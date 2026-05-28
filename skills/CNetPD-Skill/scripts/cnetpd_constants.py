@@ -10,9 +10,9 @@ SOURCE_REPO = "benjamin1108/CNetPD-Skill-Builder"
 SOURCE_URL = f"https://github.com/{SOURCE_REPO}"
 GITHUB_SKILL_SOURCE_URL = f"{SOURCE_URL}/tree/main/skills/{SKILL_NAME}"
 LATEST_VERSION_URL = f"https://raw.githubusercontent.com/{SOURCE_REPO}/main/version.json"
-INSTALL_COMMAND = f"npx -y skills add {SOURCE_REPO} --skill {SKILL_NAME} -a codex -g -y"
-UPDATE_COMMAND = f"npx -y skills update {SKILL_NAME} -y"
-UPDATE_COMMAND_GLOBAL = f"npx -y skills update {SKILL_NAME} -g -y"
+INSTALL_COMMAND = f"npx skills add {SOURCE_REPO} --skill {SKILL_NAME}"
+UPDATE_COMMAND = f"npx skills update {SKILL_NAME}"
+UPDATE_COMMAND_GLOBAL = UPDATE_COMMAND
 
 DATA_SCHEMA_VERSION = 2
 DEFAULT_CACHE_DIR = "~/.cache/cnetpd-skill/data"

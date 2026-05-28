@@ -6,19 +6,17 @@
   "sourceUrl": "https://github.com/benjamin1108/CNetPD-Skill-Builder",
   "githubSkillSourceUrl": "https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill",
   "latestVersionUrl": "https://raw.githubusercontent.com/benjamin1108/CNetPD-Skill-Builder/main/version.json",
-  "installCommand": "npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y",
-  "updateCommand": "npx -y skills update CNetPD-Skill -y",
-  "globalUpdateCommand": "npx -y skills update CNetPD-Skill -g -y",
+  "installCommand": "npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill",
+  "updateCommand": "npx skills update CNetPD-Skill",
   "installChannels": {
     "npx": {
-      "installCommand": "npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y",
-      "updateCommand": "npx -y skills update CNetPD-Skill -y",
-      "globalUpdateCommand": "npx -y skills update CNetPD-Skill -g -y"
+      "installCommand": "npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill",
+      "updateCommand": "npx skills update CNetPD-Skill"
     },
     "githubHomepage": {
       "homepage": "https://github.com/benjamin1108/CNetPD-Skill-Builder",
       "skillSource": "https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill",
-      "instruction": "不被 npx skills add 支持的 agent：打开 GitHub 主页，按该 agent 的官方 skill 安装方式安装或覆盖 skills/CNetPD-Skill/。"
+      "instruction": "不被 npx skills add 支持的环境：打开 GitHub 主页，按对应客户端的 skill 安装方式安装或覆盖 skills/CNetPD-Skill/。"
     }
   }
 }

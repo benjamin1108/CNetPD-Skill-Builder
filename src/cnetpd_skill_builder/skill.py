@@ -22,7 +22,6 @@ from .constants import (
     SOURCE_REPO,
     SOURCE_URL,
     UPDATE_COMMAND,
-    UPDATE_COMMAND_GLOBAL,
 )
 from .indexing import build_cnetpd_index
 from .manifest import write_manifest
@@ -39,17 +38,15 @@ def version_info() -> dict:
         "latestVersionUrl": LATEST_VERSION_URL,
         "installCommand": INSTALL_COMMAND,
         "updateCommand": UPDATE_COMMAND,
-        "globalUpdateCommand": UPDATE_COMMAND_GLOBAL,
         "installChannels": {
             "npx": {
                 "installCommand": INSTALL_COMMAND,
                 "updateCommand": UPDATE_COMMAND,
-                "globalUpdateCommand": UPDATE_COMMAND_GLOBAL,
             },
             "githubHomepage": {
                 "homepage": SOURCE_URL,
                 "skillSource": GITHUB_SKILL_SOURCE_URL,
-                "instruction": "不被 npx skills add 支持的 agent：打开 GitHub 主页，按该 agent 的官方 skill 安装方式安装或覆盖 skills/CNetPD-Skill/。",
+                "instruction": "不被 npx skills add 支持的环境：打开 GitHub 主页，按对应客户端的 skill 安装方式安装或覆盖 skills/CNetPD-Skill/。",
             },
         },
     }
@@ -115,7 +112,7 @@ python3 $SCRIPT sync
 
 ## 安装与自更新
 
-使用 npx 安装到 Codex 全局 skill 目录：
+使用 npx 安装：
 
 ```bash
 {INSTALL_COMMAND}
@@ -127,23 +124,17 @@ python3 $SCRIPT sync
 python3 $SCRIPT version
 ```
 
-如果版本检查提示有新版本，让 agent 执行：
+如果版本检查提示有新版本，执行：
 
 ```bash
 {UPDATE_COMMAND}
 ```
 
-如果是全局安装，执行：
-
-```bash
-{UPDATE_COMMAND_GLOBAL}
-```
-
-不被 `npx skills add` 支持的 agent，使用 GitHub 主页安装/更新：
+不被 `npx skills add` 支持的环境，使用 GitHub 主页安装/更新：
 
 1. 打开 `{SOURCE_URL}`。
-2. 按该 agent 的官方 skill 安装方式，把仓库中的 `skills/{SKILL_NAME}/` 安装或覆盖到它的 skill 目录。
-3. 如果 agent 需要直接的 skill 源目录，使用 `{GITHUB_SKILL_SOURCE_URL}`。
+2. 按对应客户端的 skill 安装方式，把仓库中的 `skills/{SKILL_NAME}/` 安装或覆盖到它的 skill 目录。
+3. 如果需要直接的 skill 源目录，使用 `{GITHUB_SKILL_SOURCE_URL}`。
 4. 安装后运行 `python3 $SCRIPT version` 检查版本。
 
 ## 数据更新

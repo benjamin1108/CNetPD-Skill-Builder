@@ -36,7 +36,7 @@ try:
     )
 except ImportError:
     GITHUB_SKILL_SOURCE_URL = "https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill"
-    INSTALL_COMMAND = "npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y"
+    INSTALL_COMMAND = "npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill"
     LATEST_VERSION_URL = "https://raw.githubusercontent.com/benjamin1108/CNetPD-Skill-Builder/main/version.json"
     DEFAULT_SYNC_TTL_DAYS = 30
     DATA_SCHEMA_VERSION = 2
@@ -44,8 +44,8 @@ except ImportError:
     SKILL_VERSION = "1.1.0"
     SOURCE_REPO = "benjamin1108/CNetPD-Skill-Builder"
     SOURCE_URL = "https://github.com/benjamin1108/CNetPD-Skill-Builder"
-    UPDATE_COMMAND = "npx -y skills update CNetPD-Skill -y"
-    UPDATE_COMMAND_GLOBAL = "npx -y skills update CNetPD-Skill -g -y"
+    UPDATE_COMMAND = "npx skills update CNetPD-Skill"
+    UPDATE_COMMAND_GLOBAL = UPDATE_COMMAND
 
 SKILL_ROOT = SCRIPT_DIR.parent
 PACKAGED_DATA_ROOT = Path(__file__).resolve().parent.parent / "data"
@@ -387,12 +387,10 @@ def local_version_info() -> dict:
     data.setdefault("latestVersionUrl", LATEST_VERSION_URL)
     data.setdefault("installCommand", INSTALL_COMMAND)
     data.setdefault("updateCommand", UPDATE_COMMAND)
-    data.setdefault("globalUpdateCommand", UPDATE_COMMAND_GLOBAL)
     data.setdefault("installChannels", {
         "npx": {
             "installCommand": INSTALL_COMMAND,
             "updateCommand": UPDATE_COMMAND,
-            "globalUpdateCommand": UPDATE_COMMAND_GLOBAL,
         },
         "githubHomepage": {
             "homepage": SOURCE_URL,
@@ -443,13 +441,11 @@ def cmd_version(*, no_remote: bool = False) -> None:
     print(f"最新版本: {latest_version}")
     if version_tuple(latest_version) > version_tuple(local_version):
         print("状态: 有新版本")
-        print("让 agent 执行以下命令更新:")
+        print("执行以下命令更新:")
         print(f"  {local.get('updateCommand', UPDATE_COMMAND)}")
-        print("如果当前 skill 是全局安装:")
-        print(f"  {local.get('globalUpdateCommand', UPDATE_COMMAND_GLOBAL)}")
-        print("如果当前 agent 不被 npx skills add 支持:")
+        print("如果当前环境不支持 npx skills add:")
         print(f"  打开 {github_channel.get('homepage', local.get('sourceUrl', SOURCE_URL))}")
-        print(f"  按该 agent 的官方方式安装或覆盖 {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
+        print(f"  按对应客户端的方式安装或覆盖 {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
     else:
         print("状态: 已是最新")
 

@@ -85,35 +85,35 @@ dist/CNetPD-Skill.skill
 
 缓存缺失、schema 过旧或超过 30 天时会尝试自动同步；同步失败时回退内置快照。AWS 同步默认直接拉取 `raw.githubusercontent.com/aws/api-models-aws` 中固定 Smithy version 的模型文件，避免依赖 GitHub contents API rate limit。
 
-## npx 安装
+## 安装
 
 仓库提交 `skills/CNetPD-Skill/` 作为 npx 安装源，不提交静态 data。安装后首次查询会自动同步最新 API 数据到本机缓存，不需要手动下载 data。
 
-安装到 Codex 全局 skill 目录：
+使用 npx 安装：
 
 ```bash
-npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y
+npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill
 ```
 
 检查 skill 版本：
 
 ```bash
-python3 ~/.codex/skills/cnetpd-skill/scripts/query.py version
+python3 <安装后的skill目录>/scripts/query.py version
 ```
 
-如果提示有新版本，让 agent 执行：
+如果提示有新版本，执行：
 
 ```bash
-npx -y skills update CNetPD-Skill -g -y
+npx skills update CNetPD-Skill
 ```
 
 ## GitHub 主页安装
 
-不被 `npx skills add` 支持的 agent，可以从 GitHub 主页安装：
+不被 `npx skills add` 支持的环境，可以从 GitHub 主页安装：
 
 1. 打开 <https://github.com/benjamin1108/CNetPD-Skill-Builder>。
-2. 按该 agent 的官方 skill 安装方式，把 `skills/CNetPD-Skill/` 安装或覆盖到它的 skill 目录。
-3. 如果 agent 需要直接的 skill 源目录，使用 <https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill>。
+2. 按对应客户端的 skill 安装方式，把 `skills/CNetPD-Skill/` 安装或覆盖到它的 skill 目录。
+3. 如果需要直接的 skill 源目录，使用 <https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill>。
 4. 安装后运行该目录里的 `scripts/query.py version` 检查版本。
 
 ## 使用生成的 Skill

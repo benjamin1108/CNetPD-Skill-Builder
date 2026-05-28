@@ -34,10 +34,10 @@ python3 $SCRIPT sync
 
 ## 安装与自更新
 
-使用 npx 安装到 Codex 全局 skill 目录：
+使用 npx 安装：
 
 ```bash
-npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y
+npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill
 ```
 
 检查当前 skill 版本：
@@ -46,23 +46,17 @@ npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a code
 python3 $SCRIPT version
 ```
 
-如果版本检查提示有新版本，让 agent 执行：
+如果版本检查提示有新版本，执行：
 
 ```bash
-npx -y skills update CNetPD-Skill -y
+npx skills update CNetPD-Skill
 ```
 
-如果是全局安装，执行：
-
-```bash
-npx -y skills update CNetPD-Skill -g -y
-```
-
-不被 `npx skills add` 支持的 agent，使用 GitHub 主页安装/更新：
+不被 `npx skills add` 支持的环境，使用 GitHub 主页安装/更新：
 
 1. 打开 `https://github.com/benjamin1108/CNetPD-Skill-Builder`。
-2. 按该 agent 的官方 skill 安装方式，把仓库中的 `skills/CNetPD-Skill/` 安装或覆盖到它的 skill 目录。
-3. 如果 agent 需要直接的 skill 源目录，使用 `https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill`。
+2. 按对应客户端的 skill 安装方式，把仓库中的 `skills/CNetPD-Skill/` 安装或覆盖到它的 skill 目录。
+3. 如果需要直接的 skill 源目录，使用 `https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill`。
 4. 安装后运行 `python3 $SCRIPT version` 检查版本。
 
 ## 数据更新
