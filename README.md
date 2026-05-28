@@ -25,6 +25,12 @@ dist/CNetPD-Skill.zip           最终 zip 包，忽略提交
 dist/CNetPD-Skill.skill         最终 .skill 包，忽略提交
 ```
 
+## 开发规则
+
+所有 skill 能力必须写在 builder 源码、模板或 runtime 源码里，再由 builder 生成最终 skill。不要把 `skills/CNetPD-Skill/` 或 `dist/CNetPD-Skill/` 当作手工修改源。
+
+详细规则见 [AGENTS.md](AGENTS.md)。
+
 ## 构建
 
 一键生成：
