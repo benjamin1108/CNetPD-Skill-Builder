@@ -63,6 +63,24 @@ npx skills update CNetPD-Skill
 
 `npx skills add` 安装源不内置静态 data。首次查询会自动同步到 `~/.cache/cnetpd-skill/data`；也可以先运行 `python3 $SCRIPT sync`。如果当前环境不能联网，请改用 `dist/` 下的离线包。
 
+Agent 首次使用本 skill 时，必须先运行：
+
+```bash
+python3 $SCRIPT data-info
+```
+
+如果输出显示 `有效: no`、schema 过旧、缺少目标 provider，或查询命令报 `数据目录无效`，不要直接改用 WebSearch。先执行：
+
+```bash
+python3 $SCRIPT sync
+```
+
+如果同步因为沙箱网络限制、企业代理、DNS、TLS 或 HTTP 403/407 等原因失败，向用户申请联网权限后重试。给用户的说明保持简洁，例如：
+
+> 需要联网初始化 CNetPD-Skill 的云网络 API 数据缓存，否则本次无法使用 skill 的本地证据链。是否允许我运行 `python3 $SCRIPT sync` 更新数据？
+
+如果用户拒绝联网或环境确实不能访问外网，再说明本次无法使用本地 skill 数据，并请用户提供可用的 `CNETPD_DATA` 目录或离线包。
+
 环境变量：
 
 - `CNETPD_DATA`：强制使用指定 data 目录
@@ -143,3 +161,14 @@ npx skills update CNetPD-Skill
 4. AWS 的 `ec2-networking` 是从 EC2 Smithy 模型中按网络相关 operation 单独抽取；其他 AWS 网络产品按服务模型独立进入 `provider=aws`。
 5. 需要完整模型细节时读取对应产品目录下的 `source-model.json`；常规回答优先使用 L0/L1/L2 渐进查询。
 6. 标注异步/同步、配额、计费、废弃状态等非功能约束。
+
+## 检索方法
+
+不要把用户原句当成唯一关键词。先把问题拆成场景、资源对象、动作、范围约束和云厂商，再按以下顺序扩展查询：
+
+1. 用 `topics` / `topic <slug>` 找候选产品和能力分区。
+2. 用 `product <product> --provider <provider>` 查看产品内的 group。
+3. 用短词、核心名词、动词、API 片段、参数名片段分别 `search`，避免只搜完整短语。
+4. 如果一个词无结果，换成同义概念、英文/中文名、连字符/空格/驼峰拆分后的词再查。
+5. 命中 API 后用 `detail` 读取约束和参数；不要只凭 API 名称下结论。
+6. 只有在本地数据初始化失败、目标 provider 不存在，或 skill 明确没有覆盖相关产品时，才使用 WebSearch 补证；补证时说明本地证据链缺口。
