@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 SKILL_NAME = "CNetPD-Skill"
-SKILL_VERSION = "1.1.0"
+SKILL_VERSION = "1.2.0"
 PROJECT_NAME = "CNetPD-Skill-Builder"
 PROJECT_DESCRIPTION = "Cloud Networking PD Skill"
 SOURCE_REPO = "benjamin1108/CNetPD-Skill-Builder"
 SOURCE_URL = f"https://github.com/{SOURCE_REPO}"
+GITHUB_SKILL_SOURCE_URL = f"{SOURCE_URL}/tree/main/skills/{SKILL_NAME}"
 LATEST_VERSION_URL = f"https://raw.githubusercontent.com/{SOURCE_REPO}/main/version.json"
 INSTALL_COMMAND = f"npx -y skills add {SOURCE_REPO} --skill {SKILL_NAME} -a codex -g -y"
 UPDATE_COMMAND = f"npx -y skills update {SKILL_NAME} -y"

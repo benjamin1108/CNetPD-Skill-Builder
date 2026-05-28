@@ -56,6 +56,13 @@ npx -y skills update CNetPD-Skill -y
 npx -y skills update CNetPD-Skill -g -y
 ```
 
+不被 `npx skills add` 支持的 agent，使用 GitHub 主页安装/更新：
+
+1. 打开 `https://github.com/benjamin1108/CNetPD-Skill-Builder`。
+2. 按该 agent 的官方 skill 安装方式，把仓库中的 `skills/CNetPD-Skill/` 安装或覆盖到它的 skill 目录。
+3. 如果 agent 需要直接的 skill 源目录，使用 `https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill`。
+4. 安装后运行 `python3 $SCRIPT version` 检查版本。
+
 ## 数据更新
 
 `npx skills add` 安装源不内置静态 data。首次查询会自动同步到 `~/.cache/cnetpd-skill/data`；也可以先运行 `python3 $SCRIPT sync`。如果当前环境不能联网，请改用 `dist/` 下的离线包。

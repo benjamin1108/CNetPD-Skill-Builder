@@ -22,6 +22,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 try:
     from cnetpd_constants import (  # type: ignore
+        GITHUB_SKILL_SOURCE_URL,
         INSTALL_COMMAND,
         LATEST_VERSION_URL,
         SKILL_NAME,
@@ -32,6 +33,7 @@ try:
         UPDATE_COMMAND_GLOBAL,
     )
 except ImportError:
+    GITHUB_SKILL_SOURCE_URL = "https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill"
     INSTALL_COMMAND = "npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y"
     LATEST_VERSION_URL = "https://raw.githubusercontent.com/benjamin1108/CNetPD-Skill-Builder/main/version.json"
     SKILL_NAME = "CNetPD-Skill"
@@ -362,10 +364,22 @@ def local_version_info() -> dict:
     data.setdefault("version", SKILL_VERSION)
     data.setdefault("sourceRepo", SOURCE_REPO)
     data.setdefault("sourceUrl", SOURCE_URL)
+    data.setdefault("githubSkillSourceUrl", GITHUB_SKILL_SOURCE_URL)
     data.setdefault("latestVersionUrl", LATEST_VERSION_URL)
     data.setdefault("installCommand", INSTALL_COMMAND)
     data.setdefault("updateCommand", UPDATE_COMMAND)
     data.setdefault("globalUpdateCommand", UPDATE_COMMAND_GLOBAL)
+    data.setdefault("installChannels", {
+        "npx": {
+            "installCommand": INSTALL_COMMAND,
+            "updateCommand": UPDATE_COMMAND,
+            "globalUpdateCommand": UPDATE_COMMAND_GLOBAL,
+        },
+        "githubHomepage": {
+            "homepage": SOURCE_URL,
+            "skillSource": GITHUB_SKILL_SOURCE_URL,
+        },
+    })
     return data
 
 
@@ -389,10 +403,14 @@ def version_tuple(value: str) -> tuple[int, int, int]:
 def cmd_version(*, no_remote: bool = False) -> None:
     local = local_version_info()
     local_version = str(local.get("version", SKILL_VERSION))
+    channels = local.get("installChannels", {})
+    github_channel = channels.get("githubHomepage", {}) if isinstance(channels, dict) else {}
     print(f"Skill: {local.get('skill', SKILL_NAME)}")
     print(f"本地版本: {local_version}")
     print(f"来源仓库: {local.get('sourceRepo', SOURCE_REPO)}")
     print(f"安装命令: {local.get('installCommand', INSTALL_COMMAND)}")
+    print(f"GitHub主页: {github_channel.get('homepage', local.get('sourceUrl', SOURCE_URL))}")
+    print(f"手动安装源: {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
     if no_remote:
         print("远端检查: 已跳过")
         return
@@ -410,6 +428,9 @@ def cmd_version(*, no_remote: bool = False) -> None:
         print(f"  {local.get('updateCommand', UPDATE_COMMAND)}")
         print("如果当前 skill 是全局安装:")
         print(f"  {local.get('globalUpdateCommand', UPDATE_COMMAND_GLOBAL)}")
+        print("如果当前 agent 不被 npx skills add 支持:")
+        print(f"  打开 {github_channel.get('homepage', local.get('sourceUrl', SOURCE_URL))}")
+        print(f"  按该 agent 的官方方式安装或覆盖 {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
     else:
         print("状态: 已是最新")
 

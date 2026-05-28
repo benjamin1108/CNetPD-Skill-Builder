@@ -10,6 +10,7 @@ from pathlib import Path
 from . import VERSION
 from .constants import (
     DEFAULT_CACHE_DIR,
+    GITHUB_SKILL_SOURCE_URL,
     INSTALL_COMMAND,
     LATEST_VERSION_URL,
     PRODUCT_CODES,
@@ -121,10 +122,23 @@ def version_info() -> dict:
         "project": PROJECT_NAME,
         "sourceRepo": SOURCE_REPO,
         "sourceUrl": SOURCE_URL,
+        "githubSkillSourceUrl": GITHUB_SKILL_SOURCE_URL,
         "latestVersionUrl": LATEST_VERSION_URL,
         "installCommand": INSTALL_COMMAND,
         "updateCommand": UPDATE_COMMAND,
         "globalUpdateCommand": UPDATE_COMMAND_GLOBAL,
+        "installChannels": {
+            "npx": {
+                "installCommand": INSTALL_COMMAND,
+                "updateCommand": UPDATE_COMMAND,
+                "globalUpdateCommand": UPDATE_COMMAND_GLOBAL,
+            },
+            "githubHomepage": {
+                "homepage": SOURCE_URL,
+                "skillSource": GITHUB_SKILL_SOURCE_URL,
+                "instruction": "不被 npx skills add 支持的 agent：打开 GitHub 主页，按该 agent 的官方 skill 安装方式安装或覆盖 skills/CNetPD-Skill/。",
+            },
+        },
     }
 
 
@@ -209,6 +223,13 @@ python3 $SCRIPT version
 ```bash
 {UPDATE_COMMAND_GLOBAL}
 ```
+
+不被 `npx skills add` 支持的 agent，使用 GitHub 主页安装/更新：
+
+1. 打开 `{SOURCE_URL}`。
+2. 按该 agent 的官方 skill 安装方式，把仓库中的 `skills/{SKILL_NAME}/` 安装或覆盖到它的 skill 目录。
+3. 如果 agent 需要直接的 skill 源目录，使用 `{GITHUB_SKILL_SOURCE_URL}`。
+4. 安装后运行 `python3 $SCRIPT version` 检查版本。
 
 ## 数据更新
 

@@ -90,6 +90,15 @@ python3 ~/.codex/skills/cnetpd-skill/scripts/query.py version
 npx -y skills update CNetPD-Skill -g -y
 ```
 
+## GitHub 主页安装
+
+不被 `npx skills add` 支持的 agent，可以从 GitHub 主页安装：
+
+1. 打开 <https://github.com/benjamin1108/CNetPD-Skill-Builder>。
+2. 按该 agent 的官方 skill 安装方式，把 `skills/CNetPD-Skill/` 安装或覆盖到它的 skill 目录。
+3. 如果 agent 需要直接的 skill 源目录，使用 <https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill>。
+4. 安装后运行该目录里的 `scripts/query.py version` 检查版本。
+
 ## 使用生成的 Skill
 
 ```bash

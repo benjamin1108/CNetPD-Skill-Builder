@@ -44,6 +44,8 @@ Examples:
     parser.add_argument("--target", "-t", type=Path, default=default_target)
     parser.add_argument("--install-source-dir", type=Path, default=default_install_source)
     parser.add_argument("--no-install-source", action="store_true")
+    parser.add_argument("--repo-version-file", type=Path, default=repo_root / "version.json")
+    parser.add_argument("--no-repo-version", action="store_true")
     parser.add_argument("--no-prepare", action="store_true")
     parser.add_argument("--refresh-meta", action="store_true")
     parser.add_argument("--force", "-f", action="store_true")
@@ -60,6 +62,7 @@ Examples:
         output_dir=args.source_dir,
         target_dir=args.target,
         install_source_dir=None if args.no_install_source else args.install_source_dir,
+        repo_version_file=None if args.no_repo_version else args.repo_version_file,
         package_dir=Path(__file__).resolve().parent,
         no_prepare=args.no_prepare,
         refresh_meta=args.refresh_meta,
@@ -72,6 +75,8 @@ Examples:
     print(f"  output: {result['target']}")
     if result.get("install_source"):
         print(f"  npx install source: {result['install_source']}")
+    if result.get("repo_version"):
+        print(f"  repo version: {result['repo_version']}")
     print(f"  zip: {result['zip']}")
     print(f"  skill: {result['skill']}")
     print(f"  products: {result['products_copied']}")

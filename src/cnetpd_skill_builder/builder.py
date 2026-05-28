@@ -9,7 +9,7 @@ from pathlib import Path
 from .aliyun_splitter import split_batch
 from .constants import PRODUCT_CODES, SKILL_NAME
 from .metadata import download_network_metadata, missing_metadata
-from .skill import build_install_source, build_skill
+from .skill import build_install_source, build_skill, write_version_file
 
 logger = logging.getLogger("cnetpd_builder")
 
@@ -52,6 +52,7 @@ def build(
     output_dir: Path,
     target_dir: Path,
     install_source_dir: Path | None,
+    repo_version_file: Path | None,
     package_dir: Path,
     no_prepare: bool = False,
     refresh_meta: bool = False,
@@ -70,5 +71,10 @@ def build(
             package_dir=package_dir,
         )
         result["install_source"] = install_result["target"]
+    if repo_version_file is not None:
+        version_path = write_version_file(repo_version_file.parent)
+        if version_path != repo_version_file:
+            version_path.replace(repo_version_file)
+        result["repo_version"] = str(repo_version_file)
     logger.info("%s built at %s", SKILL_NAME, target_dir)
     return result
