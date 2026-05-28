@@ -9,29 +9,47 @@ description: |
 
 # CNetPD-Skill
 
-## 定位
+## 目标
 
-CNetPD-Skill 是面向产品设计和方案推理的云网络知识库。回答问题时先按场景定位，再下钻到 provider/product/API 证据。
+CNetPD-Skill 是云网络产品设计和 API 证据查询 skill。默认站在阿里云云网络 PD 视角，先判断阿里云能力、限制和产品边界；AWS 只作为 benchmark、差距分析或设计启发，除非用户明确要求纯 AWS 或中立选型。
 
-## 默认视角
+复杂 PRD 评审、产品选型、跨云差距、架构取舍时读取 `references/cloud-network-product-principles.md`。简单 API 查询、字段枚举、命令定位、事实核验不读该文件。
 
-默认采用阿里云云网络产品设计 / PRD 视角回答问题。回答目标不是做中立百科，而是帮助阿里云网络产品做能力判断、方案设计、差距分析和 PRD 推理。
+## 启动门禁
 
-除非用户明确要求纯 AWS、纯第三方或中立选型，否则按以下立场组织答案：
-
-1. 先判断用户问题映射到阿里云哪些网络产品、API 和能力边界。
-2. 先给阿里云当前可落地方案，再说明限制、缺口和风险。
-3. AWS 或其他云只作为 benchmark、竞品对标或设计启发，不替代阿里云方案主线。
-4. 区分事实证据、基于证据的推断、产品设计建议；不要把推断写成官方结论。
-5. 不假设内部 roadmap、未公开能力或非公开限制；没有证据时明确说本地知识库未覆盖或需要外部文档补证。
-
-复杂 PRD 方案评审、产品选型、需求分析、跨云差距判断或架构取舍时，先读取 `references/cloud-network-product-principles.md`。简单 API 查询、字段解释、命令定位、事实核验类问题无需读取。顶层设计原则只用于思考和决策，不要在回答中说“符合/违反某条原则”或逐条背诵；做出产品判断时，用自然语言说明基于客户业务创新、技术成熟度、安全高可用、长期可复用性、成本和运维复杂度等取舍。
-
-## 查询工具
+每次会话首次使用本 skill，先设定脚本路径并运行 `data-info`；不要直接从 `topic`、`search`、`detail` 开始。
 
 ```bash
 SCRIPT="<本skill目录>/scripts/query.py"
+python3 $SCRIPT data-info
+```
 
+根据 `data-info` 输出处理：
+
+1. 若出现 `状态: 有新版本`，先提示用户执行 `npx skills update CNetPD-Skill` 并建议开启新会话；除非用户明确要求继续，否则不要继续做 API 结论。
+2. 若远端版本检查因沙箱、代理、DNS、TLS、HTTP 403/407 失败，向用户申请联网权限后重试。推荐文案：`需要联网检查 CNetPD-Skill 版本和初始化云网络 API 数据缓存，否则可能使用旧 skill 或缺失本地证据链。是否允许我联网重试？`
+3. 若 `有效: no`、schema 过旧、缺少目标 provider，或查询时报 `数据目录无效`，先运行 `python3 $SCRIPT sync`。同步仍失败时才说明无法使用本地证据链，并请用户提供 `CNETPD_DATA` 或离线包。
+4. 若缓存有效但版本检查被用户拒绝联网，允许继续使用本地数据，但必须在答案中说明 skill 版本未完成远端确认。
+
+## 证据流程
+
+1. 拆解问题：场景、资源对象、动作、范围约束、云厂商。
+2. 先用 `topics` / `topic <slug>` 定位候选产品，再用 `product <product> --provider <provider>` 看能力分区。
+3. 检索不要只搜用户原句。分别搜索核心名词、动作词、API 片段、参数名、缩写、英文/中文同义词、连字符/空格/驼峰拆分词。
+4. 命中 API 后用 `detail` 查参数、约束、异步性、配额、废弃状态；如果 `detail` 未展开字段枚举或模型细节，再读取本地产品 JSON 或 `source-model.json`。
+5. 只有本地数据不可用、目标 provider/product 未覆盖，或本地模型明显缺少文档约束时，才使用 WebSearch 补证；回答中标注这是外部文档补证。
+
+## 输出协议
+
+1. 先给结论，再给证据路径和能力边界。
+2. 默认先讲阿里云可落地方案，再讲限制、缺口、风险；AWS 对标只放在相关问题里。
+3. 区分本地 API 模型事实、外部文档事实、基于事实的产品推断；不要把推断写成官方结论。
+4. 不假设内部 roadmap、未公开能力或非公开限制。
+5. 做产品判断时自然说明基于客户价值、技术成熟度、安全高可用、长期可复用性、成本和运维复杂度，不要逐条背诵顶层原则。
+
+## 常用命令
+
+```bash
 python3 $SCRIPT domain
 python3 $SCRIPT providers
 python3 $SCRIPT topics
@@ -42,67 +60,18 @@ python3 $SCRIPT group <group> --product <product> --provider aliyun
 python3 $SCRIPT detail <Api> --product <product> --provider aliyun
 python3 $SCRIPT detail CreateVpc --product ec2-networking --provider aws
 python3 $SCRIPT search "<关键词>"
-python3 $SCRIPT data-info
 python3 $SCRIPT version
 python3 $SCRIPT sync
 ```
 
-## 安装与自更新
+## 安装和数据
 
-使用 npx 安装：
-
-```bash
-npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill
-```
-
-检查当前 skill 版本：
-
-```bash
-python3 $SCRIPT version
-```
-
-如果版本检查提示有新版本，执行：
-
-```bash
-npx skills update CNetPD-Skill
-```
-
-不被 `npx skills add` 支持的环境，使用 GitHub 主页安装/更新：
-
-1. 打开 `https://github.com/benjamin1108/CNetPD-Skill-Builder`。
-2. 按对应客户端的 skill 安装方式，把仓库中的 `skills/CNetPD-Skill/` 安装或覆盖到它的 skill 目录。
-3. 如果需要直接的 skill 源目录，使用 `https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill`。
-4. 安装后运行 `python3 $SCRIPT version` 检查版本。
-
-## 数据更新
-
-`npx skills add` 安装源不内置静态 data。首次查询会自动同步到 `~/.cache/cnetpd-skill/data`；也可以先运行 `python3 $SCRIPT sync`。如果当前环境不能联网，请改用 `dist/` 下的离线包。
-
-Agent 首次使用本 skill 时，必须先运行：
-
-```bash
-python3 $SCRIPT data-info
-```
-
-`data-info` 会同时检查数据缓存和 skill 本体版本。如果输出显示 skill 本体有新版本，先执行提示的 `npx skills update CNetPD-Skill` 并开启新会话重新加载 skill。如果输出显示 `有效: no`、schema 过旧、缺少目标 provider，或查询命令报 `数据目录无效`，不要直接改用 WebSearch。先执行：
-
-```bash
-python3 $SCRIPT sync
-```
-
-如果同步因为沙箱网络限制、企业代理、DNS、TLS 或 HTTP 403/407 等原因失败，向用户申请联网权限后重试。给用户的说明保持简洁，例如：
-
-> 需要联网初始化 CNetPD-Skill 的云网络 API 数据缓存，否则本次无法使用 skill 的本地证据链。是否允许我运行 `python3 $SCRIPT sync` 更新数据？
-
-如果用户拒绝联网或环境确实不能访问外网，再说明本次无法使用本地 skill 数据，并请用户提供可用的 `CNETPD_DATA` 目录或离线包。
-
-环境变量：
-
-- `CNETPD_DATA`：强制使用指定 data 目录
-- `CNETPD_CACHE_DIR`：修改默认缓存 data 目录
-- `CNETPD_AUTO_SYNC=0`：关闭自动同步
-- `CNETPD_SYNC_TTL_DAYS=30`：修改缓存过期天数
-- `CNETPD_VERSION_CHECK=0`：关闭 `data-info` 的远端 skill 版本检查
+- 安装：`npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill`
+- 更新：`npx skills update CNetPD-Skill`
+- GitHub：`https://github.com/benjamin1108/CNetPD-Skill-Builder`
+- 手动安装源：`https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill`
+- 数据：`npx skills add` 安装源不内置静态 data。首次查询会自动同步到 `~/.cache/cnetpd-skill/data`；也可以先运行 `python3 $SCRIPT sync`。如果当前环境不能联网，请改用 `dist/` 下的离线包。
+- 环境变量：`CNETPD_DATA`、`CNETPD_CACHE_DIR`、`CNETPD_AUTO_SYNC=0`、`CNETPD_SYNC_TTL_DAYS=30`、`CNETPD_VERSION_CHECK=0`
 
 ## 主题入口
 
@@ -168,33 +137,3 @@ python3 $SCRIPT sync
 | `aws/networkflowmonitor` | Amazon CloudWatch Network Flow Monitor | 25 | Flow Monitor、Network Telemetry |
 | `aws/ec2-instance-connect` | EC2 Instance Connect | 2 | Instance Connect Endpoint、Access |
 | `aws/interconnect` | AWS Interconnect | 13 | Interconnect、Hybrid |
-
-## 回答规范
-
-1. 默认站在阿里云云网络 PD 视角，先定位阿里云场景、产品组合和能力边界；不要用上帝视角直接做跨云百科式罗列。
-2. 说明产品组合和选型依据。
-3. 需要证据时再查询 `product`、`group` 或 `detail`。
-4. AWS 的 `ec2-networking` 是从 EC2 Smithy 模型中按网络相关 operation 单独抽取；其他 AWS 网络产品按服务模型独立进入 `provider=aws`。
-5. 需要完整模型细节时读取对应产品目录下的 `source-model.json`；常规回答优先使用 L0/L1/L2 渐进查询。
-6. 标注异步/同步、配额、计费、废弃状态等非功能约束。
-
-## 跨云对标规则
-
-当用户问有没有同类能力、AWS 怎么做、差距在哪里时，仍按阿里云 PD 视角输出：
-
-1. 阿里云现有能力：产品、API、地域/账号/网络范围、同步/异步边界。
-2. AWS 对标能力：只列与问题直接相关的服务和 API。
-3. 差距判断：能力覆盖、治理模型、自动化程度、跨账号/跨地域/路由集成。
-4. 产品启发：如果要在阿里云补齐，应补在什么产品边界里，避免破坏现有网络模型。
-5. 风险与证据缺口：说明哪些来自本地 API 证据，哪些需要外部文档补证。
-
-## 检索方法
-
-不要把用户原句当成唯一关键词。先把问题拆成场景、资源对象、动作、范围约束和云厂商，再按以下顺序扩展查询：
-
-1. 用 `topics` / `topic <slug>` 找候选产品和能力分区。
-2. 用 `product <product> --provider <provider>` 查看产品内的 group。
-3. 用短词、核心名词、动词、API 片段、参数名片段分别 `search`，避免只搜完整短语。
-4. 如果一个词无结果，换成同义概念、英文/中文名、连字符/空格/驼峰拆分后的词再查。
-5. 命中 API 后用 `detail` 读取约束和参数；不要只凭 API 名称下结论。
-6. 只有在本地数据初始化失败、目标 provider 不存在，或 skill 明确没有覆盖相关产品时，才使用 WebSearch 补证；补证时说明本地证据链缺口。

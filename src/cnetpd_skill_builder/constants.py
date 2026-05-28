@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 SKILL_NAME = "CNetPD-Skill"
-SKILL_VERSION = "1.3.3"
+SKILL_VERSION = "1.3.4"
 PROJECT_NAME = "CNetPD-Skill-Builder"
 PROJECT_DESCRIPTION = "Cloud Networking PD Skill"
 SOURCE_REPO = "benjamin1108/CNetPD-Skill-Builder"
