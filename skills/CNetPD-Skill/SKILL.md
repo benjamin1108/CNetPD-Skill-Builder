@@ -84,7 +84,7 @@ Agent 首次使用本 skill 时，必须先运行：
 python3 $SCRIPT data-info
 ```
 
-如果输出显示 `有效: no`、schema 过旧、缺少目标 provider，或查询命令报 `数据目录无效`，不要直接改用 WebSearch。先执行：
+`data-info` 会同时检查数据缓存和 skill 本体版本。如果输出显示 skill 本体有新版本，先执行提示的 `npx skills update CNetPD-Skill` 并开启新会话重新加载 skill。如果输出显示 `有效: no`、schema 过旧、缺少目标 provider，或查询命令报 `数据目录无效`，不要直接改用 WebSearch。先执行：
 
 ```bash
 python3 $SCRIPT sync
@@ -102,6 +102,7 @@ python3 $SCRIPT sync
 - `CNETPD_CACHE_DIR`：修改默认缓存 data 目录
 - `CNETPD_AUTO_SYNC=0`：关闭自动同步
 - `CNETPD_SYNC_TTL_DAYS=30`：修改缓存过期天数
+- `CNETPD_VERSION_CHECK=0`：关闭 `data-info` 的远端 skill 版本检查
 
 ## 主题入口
 

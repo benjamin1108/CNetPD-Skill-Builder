@@ -52,10 +52,10 @@ PACKAGED_DATA_ROOT = Path(__file__).resolve().parent.parent / "data"
 CACHE_DATA_ROOT = Path(os.environ.get("CNETPD_CACHE_DIR", Path.home() / ".cache" / "cnetpd-skill" / "data")).expanduser()
 SYNC_SCRIPT = SCRIPT_DIR / "sync_data.py"
 DEFAULT_PROVIDER = "aliyun"
+VERSION_CHECK_OFF = {"0", "false", "no", "off"}
 
 
-def read_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
+def read_json(path: Path) -> dict: return json.loads(path.read_text(encoding="utf-8"))
 
 
 def valid_data_root(root: Path) -> bool:
@@ -99,12 +99,10 @@ def stale(root: Path) -> bool:
     return datetime.now(timezone.utc) - generated_at > sync_ttl()
 
 
-def auto_sync_enabled() -> bool:
-    return os.environ.get("CNETPD_AUTO_SYNC", "1").lower() not in {"0", "false", "no", "off"}
+def auto_sync_enabled() -> bool: return os.environ.get("CNETPD_AUTO_SYNC", "1").lower() not in {"0", "false", "no", "off"}
 
 
-def attempt_file() -> Path:
-    return CACHE_DATA_ROOT.parent / ".last_sync_attempt"
+def attempt_file() -> Path: return CACHE_DATA_ROOT.parent / ".last_sync_attempt"
 
 
 def recent_attempt() -> bool:
@@ -359,8 +357,9 @@ def cmd_constraints(api_name: str, product: str, provider: str) -> None:
             print(f"  {code}")
 
 
-def cmd_data_info() -> None:
+def cmd_data_info(*, no_remote: bool = False) -> None:
     meta = manifest(DATA_ROOT)
+    local = local_version_info()
     print(f"数据源: {DATA_SOURCE}")
     print(f"路径: {DATA_ROOT}")
     print(f"有效: {'yes' if valid_data_root(DATA_ROOT) else 'no'}")
@@ -371,6 +370,9 @@ def cmd_data_info() -> None:
     if DATA_SOURCE == "cache":
         print(f"缓存状态: {'过期' if stale(DATA_ROOT) else '新鲜'}")
     print(f"缓存目录: {CACHE_DATA_ROOT}")
+    print("\n【Skill版本】")
+    local_version, github_channel = print_version_header(local)
+    print_remote_version_status(local, local_version, github_channel, no_remote=no_remote)
 
 
 def local_version_info() -> dict:
@@ -417,37 +419,40 @@ def version_tuple(value: str) -> tuple[int, int, int]:
     return tuple(nums[:3])
 
 
-def cmd_version(*, no_remote: bool = False) -> None:
-    local = local_version_info()
+def remote_version_check_enabled() -> bool: return os.environ.get("CNETPD_VERSION_CHECK", "1").lower() not in VERSION_CHECK_OFF
+
+def print_version_header(local: dict) -> tuple[str, dict]:
     local_version = str(local.get("version", SKILL_VERSION))
     channels = local.get("installChannels", {})
     github_channel = channels.get("githubHomepage", {}) if isinstance(channels, dict) else {}
-    print(f"Skill: {local.get('skill', SKILL_NAME)}")
-    print(f"本地版本: {local_version}")
-    print(f"来源仓库: {local.get('sourceRepo', SOURCE_REPO)}")
-    print(f"安装命令: {local.get('installCommand', INSTALL_COMMAND)}")
-    print(f"GitHub主页: {github_channel.get('homepage', local.get('sourceUrl', SOURCE_URL))}")
-    print(f"手动安装源: {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
-    if no_remote:
+    print(f"Skill: {local.get('skill', SKILL_NAME)}\n本地版本: {local_version}\n来源仓库: {local.get('sourceRepo', SOURCE_REPO)}\n安装命令: {local.get('installCommand', INSTALL_COMMAND)}\nGitHub主页: {github_channel.get('homepage', local.get('sourceUrl', SOURCE_URL))}\n手动安装源: {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
+    return local_version, github_channel
+
+def print_remote_version_status(local: dict, local_version: str, github_channel: dict, *, no_remote: bool = False) -> None:
+    if no_remote or not remote_version_check_enabled():
         print("远端检查: 已跳过")
         return
     try:
         latest = fetch_latest_version()
     except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
         print(f"远端检查: 失败 ({exc})")
-        print(f"可稍后重试: python3 {Path(__file__).resolve()} version")
+        print(f"如果当前环境是沙箱或企业代理限制，请先申请联网权限后重试版本检查。\n可重试: python3 {Path(__file__).resolve()} version")
         return
     latest_version = str(latest.get("version", "0.0.0"))
     print(f"最新版本: {latest_version}")
     if version_tuple(latest_version) > version_tuple(local_version):
-        print("状态: 有新版本")
-        print("执行以下命令更新:")
-        print(f"  {local.get('updateCommand', UPDATE_COMMAND)}")
+        print(f"状态: 有新版本\n需要先更新 skill 本体，否则 Agent 仍可能读取旧 SKILL.md 和旧脚本。\n执行以下命令更新:\n  {local.get('updateCommand', UPDATE_COMMAND)}\n更新后建议开启新会话重新加载 skill。")
         print("如果当前环境不支持 npx skills add:")
         print(f"  打开 {github_channel.get('homepage', local.get('sourceUrl', SOURCE_URL))}")
         print(f"  按对应客户端的方式安装或覆盖 {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
     else:
         print("状态: 已是最新")
+
+
+def cmd_version(*, no_remote: bool = False) -> None:
+    local = local_version_info()
+    local_version, github_channel = print_version_header(local)
+    print_remote_version_status(local, local_version, github_channel, no_remote=no_remote)
 
 
 def main() -> None:
@@ -462,7 +467,7 @@ def main() -> None:
     search = sub.add_parser("search"); search.add_argument("keyword"); search.add_argument("--provider")
     detail = sub.add_parser("detail"); detail.add_argument("api_name"); detail.add_argument("--product", required=True); detail.add_argument("--provider", default=DEFAULT_PROVIDER); detail.add_argument("--full", action="store_true")
     constraints = sub.add_parser("constraints"); constraints.add_argument("api_name"); constraints.add_argument("--product", required=True); constraints.add_argument("--provider", default=DEFAULT_PROVIDER)
-    sub.add_parser("data-info")
+    data_info = sub.add_parser("data-info"); data_info.add_argument("--no-remote", action="store_true")
     version = sub.add_parser("version"); version.add_argument("--no-remote", action="store_true")
     check_update = sub.add_parser("check-update"); check_update.add_argument("--no-remote", action="store_true")
     sync = sub.add_parser("sync"); sync.add_argument("--force", action="store_true")
@@ -483,7 +488,7 @@ def main() -> None:
         "search": lambda: cmd_search(args.keyword, args.provider),
         "detail": lambda: cmd_detail(args.api_name, args.product, args.provider, args.full),
         "constraints": lambda: cmd_constraints(args.api_name, args.product, args.provider),
-        "data-info": lambda: cmd_data_info(),
+        "data-info": lambda: cmd_data_info(no_remote=args.no_remote),
         "version": lambda: cmd_version(no_remote=args.no_remote),
         "check-update": lambda: cmd_version(no_remote=args.no_remote),
         "sync": lambda: sys.exit(0 if run_sync(quiet=False, force=args.force) else 1),
