@@ -54,7 +54,6 @@ CACHE_DATA_ROOT = Path(os.environ.get("CNETPD_CACHE_DIR", Path.home() / ".cache"
 SYNC_SCRIPT = SCRIPT_DIR / "sync_data.py"
 DEFAULT_PROVIDER = "aliyun"
 VERSION_CHECK_OFF = {"0", "false", "no", "off"}
-SELF_UPDATE_REEXEC_ENV = "CNETPD_SELF_UPDATE_REEXECED"
 DEFAULT_UPDATE_TIMEOUT_SECONDS = 180
 
 
@@ -468,11 +467,6 @@ def print_command_output(result: subprocess.CompletedProcess[str]) -> None:
         print(stderr, file=sys.stderr)
 
 
-def reexec_current_command() -> None:
-    os.environ[SELF_UPDATE_REEXEC_ENV] = "1"
-    os.execv(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]])
-
-
 def maybe_self_update(args: argparse.Namespace) -> None:
     if command_skips_remote_check(args):
         return
@@ -490,11 +484,6 @@ def maybe_self_update(args: argparse.Namespace) -> None:
     latest_version = str(latest.get("version", "0.0.0"))
     if version_tuple(latest_version) <= version_tuple(local_version):
         return
-    if os.environ.get(SELF_UPDATE_REEXEC_ENV) == "1":
-        raise SystemExit(
-            f"CNetPD-Skill 自动更新后仍检测到旧版本: 本地 {local_version}, 最新 {latest_version}。\n"
-            "请检查 skills 安装目录是否可写，或当前脚本是否来自未安装的源码目录。"
-        )
     if not auto_update_enabled():
         raise SystemExit(
             f"CNetPD-Skill 有新版本: 本地 {local_version}, 最新 {latest_version}。\n"
@@ -527,8 +516,14 @@ def maybe_self_update(args: argparse.Namespace) -> None:
             "CNetPD-Skill 自动更新命令执行完成，但当前脚本目录仍不是最新版本，已停止本次查询。\n"
             f"当前脚本目录版本: {refreshed_version}; 最新版本: {latest_version}"
         )
-    print("CNetPD-Skill 自动更新完成，重新执行原命令。", file=sys.stderr)
-    reexec_current_command()
+    skill_md = SKILL_ROOT / "SKILL.md"
+    print(
+        f"CNetPD-Skill 自动更新完成: {local_version} -> {refreshed_version}。",
+        file=sys.stderr,
+    )
+    print(f"CNETPD_SKILL_UPDATED: {skill_md}", file=sys.stderr)
+    print("请 Agent 重新读取上述 SKILL.md 后，按新版说明继续原始请求。", file=sys.stderr)
+    raise SystemExit(0)
 
 def print_version_header(local: dict) -> tuple[str, dict]:
     local_version = str(local.get("version", SKILL_VERSION))
