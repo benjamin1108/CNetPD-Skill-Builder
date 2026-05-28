@@ -1,0 +1,123 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyIPv6TranslatorAclAttribute",
+  "group": "ipv6-translation",
+  "title": "修改访问控制策略组的名称",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "deprecated": true,
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的地域。 您可以通过调用 DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "AclId",
+      "in": "query",
+      "schema": {
+        "description": "要修改的访问控制策略组ID。",
+        "type": "string",
+        "required": true,
+        "example": "ipv6transacl-bp1de2****"
+      }
+    },
+    {
+      "name": "AclName",
+      "in": "query",
+      "schema": {
+        "description": "访问控制策略组名称。",
+        "type": "string",
+        "required": true,
+        "example": "acl1"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回数据结构体。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "54B48E3D-DF70-471B-AA93-08E683A1B45"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidName",
+        "errorMessage": "The specified name is not valid",
+        "description": ""
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidIPv6TranslatorACLId.NotFound",
+        "errorMessage": "The specified ipv6 translator acl instance id does not exist.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"54B48E3D-DF70-471B-AA93-08E683A1B45\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ModifyIPv6TranslatorAclAttributeResponse>\n    <RequestId>54B48E3D-DF70-471B-AA93-08E683A1B45</RequestId>\n</ModifyIPv6TranslatorAclAttributeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

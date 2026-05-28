@@ -1,0 +1,125 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeZones",
+  "group": "region",
+  "title": "查询指定地域中可用区的列表",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "get",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "可用区所在的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ZoneType",
+      "in": "query",
+      "schema": {
+        "description": "查询可用区的类型，默认取值为**AvailabilityZone**即普通云上可用区。",
+        "type": "string",
+        "required": false,
+        "example": "AvailabilityZone"
+      }
+    },
+    {
+      "name": "AcceptLanguage",
+      "in": "query",
+      "schema": {
+        "description": "返回值可用区名称**LocalName**的显示语言。取值：\n\n- **zh-cn**：中文。\n\n- **en-us**：英文。\n\n- **ja**：日文。",
+        "type": "string",
+        "required": false,
+        "example": "zh-cn"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "6FEA0CF3-D3B9-43E5-A304-D217037876A8"
+          },
+          "Zones": {
+            "type": "object",
+            "itemNode": true,
+            "properties": {
+              "Zone": {
+                "description": "可用区的集合。",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ZoneId": {
+                      "description": "可用区ID。",
+                      "type": "string",
+                      "example": "cn-hangzhou-b"
+                    },
+                    "LocalName": {
+                      "description": "可用区名称。",
+                      "type": "string",
+                      "example": "华东 1 可用区 B"
+                    },
+                    "ZoneType": {
+                      "description": "查询到的可用区的类型，默认取值为**AvailabilityZone**即普通云上可用区。",
+                      "type": "string",
+                      "example": "AvailabilityZone"
+                    }
+                  },
+                  "description": ""
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The RegionId provided does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"6FEA0CF3-D3B9-43E5-A304-D217037876A8\",\n  \"Zones\": {\n    \"Zone\": [\n      {\n        \"ZoneId\": \"cn-hangzhou-b\",\n        \"LocalName\": \"华东 1 可用区 B\",\n        \"ZoneType\": \"AvailabilityZone\"\n      }\n    ]\n  }\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DescribeZonesResponse>\n    <RequestId>6FEA0CF3-D3B9-43E5-A304-D217037876A8</RequestId>\n    <Zones>\n        <ZoneId>cn-hangzhou-b</ZoneId>\n        <LocalName>华东 1 可用区 B</LocalName>\n        <ZoneType>AvailabilityZone</ZoneType>\n    </Zones>\n</DescribeZonesResponse>",
+      "errorExample": ""
+    }
+  ]
+}

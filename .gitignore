@@ -1,0 +1,27 @@
+# 源数据（从阿里云官方下载，体积 >200MB）
+api_metadata/
+
+# splitter 产出（可由 splitter.py 重新生成）
+output/
+output_v2/
+
+# build_skill 产出（可由 build_skill.py 重新生成）
+skills/
+
+# 打包/下载产物
+*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# IDE / 工具
+.claude/
+.vscode/
+.idea/

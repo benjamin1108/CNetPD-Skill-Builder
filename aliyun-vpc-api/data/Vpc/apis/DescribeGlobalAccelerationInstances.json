@@ -1,0 +1,330 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeGlobalAccelerationInstances",
+  "group": "global-acceleration",
+  "title": "查询已创建的全球加速实例列表",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "get",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例所在的地域。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "IncludeReservationData",
+      "in": "query",
+      "schema": {
+        "description": "是否包含未生效的订购数据，取值：\n\n- **false**（默认）：不包含未生效的订购数据。\n\n- **true**：包含未生效的订购数据。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "GlobalAccelerationInstanceId",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例的ID。",
+        "type": "string",
+        "required": false,
+        "example": "ga-234sljmxaz****"
+      }
+    },
+    {
+      "name": "IpAddress",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例的公网IP。",
+        "type": "string",
+        "required": false,
+        "example": "12.xx.xx.78"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例的名称。",
+        "type": "string",
+        "required": false,
+        "example": "GA-1"
+      }
+    },
+    {
+      "name": "Status",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例状态，取值： \n\n- **Available**：可用。\n\n- **Inuse**：已分配。\n   \n- **Associating**：绑定中。\n   \n- **Unassociating**：解绑中。",
+        "type": "string",
+        "required": false,
+        "example": "Available"
+      }
+    },
+    {
+      "name": "BandwidthType",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例的带宽类型，取值： \n           \n- **Sharing**：查询带宽共享型实例。\n  \n- **Exclusive**（默认值）：查询带宽独享型实例。",
+        "type": "string",
+        "required": false,
+        "example": "Exclusive"
+      }
+    },
+    {
+      "name": "ServiceLocation",
+      "in": "query",
+      "schema": {
+        "description": "后端服务区域，取值： \n\n- **china-mainland**：中国内地。\n\n- **north-america**：北美。\n   \n- **asia-pacific**：亚太。\n   \n- **europe**：欧洲。",
+        "type": "string",
+        "required": false,
+        "example": "china-mainland"
+      }
+    },
+    {
+      "name": "ServerId",
+      "in": "query",
+      "schema": {
+        "description": "后端服务实例ID。",
+        "type": "string",
+        "required": false,
+        "example": "i-sxjblddejj9x****"
+      }
+    },
+    {
+      "name": "PageNumber",
+      "in": "query",
+      "schema": {
+        "description": "列表的页码，默认值为**1**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "minimum": "1",
+        "example": "10",
+        "default": "1"
+      }
+    },
+    {
+      "name": "PageSize",
+      "in": "query",
+      "schema": {
+        "description": "分页查询时每页的行数，最大值为**100**，默认值为**10**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "maximum": "100",
+        "minimum": "1",
+        "example": "10",
+        "default": "10"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "PageSize": {
+            "description": "每页包含的条目数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "10"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "6B4EE38D-C75B-4E1F-844E-863A94430676"
+          },
+          "PageNumber": {
+            "description": "当前页码。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "TotalCount": {
+            "description": "列表条目数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "GlobalAccelerationInstances": {
+            "type": "object",
+            "itemNode": true,
+            "properties": {
+              "GlobalAccelerationInstance": {
+                "description": "全球加速实例列表的详细信息。",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "CreationTime": {
+                      "description": "全球加速实例的创建时间，UTC时间。",
+                      "type": "string",
+                      "example": "2018-07-05T03:39:31Z"
+                    },
+                    "Status": {
+                      "description": "全球加速实例的状态。\n\n- **Available**：可用。\n\n- **Inuse**：已分配。\n   \n- **Associating**：绑定中。\n   \n- **Unassociating**：解绑中。",
+                      "type": "string",
+                      "example": "InUse"
+                    },
+                    "BandwidthType": {
+                      "description": "全球加速实例的带宽类型。\n\n- **Sharing**：带宽共享型实例。\n  \n- **Exclusive**（默认值）：带宽独享型实例。",
+                      "type": "string",
+                      "example": "Exclusive"
+                    },
+                    "ChargeType": {
+                      "description": "全球加速实例的付费类型。",
+                      "type": "string",
+                      "example": "PrePaid"
+                    },
+                    "GlobalAccelerationInstanceId": {
+                      "description": "全球加速实例的ID。",
+                      "type": "string",
+                      "example": "ga-bp1x99kj7kl1ziw5x****"
+                    },
+                    "ServiceLocation": {
+                      "description": "全球加速实例的服务区域。",
+                      "type": "string",
+                      "example": "china-mainland"
+                    },
+                    "RegionId": {
+                      "description": "全球加速实例所在的地域。",
+                      "type": "string",
+                      "example": "cn-hangzhou"
+                    },
+                    "AccelerationLocation": {
+                      "description": "全球加速实例的加速区域。",
+                      "type": "string",
+                      "example": "china-mainland"
+                    },
+                    "IpAddress": {
+                      "description": "独享型全球加速实例的公网IP。",
+                      "type": "string",
+                      "example": "47.xx.xx.99"
+                    },
+                    "Description": {
+                      "description": "全球加速实例的描述。",
+                      "type": "string",
+                      "example": "apiDescription"
+                    },
+                    "Bandwidth": {
+                      "description": "全球加速实例的带宽峰值。",
+                      "type": "string",
+                      "example": "10"
+                    },
+                    "ExpiredTime": {
+                      "description": "实例过期时间。",
+                      "type": "string",
+                      "example": "2018-08-05T16:00Z"
+                    },
+                    "InternetChargeType": {
+                      "description": "全球加速实例的计费方式。",
+                      "type": "string",
+                      "example": "PayByBandwidth"
+                    },
+                    "Name": {
+                      "description": "全球加速实例的名称。",
+                      "type": "string",
+                      "example": "instanceName"
+                    },
+                    "BackendServers": {
+                      "type": "object",
+                      "itemNode": true,
+                      "properties": {
+                        "BackendServer": {
+                          "description": "全球加速实例的后端服务器的详细信息。",
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "ServerIpAddress": {
+                                "description": "后端服务器IP地址。",
+                                "type": "string",
+                                "example": "172.xx.xx.109"
+                              },
+                              "ServerId": {
+                                "description": "后端服务器ID。",
+                                "type": "string",
+                                "example": "i-2zeg83zvn5d4ed4y****"
+                              },
+                              "ServerType": {
+                                "description": "后端服务器类型。\n\n- **EcsInstance**：ECS实例。\n\n- **SlbInstance**：SLB实例。",
+                                "type": "string",
+                                "example": "EcsInstance"
+                              },
+                              "RegionId": {
+                                "description": "后端服务器所在的地域。",
+                                "type": "string",
+                                "example": "cn-beijing"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "PublicIpAddresses": {
+                      "type": "object",
+                      "itemNode": true,
+                      "properties": {
+                        "PublicIpAddress": {
+                          "description": "公网IP。",
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "IpAddress": {
+                                "description": "全球加速实例的公网IP。",
+                                "type": "string",
+                                "example": "12.xx.xx.78"
+                              },
+                              "AllocationId": {
+                                "description": "全球加速实例的公网IP的ID。",
+                                "type": "string",
+                                "example": "eip-bp19yqraac4w3y0jd****"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified region is not supported.",
+        "description": ""
+      }
+    ]
+  }
+}

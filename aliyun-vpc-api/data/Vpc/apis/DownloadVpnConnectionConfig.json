@@ -1,0 +1,358 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DownloadVpnConnectionConfig",
+  "group": "vpn-attachment",
+  "title": "获取IPsec连接的配置信息",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "get",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPsec连接所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "VpnConnectionId",
+      "in": "query",
+      "schema": {
+        "description": "IPsec连接的ID。",
+        "type": "string",
+        "required": true,
+        "example": "vco-bp1bbi27hojx80nck****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回结果。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "0C68048B-0F70-40DA-B8AE-1B79B5CF62E3"
+          },
+          "VpnConnectionConfig": {
+            "description": "IPsec连接对端网关设备的配置信息。",
+            "type": "object",
+            "properties": {
+              "Remote": {
+                "description": "VPN网关的标识。",
+                "type": "string",
+                "example": "116.62.XX.XX"
+              },
+              "Local": {
+                "description": "用户网关的标识。",
+                "type": "string",
+                "example": "139.196.XX.XX"
+              },
+              "RemoteSubnet": {
+                "description": "VPC侧的网段。",
+                "type": "string",
+                "example": "192.168.0.0/16"
+              },
+              "LocalSubnet": {
+                "description": "本地IDC侧的网段。",
+                "type": "string",
+                "example": "10.0.0.0/8"
+              },
+              "IkeConfig": {
+                "description": "第一阶段协商的配置信息。",
+                "type": "object",
+                "properties": {
+                  "RemoteId": {
+                    "description": "VPN网关的标识。支持FQDN和IP格式，默认为VPN网关的IP地址。",
+                    "type": "string",
+                    "example": "116.62.XX.XX"
+                  },
+                  "IkeLifetime": {
+                    "description": "IKE阶段生存时间。单位：秒。",
+                    "type": "integer",
+                    "format": "int64",
+                    "example": "86400"
+                  },
+                  "IkeEncAlg": {
+                    "description": "IKE阶段加密算法。",
+                    "type": "string",
+                    "example": "aes"
+                  },
+                  "LocalId": {
+                    "description": "用户网关的标识。支持FQDN和IP格式，默认为用户网关的IP地址。",
+                    "type": "string",
+                    "example": "139.196.XX.XX"
+                  },
+                  "IkeMode": {
+                    "description": "IKE协商模式。\n\n- **main**：主模式，协商过程安全性高。\n- **aggressive**：野蛮模式，协商快速且协商成功率高。",
+                    "type": "string",
+                    "example": "main"
+                  },
+                  "IkeVersion": {
+                    "description": "IKE协议的版本。",
+                    "type": "string",
+                    "example": "ikev2"
+                  },
+                  "IkePfs": {
+                    "description": "IKE阶段DH分组。",
+                    "type": "string",
+                    "example": "group2"
+                  },
+                  "Psk": {
+                    "description": "预共享密钥。",
+                    "type": "string",
+                    "example": "pgw6dy7d1i8i****"
+                  },
+                  "IkeAuthAlg": {
+                    "description": "IKE阶段认证算法。",
+                    "type": "string",
+                    "example": "sha1"
+                  }
+                }
+              },
+              "IpsecConfig": {
+                "description": "第二阶段协商的配置信息。",
+                "type": "object",
+                "properties": {
+                  "IpsecAuthAlg": {
+                    "description": "IPsec阶段认证算法。",
+                    "type": "string",
+                    "example": "sha1"
+                  },
+                  "IpsecEncAlg": {
+                    "description": "IPsec阶段加密算法。",
+                    "type": "string",
+                    "example": "aes"
+                  },
+                  "IpsecLifetime": {
+                    "description": "IPsec阶段生存时间。单位：秒。",
+                    "type": "integer",
+                    "format": "int64",
+                    "example": "86400"
+                  },
+                  "IpsecPfs": {
+                    "description": "IPsec阶段DH分组。",
+                    "type": "string",
+                    "example": "group2"
+                  }
+                }
+              },
+              "TunnelsConfig": {
+                "type": "object",
+                "itemNode": true,
+                "properties": {
+                  "TunnelConfig": {
+                    "description": "IPsec连接对端网关设备的隧道配置信息。\n\n仅双隧道模式的IPsec连接会返回**TunnelsConfig**数组下的参数。",
+                    "type": "array",
+                    "items": {
+                      "description": "隧道的配置信息。",
+                      "type": "object",
+                      "properties": {
+                        "TunnelId": {
+                          "description": "隧道ID。",
+                          "type": "string",
+                          "example": "tun-opsqc4d97wni27****"
+                        },
+                        "Local": {
+                          "description": "本地IDC侧隧道的标识。",
+                          "type": "string",
+                          "example": "47.21.XX.XX"
+                        },
+                        "Remote": {
+                          "description": "阿里云侧隧道的标识。",
+                          "type": "string",
+                          "example": "47.24.XX.XX"
+                        },
+                        "IkeConfig": {
+                          "description": "第一阶段协商的配置信息。",
+                          "type": "object",
+                          "properties": {
+                            "Psk": {
+                              "description": "预共享密钥。",
+                              "type": "string",
+                              "example": "pgw6dy7d1i8i****"
+                            },
+                            "IkeVersion": {
+                              "description": "IKE协议的版本。",
+                              "type": "string",
+                              "example": "ikev2"
+                            },
+                            "IkeMode": {
+                              "description": "IKE协商模式。\n\n- **main**：主模式，协商过程安全性高。\n- **aggressive**：野蛮模式，协商快速且协商成功率高。",
+                              "type": "string",
+                              "example": "main"
+                            },
+                            "IkeEncAlg": {
+                              "description": "IKE阶段加密算法。",
+                              "type": "string",
+                              "example": "aes"
+                            },
+                            "IkeAuthAlg": {
+                              "description": "IKE阶段认证算法。",
+                              "type": "string",
+                              "example": "sha1"
+                            },
+                            "IkePfs": {
+                              "description": "IKE阶段DH分组。",
+                              "type": "string",
+                              "example": "group2"
+                            },
+                            "IkeLifetime": {
+                              "description": "IKE阶段生存时间。单位：秒。",
+                              "type": "integer",
+                              "format": "int64",
+                              "example": "86400"
+                            },
+                            "LocalId": {
+                              "description": "本地IDC侧隧道的标识。",
+                              "type": "string",
+                              "example": "47.21.XX.XX"
+                            },
+                            "RemoteId": {
+                              "description": "阿里云侧隧道的标识。",
+                              "type": "string",
+                              "example": "47.24.XX.XX"
+                            }
+                          }
+                        },
+                        "IpsecConfig": {
+                          "description": "第二阶段协商的配置信息。",
+                          "type": "object",
+                          "properties": {
+                            "IpsecAuthAlg": {
+                              "description": "IPsec阶段认证算法。",
+                              "type": "string",
+                              "example": "sha1"
+                            },
+                            "IpsecEncAlg": {
+                              "description": "IPsec阶段加密算法。",
+                              "type": "string",
+                              "example": "aes"
+                            },
+                            "IpsecPfs": {
+                              "description": "IPsec阶段DH分组。",
+                              "type": "string",
+                              "example": "group2"
+                            },
+                            "IpsecLifetime": {
+                              "description": "IPsec阶段生存时间。单位：秒。",
+                              "type": "integer",
+                              "format": "int64",
+                              "example": "86400"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "description": ""
+              },
+              "BgpConfigs": {
+                "type": "object",
+                "itemNode": true,
+                "properties": {
+                  "BgpConfig": {
+                    "description": "BGP的配置信息",
+                    "type": "array",
+                    "items": {
+                      "description": "BGP 的配置信息",
+                      "type": "object",
+                      "properties": {
+                        "LocalAsn": {
+                          "description": "本地IDC自治系统号。",
+                          "type": "string",
+                          "example": "1219002"
+                        },
+                        "LocalBgpIp": {
+                          "description": "本地IDC侧的BGP地址。",
+                          "type": "string",
+                          "example": "169.254.20.2"
+                        },
+                        "PeerAsn": {
+                          "description": "阿里云侧自治系统号。",
+                          "type": "string",
+                          "example": "1219001"
+                        },
+                        "PeerBgpIp": {
+                          "description": "阿里云侧的 BGP 地址。",
+                          "type": "string",
+                          "example": "169.254.20.1"
+                        },
+                        "TunnelCidr": {
+                          "description": "隧道的BGP网段。",
+                          "type": "string",
+                          "example": "169.254.20.0/30"
+                        },
+                        "TunnelId": {
+                          "description": "隧道ID。",
+                          "type": "string",
+                          "example": "tun-900ghtunmhp75r14wh"
+                        }
+                      }
+                    }
+                  }
+                },
+                "description": ""
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidVpnConnectionInstanceId.NotFound",
+        "errorMessage": "The specified vpn connection instance id does not exist.",
+        "description": "指定的VPN连接不存在，请您检查该VPN连接ID是否正确。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"0C68048B-0F70-40DA-B8AE-1B79B5CF62E3\",\n  \"VpnConnectionConfig\": {\n    \"Remote\": \"116.62.XX.XX\",\n    \"Local\": \"139.196.XX.XX\",\n    \"RemoteSubnet\": \"192.168.0.0/16\",\n    \"LocalSubnet\": \"10.0.0.0/8\",\n    \"IkeConfig\": {\n      \"RemoteId\": \"116.62.XX.XX\",\n      \"IkeLifetime\": 86400,\n      \"IkeEncAlg\": \"aes\",\n      \"LocalId\": \"139.196.XX.XX\",\n      \"IkeMode\": \"main\",\n      \"IkeVersion\": \"ikev2\",\n      \"IkePfs\": \"group2\",\n      \"Psk\": \"pgw6dy7d1i8i****\",\n      \"IkeAuthAlg\": \"sha1\"\n    },\n    \"IpsecConfig\": {\n      \"IpsecAuthAlg\": \"sha1\",\n      \"IpsecEncAlg\": \"aes\",\n      \"IpsecLifetime\": 86400,\n      \"IpsecPfs\": \"group2\"\n    },\n    \"TunnelsConfig\": {\n      \"TunnelConfig\": [\n        {\n          \"TunnelId\": \"tun-opsqc4d97wni27****\",\n          \"Local\": \"47.21.XX.XX\",\n          \"Remote\": \"47.24.XX.XX\",\n          \"IkeConfig\": {\n            \"Psk\": \"pgw6dy7d1i8i****\",\n            \"IkeVersion\": \"ikev2\",\n            \"IkeMode\": \"main\",\n            \"IkeEncAlg\": \"aes\",\n            \"IkeAuthAlg\": \"sha1\",\n            \"IkePfs\": \"group2\",\n            \"IkeLifetime\": 86400,\n            \"LocalId\": \"47.21.XX.XX\",\n            \"RemoteId\": \"47.24.XX.XX\"\n          },\n          \"IpsecConfig\": {\n            \"IpsecAuthAlg\": \"sha1\",\n            \"IpsecEncAlg\": \"aes\",\n            \"IpsecPfs\": \"group2\",\n            \"IpsecLifetime\": 86400\n          }\n        }\n      ]\n    },\n    \"BgpConfigs\": {\n      \"BgpConfig\": [\n        {\n          \"LocalAsn\": \"1219002\",\n          \"LocalBgpIp\": \"169.254.20.2\",\n          \"PeerAsn\": \"1219001\",\n          \"PeerBgpIp\": \"169.254.20.1\",\n          \"TunnelCidr\": \"169.254.20.0/30\",\n          \"TunnelId\": \"tun-900ghtunmhp75r14wh\"\n        }\n      ]\n    }\n  }\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DownloadVpnConnectionConfigResponse>\n    <RequestId>0C68048B-0F70-40DA-B8AE-1B79B5CF62E3</RequestId>\n    <VpnConnectionConfig>\n        <Remote>116.62.XX.XX</Remote>\n        <Local>139.196.XX.XX</Local>\n        <RemoteSubnet>192.168.0.0/16</RemoteSubnet>\n        <LocalSubnet>10.0.0.0/8</LocalSubnet>\n        <IkeConfig>\n            <RemoteId>139.196.XX.XX</RemoteId>\n            <IkeLifetime>86400</IkeLifetime>\n            <IkeEncAlg>aes</IkeEncAlg>\n            <LocalId>116.62.XX.XX</LocalId>\n            <IkeMode>main</IkeMode>\n            <IkeVersion>ikev1</IkeVersion>\n            <IkePfs>group2</IkePfs>\n            <Psk>pgw6dy7d1i8i****</Psk>\n            <IkeAuthAlg>sha1</IkeAuthAlg>\n        </IkeConfig>\n        <IpsecConfig>\n            <IpsecAuthAlg>sha1</IpsecAuthAlg>\n            <IpsecLifetime>86400</IpsecLifetime>\n            <IpsecEncAlg>aes</IpsecEncAlg>\n            <IpsecPfs>group2</IpsecPfs>\n        </IpsecConfig>\n    </VpnConnectionConfig>\n</DownloadVpnConnectionConfigResponse>",
+      "errorExample": ""
+    }
+  ]
+}

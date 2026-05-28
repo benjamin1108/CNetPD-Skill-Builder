@@ -1,0 +1,488 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "CreateVpc",
+  "group": "vpc",
+  "title": "创建一个VPC",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "description": "调用该接口创建VPC时，请注意：\n\n- 一个 VPC 只能指定一个 IPv4 主网段，您可以添加 IPv4 附加网段来扩充网段。\n\n- VPC 创建后，您可以在原 IPv4 网段内放大或缩小网段。当您缩小 VPC 的 IPv4 网段时，如果有已经使用的 IP 地址在目标网段外，则会修改失败。\n\n- 每个 VPC 支持云资源使用的私网网络地址数量为 300,000 个，且无法提升配额。\n  \n- VPC 创建后，会自动创建一个路由器和一个路由表。\n  \n- 每个 VPC 支持三个用户侧网段。如果多个用户侧网段之间存在包含关系，掩码较短的网段实际生效。例如10.0.0.0/16和10.0.0.0/24中，10.0.0.0/16实际生效。  \n\n- **CreateVpc**接口属于异步接口，即系统会返回一个实例ID，但该VPC尚未创建完成，系统后台的创建任务仍在进行。您可以调用DescribeVpcAttribute查询VPC的创建状态：\n    - 当VPC处于**Creating**状态时，表示VPC正在创建中。\n    - 当VPC处于**Created**状态时，表示VPC创建完成。\n- **CreateVpc**接口支持在同一地域内并发创建非默认VPC，受配额约束。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "VPC所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "CidrBlock",
+      "in": "query",
+      "schema": {
+        "description": "VPC的网段。\n\n- 建议您使用RFC 1918标准中指定的私有IPv4地址作为VPC的主IPv4网段，网段掩码推荐使用16~28位。例如：10.0.0.0/16、172.16.0.0/16、192.168.0.0/16。\n- 您也可以使用除100.64.0.0/10、224.0.0.0/4、127.0.0.0/8或169.254.0.0/16及其子网外的自定义地址段作为专有网络的主IPv4网段。",
+        "type": "string",
+        "required": false,
+        "example": "172.16.0.0/12",
+        "default": "172.16.0.0/12"
+      }
+    },
+    {
+      "name": "Ipv6CidrBlock",
+      "in": "query",
+      "schema": {
+        "description": "VPC的IPv6网段。为VPC开启IPv6时，系统将分配IPv6网段。如需指定IPv6网段，您需要先调用AllocateVpcIpv6Cidr接口预留指定的IPv6地址段，并将其传入。",
+        "type": "string",
+        "required": false,
+        "example": "2408:XXXX:0:6a::/56"
+      }
+    },
+    {
+      "name": "VpcName",
+      "in": "query",
+      "schema": {
+        "description": "VPC的名称。\n\n长度为1～128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "abc"
+      }
+    },
+    {
+      "name": "EnableIpv6",
+      "in": "query",
+      "schema": {
+        "description": "是否开启IPv6。取值：\n\n- **false**（默认值）：不开启。\n- **true**：开启。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "VPC的描述信息。\n\n长度为1～256个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "This is my first Vpc"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "资源组ID。\n\n关于资源组的更多信息，请参见什么是资源组。",
+        "type": "string",
+        "required": false,
+        "example": "rg-acfmxazb4ph6aiy****"
+      }
+    },
+    {
+      "name": "Tag",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "资源的标签。",
+        "type": "array",
+        "items": {
+          "description": "标签。",
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "资源的标签键。最多支持输入20个标签键。如需传入该值，则不能输入空字符串。\n\n一个标签键最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceDept"
+            },
+            "Value": {
+              "description": "资源的标签值。最多支持输入20个标签值。如需传入该值，可以输入空字符串。\n\n最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceJoshua"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 21
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求。取值：\n- **true**：发送检查请求，不会创建VPC。检查项包括是否填写了必需参数、请求格式、业务限制。如果检查不通过，则返回对应错误。如果检查通过，则返回错误码`DryRunOperation`。\n- **false**（默认值）：发送正常请求，通过检查后返回HTTP 2xx状态码并直接创建VPC。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "UserCidr",
+      "in": "query",
+      "schema": {
+        "description": "用户网段，如需定义多个网段请使用半角逗号（,）隔开，最多支持3个网段。\n\n关于用户网段的详细信息，请参见专有网络FAQ的`什么是用户网段`。",
+        "type": "string",
+        "required": false,
+        "example": "192.168.0.0/12"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "Ipv6Isp",
+      "in": "query",
+      "schema": {
+        "description": "VPC的IPv6地址段类型。取值：\n\n- **BGP**（默认值）：阿里云BGP IPv6。\n- **ChinaMobile**：中国移动（单线）。\n- **ChinaUnicom**：中国联通（单线）。\n- **ChinaTelecom**：中国电信（单线）。\n\n> 如果是开通了单线带宽白名单的用户，该字段可以设置为**ChinaTelecom**（中国电信）、**ChinaUnicom**（中国联通）或**ChinaMobile**（中国移动）。",
+        "type": "string",
+        "required": false,
+        "example": "BGP"
+      }
+    },
+    {
+      "name": "Ipv4IpamPoolId",
+      "in": "query",
+      "schema": {
+        "description": "IPv4类型的IPAM地址池实例ID。",
+        "type": "string",
+        "required": false,
+        "example": "ipam-pool-sycmt3p2a9v63i****"
+      }
+    },
+    {
+      "name": "Ipv4CidrMask",
+      "in": "query",
+      "schema": {
+        "description": "通过输入掩码的方式从IPAM地址池分配VPC。\n\n> 指定IPAM地址池创建VPC时，参数CidrBlock或Ipv4CidrMask至少输入一个。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "12"
+      }
+    },
+    {
+      "name": "EnableDnsHostname",
+      "in": "query",
+      "schema": {
+        "description": "是否启用DNS主机名功能。取值：\n\n- **false**（默认值）：不开启。\n- **true**：开启。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "Ipv6IpamPoolId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6类型的IPAM地址池实例ID。",
+        "type": "string",
+        "required": false,
+        "example": "ipam-pool-bp1aq51kkfh477z03****"
+      }
+    },
+    {
+      "name": "Ipv6CidrMask",
+      "in": "query",
+      "schema": {
+        "description": "通过输入掩码的方式从IPAM地址池为VPC添加IPv6网段。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "56"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "创建的VPC的ID。",
+        "type": "object",
+        "properties": {
+          "VpcId": {
+            "description": "创建的VPC的ID。",
+            "type": "string",
+            "example": "vpc-bp15zckdt37pq72zv****"
+          },
+          "VRouterId": {
+            "description": "创建VPC后，系统自动创建的路由器的ID。",
+            "type": "string",
+            "example": "vrt-bp1lhl0taikrteen8****"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "0ED8D006-F706-4D23-88ED-E11ED28DCAC0"
+          },
+          "RouteTableId": {
+            "description": "创建VPC后，系统自动创建的路由表的ID。",
+            "type": "string",
+            "example": "vtb-bp145q7glnuzdv****"
+          },
+          "ResourceGroupId": {
+            "description": "资源组ID。",
+            "type": "string",
+            "example": "rg-acfmxazb4ph6aiy****"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "TOKEN_PROCESSING",
+        "errorMessage": "Action is processing.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvokeError",
+        "errorMessage": "instance quota rule invoke error.",
+        "description": "获取规则数据失败，请稍后再试"
+      },
+      {
+        "errorCode": "InvalidParameter",
+        "errorMessage": "Specified CIDR block is not valid",
+        "description": ""
+      },
+      {
+        "errorCode": "ResourceNotAvailable",
+        "errorMessage": "Resource you requested is not available in this region or zone.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVpcName.Malformed",
+        "errorMessage": "Specified VPC name is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVpcDiscription.Malformed",
+        "errorMessage": "Specified VPC description is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.Vpc",
+        "errorMessage": "VPC quota exceeded.",
+        "description": "用户名下的VPC数量达到配额上限。"
+      },
+      {
+        "errorCode": "ResourceNotAvailable.Vpc",
+        "errorMessage": "Resource you requested is not available in this region or zone.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidUserCidr.Quota",
+        "errorMessage": "Specified  UserCidr number is greater than 3.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidUserCidr.Malformed",
+        "errorMessage": "Specified  UserCidr  overlapping in of 100.64.0.0/10.",
+        "description": "该UserCidr和100.64.0.0/10重叠。"
+      },
+      {
+        "errorCode": "InvalidResourceGroupId",
+        "errorMessage": "The specified ResourceGroupId does not exist.",
+        "description": "资源组ID不存在。"
+      },
+      {
+        "errorCode": "IllegalParam.Ipv6CidrBlock",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.IPv6CidrNotReserved",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParam.EnableIpv6",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.Ipv6Feature",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "System.ServiceBusy",
+        "errorMessage": "System is busy, please try later.",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.UserCidr",
+        "errorMessage": "UserCidr is not a valid or strict address.",
+        "description": "UserCidr 不合法"
+      },
+      {
+        "errorCode": "OperationUnsupported.ResourceGroupId",
+        "errorMessage": "ResourceGroup is not supported in this region.",
+        "description": "资源组功能未打开。"
+      },
+      {
+        "errorCode": "IllegalParam.EnableIpv6",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIpv6CidrBlock.Malformed",
+        "errorMessage": "Specified Ipv6CidrBlock is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "UnsupportedFeature.Ipv6Isp",
+        "errorMessage": "The Ipv6Isp feature is not supported.",
+        "description": "指定的Ipv6Isp特性不支持。"
+      },
+      {
+        "errorCode": "ResourceNotEnough.Ipv6Cidr",
+        "errorMessage": "The specified resource of Ipv6Cidr is not enough.",
+        "description": "Ipv6地址资源不足。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.IPAM",
+        "errorMessage": "VPCs cannot be created by using IPAM.",
+        "description": "使用IPAM创建VPC特性不支持"
+      },
+      {
+        "errorCode": "IllegalParam.Ipv4CidrMask",
+        "errorMessage": "The specified Ipv4CidrMask is illegal.",
+        "description": "指定的Ipv4CidrMask不合法。"
+      },
+      {
+        "errorCode": "IllegalParam.IpamPool",
+        "errorMessage": "The specified IPAM pool cannot be empty.",
+        "description": "IPAM Pool不可以为空。"
+      },
+      {
+        "errorCode": "OperationDenied.RequestRegionInvalid",
+        "errorMessage": "The operation is not allowed because the request is not invoked in the region of the IPAM pool.",
+        "description": "操作被拒绝，因为未在地址池所在地域调用请求。"
+      },
+      {
+        "errorCode": "OperationDenied.IpamPoolNotInRegion",
+        "errorMessage": "The operation is not allowed because the IPAM pool not in specific region does not support creating VPC or associating CIDR for VPC.",
+        "description": "操作被拒绝，因为无法从不具备地域属性的地址池中创建VPC或为VPC添加附加网段。"
+      },
+      {
+        "errorCode": "MissingParam.CidrOrCidrMask",
+        "errorMessage": "The CIDR or CIDR Mask must be input.",
+        "description": "从IPAM地址池创建资源时，请输入Cidr或CidrMask。"
+      },
+      {
+        "errorCode": "OperationDenied.CidrInExcludeCidrs",
+        "errorMessage": "The operation is not allowed because the input CIDR is within the illegal CIDRs.",
+        "description": "操作被拒绝，原因是输入的CIDR在不合法的CIDR范围内。"
+      },
+      {
+        "errorCode": "OperationDenied.AvailableCidrInsufficient",
+        "errorMessage": "The operation is not allowed because available CIDR is insufficient.",
+        "description": "操作被拒绝，原因是可用的CIDR资源不足。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.Ipam",
+        "errorMessage": "IPAM is not supported in this region.",
+        "description": "该地域不支持IPAM功能。"
+      },
+      {
+        "errorCode": "OperationDenied.CidrUnavailableInPool",
+        "errorMessage": "The operation is not allowed because the CIDR is unavailable in the IPAM pool.",
+        "description": "操作被拒绝，原因是CIDR在IPAM地址池中不可用。"
+      },
+      {
+        "errorCode": "IllegalParam.CidrBlockMask",
+        "errorMessage": "The param of CidrBlock Mask [%s] is illegal.",
+        "description": "CidrBlock掩码非法"
+      },
+      {
+        "errorCode": "UnsupportedFeature.VpcDnsHostname",
+        "errorMessage": "The feature of vpc dns hostname is unsupported.",
+        "description": "VPC私网域名功能在当前地域不生效"
+      },
+      {
+        "errorCode": "OperationDenied.MaskOfCidrIsNotAllowed",
+        "errorMessage": "The input mask or mask of the input CIDR is not allowed.",
+        "description": "输入的掩码或CIDR的掩码不在允许的范围内。"
+      },
+      {
+        "errorCode": "IllegalParam.Ipv6Isp",
+        "errorMessage": "The specified Ipv6Isp is illegal.",
+        "description": "指定的Ipv6Isp参数不合法。"
+      },
+      {
+        "errorCode": "IllegalParam.CidrMask",
+        "errorMessage": "The input CIDR mask is illegal.",
+        "description": "指定的网段掩码不合法。"
+      },
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "Specified value of \"regionId\" is not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "UnsupportedFeature.DhcpOptionsSet",
+        "errorMessage": "The feature of dhcp options set is unsupported.",
+        "description": "DHCP选项集相关功能能在当前地域不生效。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "ResourceNotFound.IpamPool",
+        "errorMessage": "The dependent IPAM pool is not found.",
+        "description": "依赖资源IPAM Pool不存在。"
+      }
+    ],
+    "500": [
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"VpcId\": \"vpc-bp15zckdt37pq72zv****\",\n  \"VRouterId\": \"vrt-bp1lhl0taikrteen8****\",\n  \"RequestId\": \"0ED8D006-F706-4D23-88ED-E11ED28DCAC0\",\n  \"RouteTableId\": \"vtb-bp145q7glnuzdv****\",\n  \"ResourceGroupId\": \"rg-acfmxazb4ph6aiy****\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<CreateVpcResponse>\n    <VpcId>vpc-bp15zckdt37pq72zv****</VpcId>\n    <VRouterId>vrt-bp1lhl0taikrteen8****</VRouterId>\n    <RequestId>0ED8D006-F706-4D23-88ED-E11ED28DCAC0</RequestId>\n    <RouteTableId>vtb-bp145q7glnuzdv****</RouteTableId>\n    <ResourceGroupId>rg-acfmxazb4ph6aiy****</ResourceGroupId>\n</CreateVpcResponse>",
+      "errorExample": ""
+    }
+  ]
+}

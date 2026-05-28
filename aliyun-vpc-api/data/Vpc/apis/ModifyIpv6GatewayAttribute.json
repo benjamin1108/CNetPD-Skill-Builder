@@ -1,0 +1,148 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyIpv6GatewayAttribute",
+  "group": "ipv6-gateway",
+  "title": "修改IPv6网关的信息",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6网关的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-huhehaote"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6网关的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-huhehaote"
+      }
+    },
+    {
+      "name": "Ipv6GatewayId",
+      "in": "query",
+      "schema": {
+        "description": "要修改的IPv6网关的ID。",
+        "type": "string",
+        "required": true,
+        "example": "ipv6gw-hp39kh1ya51yzp2lu****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "IPv6网关的名称。\n\n长度为0-128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "ipv6name"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "IPv6网关的描述信息。\n\n长度为0-256个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "ipv6description"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求，取值：\n\n- **true**：发送检查请求，不会关联路由表。检查项包括AccessKey是否有效、RAM用户的授权情况和是否填写了必需参数。如果检查不通过，则返回对应错误。如果检查通过，会返回错误码`DryRunOperation`。\n\n- **false**（默认值）：发送正常请求，通过检查后返回2xx HTTP状态码并关联路由表。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-0016e04115b"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "9DFEDBEE-E5AB-49E8-A2DC-CC114C67AF75"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidIpv6GatewayId.NotFound",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.Name",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.Description",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": "指定的RegionId不存在。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"9DFEDBEE-E5AB-49E8-A2DC-CC114C67AF75\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ModifyIpv6GatewayAttributeResponse>\n    <RequestId>9DFEDBEE-E5AB-49E8-A2DC-CC114C67AF75</RequestId>\n</ModifyIpv6GatewayAttributeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

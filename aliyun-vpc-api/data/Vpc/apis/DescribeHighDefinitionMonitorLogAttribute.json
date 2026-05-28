@@ -1,0 +1,144 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeHighDefinitionMonitorLogAttribute",
+  "group": "eip",
+  "title": "查询EIP秒级监控的SLS log信息",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "get",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "实例所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "InstanceId",
+      "in": "query",
+      "schema": {
+        "description": "查询高精度秒级监控的实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "eip-wz9fi6qboho9fwgx7****"
+      }
+    },
+    {
+      "name": "InstanceType",
+      "in": "query",
+      "schema": {
+        "description": "实例的类型，仅取值为**EIP**。",
+        "type": "string",
+        "required": false,
+        "example": "EIP",
+        "default": "EIP"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "LogProject": {
+            "description": "日志服务LogProject的名称。",
+            "type": "string",
+            "example": "hdmonitor-cn-shenzhen-1658206966225390"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "54B48E3D-DF70-471B-AA93-08E683A1B457"
+          },
+          "LogStore": {
+            "description": "日志服务LogStore的名称。",
+            "type": "string",
+            "example": "hdmonitor"
+          },
+          "Success": {
+            "description": "结果是否调用成功。\n\n- **true**：调用成功。\n- **false**：调用失败。",
+            "type": "string",
+            "example": "true"
+          },
+          "InstanceId": {
+            "description": "要查看高精度秒级监控的实例ID。",
+            "type": "string",
+            "example": "eip-wz9fi6qboho9fwgx7****"
+          },
+          "InstanceType": {
+            "description": "要查看高精度秒级监控的实例类型，仅可以取值为**EIP**。",
+            "type": "string",
+            "example": "EIP"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidInstanceId",
+        "errorMessage": "Instance does not exist.",
+        "description": "实例不存在。"
+      },
+      {
+        "errorCode": "ProjectNotExist",
+        "errorMessage": "The Project does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterInvalid",
+        "errorMessage": "Invalid parameter.",
+        "description": "入参非法"
+      },
+      {
+        "errorCode": "InvalidHdMonitorStatus",
+        "errorMessage": "Current instance status is not valid for this action.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidAction.NotSupport",
+        "errorMessage": "This region does not support this action.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidAllocationId.NotFound",
+        "errorMessage": "Specified allocation id is not found.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"LogProject\": \"hdmonitor-cn-shenzhen-1658206966225390\",\n  \"RequestId\": \"54B48E3D-DF70-471B-AA93-08E683A1B457\",\n  \"LogStore\": \"hdmonitor\",\n  \"Success\": \"true\",\n  \"InstanceId\": \"eip-wz9fi6qboho9fwgx7****\",\n  \"InstanceType\": \"EIP\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DescribeHighDefinitionMonitorLogAttributeResponse>\n<RequestId>54B48E3D-DF70-471B-AA93-08E683A1B457</RequestId>\n<LogStore>hdmonitor</LogStore>\n<InstanceId>eip-wz9fi6qboho9fwgx7****</InstanceId>\n<InstanceType>EIP</InstanceType>\n<LogProject>hdmonitor-cn-shenzhen-1658206966225390</LogProject>\n<Success>true</Success>\n</DescribeHighDefinitionMonitorLogAttributeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

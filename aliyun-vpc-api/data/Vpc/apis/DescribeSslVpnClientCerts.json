@@ -1,0 +1,226 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeSslVpnClientCerts",
+  "group": "ssl-client",
+  "title": "查询已创建的SSL-VPN客户端证书",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "list",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的SSL客户端证书所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "SslVpnServerId",
+      "in": "query",
+      "schema": {
+        "description": "SSL服务端ID。",
+        "type": "string",
+        "required": false,
+        "example": "vss-bp18q7hzj6largv4v****"
+      }
+    },
+    {
+      "name": "SslVpnClientCertId",
+      "in": "query",
+      "schema": {
+        "description": "SSL客户端证书ID。",
+        "type": "string",
+        "required": false,
+        "example": "vsc-bp1n8wcf134yl0osr****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "SSL客户端证书的名称。",
+        "type": "string",
+        "required": false,
+        "example": "cert1"
+      }
+    },
+    {
+      "name": "PageNumber",
+      "in": "query",
+      "schema": {
+        "description": "列表的页码，默认值：**1**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "1",
+        "default": "1"
+      }
+    },
+    {
+      "name": "PageSize",
+      "in": "query",
+      "schema": {
+        "description": "分页查询时每页显示的条目数。默认值：**10**，取值范围：**1**~**50**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "10",
+        "default": "10"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "SSL客户端证书所属的资源组ID。\n\nSSL客户端证书与其关联的SSL服务端的资源组相同。您可以调用DescribeSslVpnServers接口查询SSL服务端所属的资源组ID。",
+        "type": "string",
+        "required": false,
+        "example": "rg-acfmzs372yg****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回结果。",
+        "type": "object",
+        "properties": {
+          "PageSize": {
+            "description": "分页查询时每页显示的条目数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "10"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "5BE01CD7-5A50-472D-AC14-CA181C5C03BE"
+          },
+          "PageNumber": {
+            "description": "列表的页码。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "TotalCount": {
+            "description": "列表条目数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "SslVpnClientCertKeys": {
+            "type": "object",
+            "itemNode": true,
+            "properties": {
+              "SslVpnClientCertKey": {
+                "description": "SSL客户端证书的信息列表。",
+                "type": "array",
+                "items": {
+                  "description": "SSL客户端证书的信息。",
+                  "type": "object",
+                  "properties": {
+                    "Status": {
+                      "description": "客户端证书的状态。\n\n- **expiring-soon**：证书将在1周后过期。\n   \n- **normal**：正常。   \n\n- **expired**：已过期。",
+                      "type": "string",
+                      "example": "normal"
+                    },
+                    "EndTime": {
+                      "description": "SSL客户端证书的到期时间戳。单位：毫秒。\n\n时间戳的格式采用Unix时间戳，表示从格林威治时间1970年01月01日00时00分00秒至SSL客户端证书到期时的总时长。",
+                      "type": "integer",
+                      "format": "int64",
+                      "example": "1494966335000"
+                    },
+                    "CreateTime": {
+                      "description": "SSL客户端证书的创建时间戳。单位：毫秒。\n\n时间戳的格式采用Unix时间戳，表示从格林威治时间1970年01月01日00时00分00秒至创建SSL客户端证书时的总时长。",
+                      "type": "integer",
+                      "format": "int64",
+                      "example": "1492747187000"
+                    },
+                    "SslVpnClientCertId": {
+                      "description": "SSL客户端证书的ID。",
+                      "type": "string",
+                      "example": "vsc-bp1n8wcf134yl0osr****"
+                    },
+                    "SslVpnServerId": {
+                      "description": "SSL服务端ID。",
+                      "type": "string",
+                      "example": "vss-bp18q7hzj6largv4v****"
+                    },
+                    "Name": {
+                      "description": "SSL客户端证书的名称。",
+                      "type": "string",
+                      "example": "cert1"
+                    },
+                    "RegionId": {
+                      "description": "SSL客户端证书的地域。",
+                      "type": "string",
+                      "example": "cn-hangzhou"
+                    },
+                    "ResourceGroupId": {
+                      "description": "SSL客户端证书所属的资源组ID。\n\n您可以调用ListResourceGroups接口查询资源组信息。",
+                      "type": "string",
+                      "example": "rg-acfmzs372yg****"
+                    }
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified region is not found during access authentication.",
+        "description": "接入认证时未找到指定区域。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"PageSize\": 10,\n  \"RequestId\": \"5BE01CD7-5A50-472D-AC14-CA181C5C03BE\",\n  \"PageNumber\": 1,\n  \"TotalCount\": 1,\n  \"SslVpnClientCertKeys\": {\n    \"SslVpnClientCertKey\": [\n      {\n        \"Status\": \"normal\",\n        \"EndTime\": 1494966335000,\n        \"CreateTime\": 1492747187000,\n        \"SslVpnClientCertId\": \"vsc-bp1n8wcf134yl0osr****\",\n        \"SslVpnServerId\": \"vss-bp18q7hzj6largv4v****\",\n        \"Name\": \"cert1\",\n        \"RegionId\": \"cn-hangzhou\",\n        \"ResourceGroupId\": \"rg-acfmzs372yg****\"\n      }\n    ]\n  }\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DescribeSslVpnClientCertsResponse>\n    <PageSize>10</PageSize>\n    <RequestId>5BE01CD7-5A50-472D-AC14-CA181C5C03BE</RequestId>\n    <PageNumber>1</PageNumber>\n    <TotalCount>1</TotalCount>\n    <SslVpnClientCertKeys>\n        <Status>normal</Status>\n        <EndTime>1494966335000</EndTime>\n        <CreateTime>1492747187000</CreateTime>\n        <SslVpnClientCertId>vsc-bp1n8wcf134yl0osr****</SslVpnClientCertId>\n        <SslVpnServerId>vss-bp18q7hzj6largv4v****</SslVpnServerId>\n        <Name>cert1</Name>\n        <RegionId>cn-hangzhou</RegionId>\n    </SslVpnClientCertKeys>\n</DescribeSslVpnClientCertsResponse>",
+      "errorExample": ""
+    }
+  ]
+}

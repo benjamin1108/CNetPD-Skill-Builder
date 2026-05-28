@@ -1,0 +1,107 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeactivateRouterInterface",
+  "group": "router-interface",
+  "title": "冻结路由器接口",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口所在的地域。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "RouterInterfaceId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口的ID。",
+        "type": "string",
+        "required": true,
+        "example": "ri-2zeo3xzyf38r4urz****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "BE7EB53A-99AB-4DA8-AEDE-75FA90D046A6"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IncorrectRIStatus",
+        "errorMessage": "RouterInterface can be operated by this action only when it's status is Active.",
+        "description": "仅当路由器接口处于“Active”状态时，才可以使用该操作。"
+      },
+      {
+        "errorCode": "Forbidden.FinancialLocked",
+        "errorMessage": "This RouterInterface is financiel locked because of bills outstanding.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbbiden.InvaildOwner",
+        "errorMessage": "The RouterInterface owener error",
+        "description": "路由器所有者信息错误"
+      },
+      {
+        "errorCode": "OperationFailed.OperationLocked",
+        "errorMessage": "Operation failed because OperationLocked.",
+        "description": "操作失败因为实例已经被运维锁定。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The RegionId provided does not exist in our records.",
+        "description": "指定的RegionId不存在"
+      },
+      {
+        "errorCode": "InvalidRouterInterfaceId.NotFound",
+        "errorMessage": "The specified RouterInterfaceId does not exist in our record.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"BE7EB53A-99AB-4DA8-AEDE-75FA90D046A6\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DeactivateRouterInterfaceResponse>\n    <RequestId>BE7EB53A-99AB-4DA8-AEDE-75FA90D046A6</RequestId>\n</DeactivateRouterInterfaceResponse>",
+      "errorExample": ""
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "OpenFlowLogService",
+  "group": "flow-log",
+  "title": "开通流日志功能",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "description": "- **OpenFlowLogService**接口不支持在同一个阿里云账号（主账号）并发开通流日志功能。\n\n- 您可以调用GetFlowLogServiceStatus接口查询流日志功能的开通状态。",
+  "parameters": [
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "流日志所属的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "流日志所属的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "28CF47AB-B6C0-5FA2-80C7-2B28826A92CB"
+          },
+          "Code": {
+            "description": "状态码。",
+            "type": "string",
+            "example": "200"
+          },
+          "Message": {
+            "description": "流日志开通成功返回的信息。",
+            "type": "string",
+            "example": "successful"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "OperationFailed.ExceedPurchaseLimit",
+        "errorMessage": "You have reached the limit of purchase quantity.",
+        "description": "您已达到最大购买量。"
+      },
+      {
+        "errorCode": "Forbidden.RAM",
+        "errorMessage": "User not authorized to operate on the specified resource, or this API doesn't support RAM.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.AliGroupUserCanNotBuyInnerCommodity",
+        "errorMessage": "Vpc_flowlog_public has no group cloud product label, and users within the group are not allowed to purchase.",
+        "description": "vpc_flowlog_public 无集团上云商品标签，不允许集团内部用户购买。"
+      },
+      {
+        "errorCode": "OperationFailed.QuotaNotEnough",
+        "errorMessage": "Your quota is insufficient. Please contact your channel partner to increase your quota",
+        "description": "您当前quota配额不足，请您可以联系渠道伙伴为您增加额度"
+      },
+      {
+        "errorCode": "Order.NoRealNameAuthentication",
+        "errorMessage": "Real-name verification has not been completed for the account.",
+        "description": "您尚未进行实名认证，请前往账号中心完成实名认证。"
+      },
+      {
+        "errorCode": "OperationFailed.BasicInfoUncompleted",
+        "errorMessage": "You have not completed your basic personal information, please complete the information and try again.",
+        "description": "您未完善个人基本信息，请完善信息后重新操作。"
+      }
+    ]
+  }
+}

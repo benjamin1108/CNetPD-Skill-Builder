@@ -1,0 +1,276 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "UpdateIpsecServer",
+  "group": "ipsec-server",
+  "title": "更新IPsec服务端",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "- 如果您只修改IPsec服务端的**IpsecServerName**信息时该接口为同步接口，如果您修改了除**IpsecServerName**之外的配置，该接口为异步接口。\n- 当**UpdateIpsecServer**接口为异步接口时，系统会先返回一个请求ID，但该IPsec服务端的配置尚未修改成功，系统后台的修改任务仍在进行。您可以调用DescribeVpnGateway查询VPN网关实例的状态，来确定IPsec服务端配置的修改状态：\n    - 当VPN网关实例处于**updating**状态时，表示IPsec服务端的配置正在修改中。\n    - 当VPN网关实例处于**active**状态时，表示IPsec服务端的配置修改成功。\n- **UpdateIpsecServer**接口不支持在同一VPN网关下并发修改IPsec服务端的配置。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPsec服务端所属地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "IpsecServerId",
+      "in": "query",
+      "schema": {
+        "description": "IPsec服务端ID。",
+        "type": "string",
+        "required": true,
+        "example": "iss-bp1bo3xuvcxo7ixll****"
+      }
+    },
+    {
+      "name": "LocalSubnet",
+      "in": "query",
+      "schema": {
+        "description": "本端网段，指需要和客户端网段互连的VPC侧的网段。\n\n多个网段之间用半角逗号（,）分隔，例如：192.168.1.0/24,192.168.2.0/24。",
+        "type": "string",
+        "required": false,
+        "example": "192.168.0.0/24,172.17.0.0/16"
+      }
+    },
+    {
+      "name": "ClientIpPool",
+      "in": "query",
+      "schema": {
+        "description": "客户端网段，指给客户端虚拟网卡分配访问地址的网段。\n\n> 客户端网段不能和VPC侧网段冲突。",
+        "type": "string",
+        "required": false,
+        "example": "10.0.0.0/24"
+      }
+    },
+    {
+      "name": "IpsecServerName",
+      "in": "query",
+      "schema": {
+        "description": "IPsec服务端名称。\n\n长度为1～100个字符。",
+        "type": "string",
+        "required": false,
+        "example": "test",
+        "maxLength": 100
+      }
+    },
+    {
+      "name": "EffectImmediately",
+      "in": "query",
+      "schema": {
+        "description": "是否删除当前已协商成功的IPsec隧道并重新发起协商。取值：\n\n- **true**：配置完成后立即进行协商。\n\n- **false**：当有流量进入时进行协商。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "IkeConfig",
+      "in": "query",
+      "schema": {
+        "description": "第一阶段协商参数配置。取值：\n\n- **IkeVersion**：IKE协议的版本。取值：**ikev1**或**ikev2**。\n\n- **IkeMode**：IKE版本的协商模式。默认值：**main**。\n\n- **IkeEncAlg**：第一阶段协商的加密算法。默认值：**aes**。\n\n- **IkeAuthAlg**：第一阶段协商的认证算法。默认值：**sha1**。\n\n- **IkePfs**：第一阶段协商使用的Diffie-Hellman密钥交换算法。默认值：**group2**。\n\n- **IkeLifetime**：第一阶段协商出的SA的生存周期。单位：秒，取值范围：**0**~**86400**，默认值：**86400**。\n\n- **LocalId**：IPsec服务端标识。支持FQDN和IP地址格式。\n\n- **RemoteId**：对端标识。支持FQDN和IP地址格式。",
+        "type": "string",
+        "required": false,
+        "example": "{\"IkeVersion\":\"ikev2\",\"IkeMode\":\"main\",\"IkeEncAlg\":\"aes\",\"IkeAuthAlg\":\"sha1\",\"IkePfs\":\"group2\",\"IkeLifetime\":86400}"
+      }
+    },
+    {
+      "name": "IpsecConfig",
+      "in": "query",
+      "schema": {
+        "description": "第二阶段协商参数配置。取值：\n\n- **IpsecEncAlg**：第二阶段协商的加密算法。默认值：**aes**。\n\n- **IpsecAuthAlg**：第二阶段协商的认证算法。默认值：**sha1**。\n\n- **IpsecPfs**：转发所有协议的报文。第二阶段协商使用的Diffie-Hellman密钥交换算法。默认值：**group2**。\n\n- **IpsecLifetime**：第二阶段协商出的SA的生存周期。单位：秒，取值范围：**0**~**86400**，默认值：**86400**。",
+        "type": "string",
+        "required": false,
+        "example": "{\"IpsecEncAlg\":\"aes\",\"IpsecAuthAlg\":\"sha1\",\"IpsecPfs\":\"group2\",\"IpsecLifetime\":86400}"
+      }
+    },
+    {
+      "name": "PskEnabled",
+      "in": "query",
+      "schema": {
+        "description": "是否开启预共享密钥认证方式。取值：**true**，表示开启预共享密钥认证方式。",
+        "type": "boolean",
+        "required": false,
+        "example": "true"
+      }
+    },
+    {
+      "name": "Psk",
+      "in": "query",
+      "schema": {
+        "description": "预共享密钥。\n\n用于IPsec服务端与客户端之间的身份认证。密钥长度为1~100个字符。\n\n您可以调用ListIpsecServers接口查询系统生成的密钥信息。\n\n> IPsec服务端的预共享密钥需和客户端的认证密钥一致，否则IPsec服务端和客户端之间无法建立连接。",
+        "type": "string",
+        "required": false,
+        "example": "Cfd123****"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "e4567-e89b-12d3-a456-42665544****"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求，取值：\n\n- **true**：只预检此次请求，不会更改IPsec服务端配置。检查项包括是否填写了必需参数、请求格式、业务限制等。如果检查不通过，则返回对应错误信息。如果检查通过，则返回`DryRunOperation`。\n\n- **false**（默认值）：发送正常请求，通过检查后直接更改IPsec服务端配置。",
+        "type": "string",
+        "required": false,
+        "example": "false"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回结果。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "B61C08E5-403A-46A2-96C1-F7B1216DB10C"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "VpnGateway.Configuring",
+        "errorMessage": "The specified service is configuring.",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnGateway.FinancialLocked",
+        "errorMessage": "The specified service is financial locked.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.IpsecPfs",
+        "errorMessage": "The specified IPsec Pfs is unsupported.",
+        "description": "不支持指定的IPsec Pfs"
+      },
+      {
+        "errorCode": "IllegalParam.AuthMethod",
+        "errorMessage": "One authentication method (Psk or IDaaS) should be specified at least.",
+        "description": "至少有一种认证方法（Psk或者IDaas）应该被指定"
+      },
+      {
+        "errorCode": "IllegalParam.LocalSubnet",
+        "errorMessage": "The specified \"LocalSubnet\" (%s) is invalid.",
+        "description": "本端网段(%s)不合法。"
+      },
+      {
+        "errorCode": "IllegalParam.ClientIpPool",
+        "errorMessage": "The specified \"ClientIpPool\" (%s) is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParam.IDaaSInstanceId",
+        "errorMessage": "The input parameter IDaaSInstanceId is mandatory when enable multi-factor authentication.",
+        "description": "当开启双因子认证时，IDaaS实例ID是必填的参数"
+      },
+      {
+        "errorCode": "OperationFailed.NoRamPermission",
+        "errorMessage": "Vpn Service has no permission to operate your IDaaS instances.",
+        "description": "Vpn服务没有权限操作您的IDaaS实例"
+      },
+      {
+        "errorCode": "OperationFailed.AddVpcRoute",
+        "errorMessage": "It's failed to add VPC route after this operation.",
+        "description": ""
+      },
+      {
+        "errorCode": "ClientIpPool.NetmaskInvalid",
+        "errorMessage": "The netmask length of client IP pool must be greater than or equal to 16 and less than or equal to 29.",
+        "description": "客户端 IP 池的网络掩码长度必须大于等于 16 且小于等于 29。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.Conflict",
+        "errorMessage": "The specified client IP pool conflicts with VPN connection or SSL server.",
+        "description": "指定的客户端 IP 池与 VPN 连接或 SSL 服务端冲突。"
+      },
+      {
+        "errorCode": "ClientIpPool.SubnetInvalid",
+        "errorMessage": "The specified client IP pool cannot be used.",
+        "description": "当前客户端网段不可用。"
+      },
+      {
+        "errorCode": "InvalidClientIpPool.Conflict",
+        "errorMessage": "The specified client IP pool conflicts with other resources in the same VPC.",
+        "description": "客户端网段与VPC内其他资源冲突。"
+      },
+      {
+        "errorCode": "SystemBusy",
+        "errorMessage": "The system is busy. Please try again later.",
+        "description": ""
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidIpsecServerId.NotFound",
+        "errorMessage": "The specified IPsec server ID (%s) does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIDaaSInstanceId.NotFound",
+        "errorMessage": "The specified IDaaS instance ID does not exist.",
+        "description": "指定的IDaaS实例ID不存在"
+      }
+    ],
+    "409": [
+      {
+        "errorCode": "OperationConflict",
+        "errorMessage": "The operation against this instance is too frequent, please try again later.",
+        "description": "对该实例的操作过于频繁，请稍后重试。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"B61C08E5-403A-46A2-96C1-F7B1216DB10C\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "</UpdateIpsecServerResponse>\r\n<RequestId>B61C08E5-403A-46A2-96C1-F7B1216DB10C</RequestId>\r\n</UpdateIpsecServerResponse>",
+      "errorExample": ""
+    }
+  ]
+}

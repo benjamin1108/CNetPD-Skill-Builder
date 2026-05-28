@@ -1,0 +1,244 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "GetRouteTargetGroup",
+  "group": "route-target-group",
+  "title": "查询路由目标组",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "get",
+  "description": "获取路由目标组实例信息。",
+  "parameters": [
+    {
+      "name": "RouteTargetGroupId",
+      "in": "query",
+      "schema": {
+        "description": "路由目标组成员实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "rtg-xxxx"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "路由目标组所属地域的ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-0016e04115b"
+      }
+    },
+    {
+      "name": "Tag",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "标签信息。",
+        "type": "array",
+        "items": {
+          "description": "资源的标签集合。",
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "资源的标签键。最多支持输入20个标签键。如需传入该值，则不能输入空字符串。\n\n一个标签键最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceDept"
+            },
+            "Value": {
+              "description": "资源的标签值。最多支持输入20个标签值。如需传入该值，可以输入空字符串。\n\n最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceJoshua"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 21
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "Schema of Response",
+        "type": "object",
+        "properties": {
+          "RouteTargetGroupId": {
+            "description": "路由目标组实例ID。",
+            "type": "string",
+            "example": "rtg-xxxx"
+          },
+          "RouteTargetGroupName": {
+            "description": "路由目标组名称。",
+            "type": "string",
+            "example": "myRouteTargetGroupName"
+          },
+          "RouteTargetGroupDescription": {
+            "description": "路由目标组描述。",
+            "type": "string",
+            "example": "myRouteTargetGroupDescription"
+          },
+          "VpcId": {
+            "description": "路由目标组所属的VPC的ID。",
+            "type": "string",
+            "example": "vpc-xxxx"
+          },
+          "ConfigMode": {
+            "description": "路由目标组的配置模式，支持模式如下：\n\n- **Active-Standby**: 主备模式。",
+            "type": "string",
+            "enumValueTitles": {
+              "Active-Standby": "Active-Standby"
+            },
+            "example": "Active-Standby"
+          },
+          "Status": {
+            "description": "路由目标组的状态。取值：\n\n- **Recovering**：主备回切中\n- **Switched**：主备已切换\n- **Available**：可用\n- **Abnormal**：备实例异常\n- **Pending**：创建中\n- **Switching**：主备切换中\n- **Deleting**：删除中\n- **Unavailable**：主备实例均异常",
+            "type": "string",
+            "enumValueTitles": {
+              "Recovering": "主备回切中",
+              "Switched": "主备已切换",
+              "Available": "可用",
+              "Abnormal": "备实例异常",
+              "Pending": "创建中",
+              "Switching": "主备切换中",
+              "Deleting": "删除中",
+              "Unavailable": "主备实例均异常"
+            },
+            "example": "Available"
+          },
+          "RouteTargetMemberList": {
+            "description": "路由目标组的成员列表。",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "MemberId": {
+                  "description": "路由目标组成员实例ID。",
+                  "type": "string",
+                  "example": "ep-xxxx"
+                },
+                "MemberType": {
+                  "description": "路由目标组的成员类型。\n\n当前支持的类型：\n\n- **GatewayLoadBalancerEndpoint**",
+                  "type": "string",
+                  "enumValueTitles": {
+                    "GatewayLoadBalancerEndpoint": "网关型负载均衡终端节点"
+                  },
+                  "example": "GatewayLoadBalancerEndpoint"
+                },
+                "Weight": {
+                  "description": "路由目标组成员的权重值。取值：\n\n- **100**：表示成员为主实例。\n- **0**：表示成员为备实例。\n\n权重值仅支持在创建时设置，不支持修改。",
+                  "type": "integer",
+                  "format": "int32",
+                  "enumValueTitles": {
+                    "0": "0",
+                    "100": "100"
+                  },
+                  "example": "100"
+                },
+                "HealthCheckStatus": {
+                  "description": "路由目标组成员健康检查状态。取值：\n\n- **Normal**：正常\n- **Abnormal**：状态异常",
+                  "type": "string",
+                  "enumValueTitles": {
+                    "Normal": "Normal",
+                    "Abnormal": "Abnormal"
+                  },
+                  "example": "Normal"
+                },
+                "EnableStatus": {
+                  "description": "路由目标组成员使能状态。取值：\n\n- **Enable**：使能中。\n- **Disable**：未使能。\n\n只有未使能状态的路由目标组成员允许被修改为其他实例。使能中的路由目标组成员禁止修改。",
+                  "type": "string",
+                  "enumValueTitles": {
+                    "Enable": "使能中",
+                    "Disable": "未使能"
+                  },
+                  "example": "Enable"
+                }
+              },
+              "description": ""
+            }
+          },
+          "Tags": {
+            "description": "路由目标组的标签。",
+            "type": "array",
+            "items": {
+              "description": "资源的标签。",
+              "type": "object",
+              "properties": {
+                "Key": {
+                  "description": "标签键。",
+                  "type": "string",
+                  "example": "FinanceDept"
+                },
+                "Value": {
+                  "description": "标签值。",
+                  "type": "string",
+                  "example": "FinanceJoshua"
+                }
+              }
+            }
+          },
+          "RegionId": {
+            "description": "路由目标组所属的VPC的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+            "type": "string",
+            "example": "cn-qingdao"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "1AE05898-06E5-4782-xxxxx"
+          },
+          "ResourceGroupId": {
+            "description": "要查询的路由目标组所属资源组的ID。",
+            "type": "string",
+            "example": "rg-acfmxazdjdhd****"
+          },
+          "CreateTime": {
+            "description": "创建路由目标组的时间。",
+            "type": "string",
+            "example": "2025-12-30T06:40:50Z"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "ResourceNotFound.RouteTargetGroup",
+        "errorMessage": "The specified resource of %s is not found.",
+        "description": "指定资源%s不存在。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RouteTargetGroupId\": \"rtg-xxxx\",\n  \"RouteTargetGroupName\": \"myRouteTargetGroupName\",\n  \"RouteTargetGroupDescription\": \"myRouteTargetGroupDescription\",\n  \"VpcId\": \"vpc-xxxx\",\n  \"ConfigMode\": \"Active-Standby\",\n  \"Status\": \"Available\",\n  \"RouteTargetMemberList\": [\n    {\n      \"MemberId\": \"ep-xxxx\",\n      \"MemberType\": \"GatewayLoadBalancerEndpoint\",\n      \"Weight\": 100,\n      \"HealthCheckStatus\": \"Normal\",\n      \"EnableStatus\": \"Enable\"\n    }\n  ],\n  \"Tags\": [\n    {\n      \"Key\": \"FinanceDept\",\n      \"Value\": \"FinanceJoshua\"\n    }\n  ],\n  \"RegionId\": \"cn-qingdao\",\n  \"RequestId\": \"1AE05898-06E5-4782-xxxxx\",\n  \"ResourceGroupId\": \"rg-acfmxazdjdhd****\",\n  \"CreateTime\": \"2025-12-30T06:40:50Z\"\n}",
+      "type": "json"
+    }
+  ]
+}

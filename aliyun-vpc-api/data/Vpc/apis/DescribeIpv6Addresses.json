@@ -1,0 +1,482 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeIpv6Addresses",
+  "group": "ipv6-gateway",
+  "title": "查询IPv6地址列表",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "list",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址所在的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-huhehaote"
+      }
+    },
+    {
+      "name": "Ipv6AddressId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址ID。每次调用最多可以输入20个IPv6地址ID，以半角逗号（,）分隔。",
+        "type": "string",
+        "required": false,
+        "example": "ipv6-2zen5j4axcp5l5qyy****"
+      }
+    },
+    {
+      "name": "Ipv6Address",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址。",
+        "type": "string",
+        "required": false,
+        "example": "2408:XXXX:153:3921:851c:c435:7b12:1c5f"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址的名称。\n\n名称长度为0-128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "test"
+      }
+    },
+    {
+      "name": "AddressType",
+      "in": "query",
+      "schema": {
+        "description": "IPv6地址的类型，取值：\n\n* IPv6Address（默认值）：代表查询单IPv6 IP的IPv6实例。\n* IPv6Prefix：代表查询前缀网段的IPv6实例。",
+        "type": "string",
+        "required": false,
+        "example": "IPv6Address"
+      }
+    },
+    {
+      "name": "AssociatedInstanceId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址关联的实例ID。",
+        "type": "string",
+        "required": false,
+        "example": "i-2ze72wuqj4y3jl4f****"
+      }
+    },
+    {
+      "name": "AssociatedInstanceType",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址所关联的实例类型，取值：\n\n - **EcsInstance**：VPC类型的ECS。\n- **NetworkInterface**：辅助弹性网卡ENI。",
+        "type": "string",
+        "required": false,
+        "example": "EcsInstance"
+      }
+    },
+    {
+      "name": "NetworkType",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址的通信能力类型，取值：\n\n- **Private**：私网通信类型。\n\n- **Public**：公网通信类型。",
+        "type": "string",
+        "required": false,
+        "example": "Private"
+      }
+    },
+    {
+      "name": "VpcId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址所在的VPC ID。",
+        "type": "string",
+        "required": false,
+        "example": "vpc-bp15zckdt37pq72zv****"
+      }
+    },
+    {
+      "name": "VSwitchId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址所在的交换机ID。",
+        "type": "string",
+        "required": false,
+        "example": "vsw-25navfgbue4g****"
+      }
+    },
+    {
+      "name": "Ipv6InternetBandwidthId",
+      "in": "query",
+      "schema": {
+        "description": "开通公网带宽后，要查询的IPv6地址对应的公网带宽实例ID。",
+        "type": "string",
+        "required": false,
+        "example": "ipv6bw-uf6hcyzu65v98v3du****"
+      }
+    },
+    {
+      "name": "IncludeReservationData",
+      "in": "query",
+      "schema": {
+        "description": "是否包含未生效的订购数据，取值：\n\n- **false**（默认值）：不包含未生效的订购数据。\n\n- **true**：包含未生效的订购数据。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6网关所属的资源组ID。",
+        "type": "string",
+        "required": false,
+        "example": "rg-bp67acfmxazb4ph****"
+      }
+    },
+    {
+      "name": "Tag",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "标签列表。列表元素最大数量：20。",
+        "type": "array",
+        "items": {
+          "description": "资源的标签集合。",
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "资源的标签键。最多支持输入20个标签键。如需传入该值，则不能输入空字符串。\n\n一个标签键最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceDept"
+            },
+            "Value": {
+              "description": "资源的标签值。最多支持输入20个标签值。一旦传入该值，可以为空字符串。\n\n\n一个标签值最多支持128个字符，必须以字母或中文开头，可包含数字、半角句号（.）、下划线（_）和短划线（-），不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "yunke"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 21
+      }
+    },
+    {
+      "name": "PageNumber",
+      "in": "query",
+      "schema": {
+        "description": "列表的页码，默认值：**1**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "minimum": "1",
+        "example": "1",
+        "default": "1"
+      }
+    },
+    {
+      "name": "PageSize",
+      "in": "query",
+      "schema": {
+        "description": "分页查询时每页的行数，最大值：**50**；默认值：**10**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "maximum": "100",
+        "minimum": "1",
+        "example": "10",
+        "default": "10"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的IPv6地址所在的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-huhehaote"
+      }
+    },
+    {
+      "name": "ServiceManaged",
+      "in": "query",
+      "schema": {
+        "description": "是否为托管实例。取值：\n- **true**：是托管实例。\n- **false**：不是托管实例。\n\n不填默认查询所有实例。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "PageSize": {
+            "description": "分页查询时每页的行数，最大值为**50**，默认值为**10**。",
+            "type": "integer",
+            "format": "int32",
+            "example": "10"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "AA4486A8-B6AE-469E-AB09-820EF8ECFA2B"
+          },
+          "PageNumber": {
+            "description": "列表的页码，默认值为**1**。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "TotalCount": {
+            "description": "列表条目数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "2"
+          },
+          "Ipv6Addresses": {
+            "type": "object",
+            "itemNode": true,
+            "properties": {
+              "Ipv6Address": {
+                "description": "IPv6地址的详细信息。",
+                "type": "array",
+                "items": {
+                  "description": "Ipv6地址的详细信息。",
+                  "type": "object",
+                  "properties": {
+                    "VpcId": {
+                      "description": "IPv6地址所在的VPC ID。",
+                      "type": "string",
+                      "example": "vpc-bp15zckdt37pq72zv****"
+                    },
+                    "Status": {
+                      "description": "IPv6地址的状态，取值：\n\n- **Pending**：配置中。\n\n- **Available**：可用。",
+                      "type": "string",
+                      "example": "Available"
+                    },
+                    "Ipv6AddressId": {
+                      "description": "IPv6地址的实例ID。",
+                      "type": "string",
+                      "example": "ipv6-2zen5j4axcp5l5qyy****"
+                    },
+                    "AllocationTime": {
+                      "description": "IPv6地址的创建时间。",
+                      "type": "string",
+                      "example": "2020-12-20T14:56:09Z"
+                    },
+                    "Ipv6AddressName": {
+                      "description": "IPv6地址的实例名称。",
+                      "type": "string",
+                      "example": "test"
+                    },
+                    "Ipv6AddressDescription": {
+                      "description": "IPv6地址的实例描述。",
+                      "type": "string",
+                      "example": "test"
+                    },
+                    "AssociatedInstanceType": {
+                      "description": "IPv6地址关联的实例类型。",
+                      "type": "string",
+                      "example": "EcsInstance"
+                    },
+                    "AssociatedInstanceId": {
+                      "description": "IPv6地址关联的实例ID。",
+                      "type": "string",
+                      "example": "i-2ze72wuqj4y3jl4f****"
+                    },
+                    "NetworkType": {
+                      "description": "IPv6地址的通信能力类型，取值：\n\n- **Private**：私网通信类型。\n\n- **Public**：公网通信类型 。",
+                      "type": "string",
+                      "example": "Private"
+                    },
+                    "Ipv6Address": {
+                      "description": "IPv6地址。",
+                      "type": "string",
+                      "example": "2408:XXXX:153:3921:851c:c435:7b12:1c5f"
+                    },
+                    "AddressType": {
+                      "description": "IPv6地址的类型，取值：\n\n* IPv6Address（默认值）：代表当前实例是单个IPv6 IP。\n* IPv6Prefix：代表当前实例是IPv6 Cidr。",
+                      "type": "string",
+                      "example": "IPv6Address"
+                    },
+                    "Ipv6Isp": {
+                      "description": "IPv6地址的服务运营商，取值：\n- **BGP**（默认值）：阿里云BGP IPv6。\n- **ChinaMobile**：中国移动（单线）。\n- **ChinaUnicom**：中国联通（单线）。\n- **ChinaTelecom**：中国电信（单线）。",
+                      "type": "string",
+                      "example": "BGP"
+                    },
+                    "VSwitchId": {
+                      "description": "IPv6地址所在的交换机的ID。",
+                      "type": "string",
+                      "example": "vsw-25navfgbue4g****"
+                    },
+                    "Ipv6GatewayId": {
+                      "description": "IPv6地址的所属IPv6网关实例ID。",
+                      "type": "string",
+                      "example": "ipv6gw-2zewg0l66s73b4k2q****"
+                    },
+                    "RealBandwidth": {
+                      "description": "IPv6地址的实际带宽峰值。",
+                      "type": "integer",
+                      "format": "int32",
+                      "example": "5"
+                    },
+                    "Ipv6InternetBandwidth": {
+                      "description": "IPv6地址的公网带宽信息。",
+                      "type": "object",
+                      "properties": {
+                        "InternetChargeType": {
+                          "description": "IPv6地址的公网带宽的计费方式，取值：\n\n\n\n- **PayByTraffic**：按使用流量计费。\n- **PayByBandwidth**：按固定带宽计费。\n- **PayByOld95**：表示按传统95计费。IPv6公网带宽默认不支持按传统95计费，如需使用，请联系客户经理申请。\n\n\n\n\n\n- **PayByTraffic**：按使用流量计费。\n- **PayByBandwidth**：按固定带宽计费。",
+                          "type": "string",
+                          "example": "PayByTraffic"
+                        },
+                        "BusinessStatus": {
+                          "description": "IPv6地址的公网带宽的商业状态，取值：\n\n- **Normal**：正常。\n\n- **FinancialLocked**：欠费锁定。\n\n- **SecurityLocked**：安全锁定。",
+                          "type": "string",
+                          "example": "Normal"
+                        },
+                        "Bandwidth": {
+                          "description": "IPv6地址的独享公网带宽，单位：Mbps。",
+                          "type": "integer",
+                          "format": "int32",
+                          "example": "5"
+                        },
+                        "Ipv6InternetBandwidthId": {
+                          "description": "IPv6地址的公网带宽实例ID。",
+                          "type": "string",
+                          "example": "ipv6bw-hp3b35oq1fj50kbv****"
+                        },
+                        "InstanceChargeType": {
+                          "description": "IPv6地址的公网带宽的付费方式，取值：\n\n**PostPaid**：后付费。",
+                          "type": "string",
+                          "example": "PostPaid"
+                        },
+                        "HasReservationData": {
+                          "description": "是否有续费数据。\n\n- **false**：无续费数据。\n\n- **true**：有续费数据。只有在入参**IncludeReservationData**为**true**，且有未生效订购数据时才会为**true**。",
+                          "type": "boolean",
+                          "example": "false"
+                        },
+                        "ReservationInternetChargeType": {
+                          "description": "续费付费类型。\n\n\n\n\n- **PayByTraffic**：按使用流量计费。\n- **PayByBandwidth**：按固定带宽计费。\n- **PayByOld95**：按传统95计费。IPv6公网带宽默认不支持按传统95计费，如需使用，请联系客户经理申请。\n\n\n\n\n\n- **PayByTraffic**：按使用流量计费。\n- **PayByBandwidth**：按固定带宽计费。",
+                          "type": "string",
+                          "example": "PayByTraffic"
+                        },
+                        "ReservationOrderType": {
+                          "description": "续费订单类型。取值：**RENEW**，表示续费订单。",
+                          "type": "string",
+                          "example": "RENEW"
+                        },
+                        "ReservationActiveTime": {
+                          "description": "续费生效时间，格式为`YYYY-MM-DDThh:mm:ssZ`。",
+                          "type": "string",
+                          "example": "2021-05-23T16:00:00Z"
+                        },
+                        "ReservationBandwidth": {
+                          "description": "续费带宽。单位：Mbps。",
+                          "type": "integer",
+                          "format": "int64",
+                          "example": "12"
+                        }
+                      }
+                    },
+                    "ResourceGroupId": {
+                      "description": "IPv6网关所属的资源组ID。",
+                      "type": "string",
+                      "example": "rg-bp67acfmxazb4ph****"
+                    },
+                    "Tags": {
+                      "type": "object",
+                      "itemNode": true,
+                      "properties": {
+                        "Tag": {
+                          "description": "标签列表。",
+                          "type": "array",
+                          "items": {
+                            "description": "标签列表信息。",
+                            "type": "object",
+                            "properties": {
+                              "Key": {
+                                "description": "资源的标签键。最多支持输入20个标签键。如需传入该值，则不能输入空字符串。\n\n一个标签键最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+                                "type": "string",
+                                "example": "FinanceDept"
+                              },
+                              "Value": {
+                                "description": "标签的标签值。\n\n标签值最多支持128个字符，可以为空字符串，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。\n\n一个标签键对应一个标签值。一次最多支持输入20个标签值。",
+                                "type": "string",
+                                "example": "yunke"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "ServiceManaged": {
+                      "description": "是否为托管实例。取值：\n\n- **1**：是托管实例。\n\n- **0**：不是托管实例。",
+                      "type": "integer",
+                      "format": "int32",
+                      "example": "1"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IllegalParam.Ipv6Address",
+        "errorMessage": "The param of %s is illegal.",
+        "description": "您指定的ipv6地址非法，请检查您的输入是否正确"
+      },
+      {
+        "errorCode": "IllegalParam.NetworkType",
+        "errorMessage": "The param of %s is illegal.",
+        "description": "您输入的NetworkType非法，请检查您的输入是否正确"
+      },
+      {
+        "errorCode": "IllegalParam.AddressType",
+        "errorMessage": "The specified AddressType is illegal.",
+        "description": "指定的入参AddressType非法"
+      },
+      {
+        "errorCode": "IllegalParamSize.AssociatedInstanceId",
+        "errorMessage": "The param size of AssociatedInstanceId is illegal.",
+        "description": "参数AssociatedInstanceId长度非法"
+      },
+      {
+        "errorCode": "MissingParam.AssociatedInstanceId",
+        "errorMessage": "The param of AssociatedInstanceId is missing when AssociatedInstanceType is specified.",
+        "description": "参数AssociatedInstanceId缺失"
+      }
+    ]
+  }
+}

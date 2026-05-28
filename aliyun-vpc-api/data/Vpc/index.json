@@ -1,0 +1,233 @@
+{
+  "_layer": "L0",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "style": "RPC",
+  "apiVersion": "2016-04-28",
+  "totalApis": 404,
+  "groups": [
+    {
+      "slug": "vpc",
+      "title": "专有网络（VPC）",
+      "count": 15
+    },
+    {
+      "slug": "vrouter",
+      "title": "路由器",
+      "count": 2
+    },
+    {
+      "slug": "vswitch",
+      "title": "交换机",
+      "count": 12
+    },
+    {
+      "slug": "route-table",
+      "title": "路由表",
+      "count": 21
+    },
+    {
+      "slug": "prefix-list",
+      "title": "前缀列表",
+      "count": 7
+    },
+    {
+      "slug": "dhcp-option-set",
+      "title": "DHCP选项集",
+      "count": 8
+    },
+    {
+      "slug": "flow-log",
+      "title": "流日志",
+      "count": 8
+    },
+    {
+      "slug": "network-acl",
+      "title": "网络ACL",
+      "count": 9
+    },
+    {
+      "slug": "havip",
+      "title": "高可用虚拟IP",
+      "count": 6
+    },
+    {
+      "slug": "traffic-mirror",
+      "title": "流量镜像",
+      "count": 15
+    },
+    {
+      "slug": "route-target-group",
+      "title": "路由目标组",
+      "count": 6
+    },
+    {
+      "slug": "eip",
+      "title": "弹性公网IP",
+      "count": 27
+    },
+    {
+      "slug": "shared-bandwidth",
+      "title": "共享带宽",
+      "count": 11
+    },
+    {
+      "slug": "physical-connection",
+      "title": "物理专线",
+      "count": 28
+    },
+    {
+      "slug": "fault-simulation",
+      "title": "故障演练",
+      "count": 7
+    },
+    {
+      "slug": "qos-policy",
+      "title": "QoS策略",
+      "count": 12
+    },
+    {
+      "slug": "virtual-border-router",
+      "title": "边界路由器",
+      "count": 14
+    },
+    {
+      "slug": "bgp",
+      "title": "BGP",
+      "count": 11
+    },
+    {
+      "slug": "nat",
+      "title": "NAT",
+      "count": 30
+    },
+    {
+      "slug": "ipv4-gateway",
+      "title": "IPv4网关",
+      "count": 6
+    },
+    {
+      "slug": "vpn-gateway",
+      "title": "VPN网关",
+      "count": 12
+    },
+    {
+      "slug": "customer-gateway",
+      "title": "用户网关",
+      "count": 5
+    },
+    {
+      "slug": "vpn-attachment",
+      "title": "绑定VPN网关实例",
+      "count": 20
+    },
+    {
+      "slug": "vpn-route-entry",
+      "title": "绑定转发路由器实例",
+      "count": 10
+    },
+    {
+      "slug": "ssl-client",
+      "title": "SSL客户端",
+      "count": 6
+    },
+    {
+      "slug": "ssl-server",
+      "title": "SSL服务端",
+      "count": 5
+    },
+    {
+      "slug": "ipsec-server",
+      "title": "IPsec服务端",
+      "count": 5
+    },
+    {
+      "slug": "ipv6-gateway",
+      "title": "IPv6网关",
+      "count": 15
+    },
+    {
+      "slug": "ipv6-translation",
+      "title": "IPv6转换服务",
+      "count": 17
+    },
+    {
+      "slug": "region",
+      "title": "地域",
+      "count": 2
+    },
+    {
+      "slug": "tag",
+      "title": "标签",
+      "count": 9
+    },
+    {
+      "slug": "router-interface",
+      "title": "路由器接口",
+      "count": 12
+    },
+    {
+      "slug": "express-connect",
+      "title": "高速上云服务",
+      "count": 3
+    },
+    {
+      "slug": "global-acceleration",
+      "title": "全球加速实例",
+      "count": 9
+    },
+    {
+      "slug": "gateway-endpoint",
+      "title": "网关终端节点",
+      "count": 8
+    },
+    {
+      "slug": "resource-group",
+      "title": "资源组",
+      "count": 2
+    },
+    {
+      "slug": "misc",
+      "title": "其他",
+      "count": 9
+    }
+  ],
+  "endpoints": {
+    "cn-beijing": "vpc.cn-beijing.aliyuncs.com",
+    "cn-zhengzhou-jva": "vpc.cn-zhengzhou-jva.aliyuncs.com",
+    "cn-heyuan": "vpc.cn-heyuan.aliyuncs.com",
+    "cn-zhangjiakou": "vpc.cn-zhangjiakou.aliyuncs.com",
+    "ap-northeast-2": "vpc.ap-northeast-2.aliyuncs.com",
+    "ap-northeast-1": "vpc.ap-northeast-1.aliyuncs.com",
+    "ap-southeast-1": "vpc.ap-southeast-1.aliyuncs.com",
+    "ap-southeast-2": "vpc.ap-southeast-2.aliyuncs.com",
+    "ap-southeast-3": "vpc.ap-southeast-3.aliyuncs.com",
+    "ap-southeast-5": "vpc.ap-southeast-5.aliyuncs.com",
+    "ap-southeast-6": "vpc.ap-southeast-6.aliyuncs.com",
+    "ap-southeast-7": "vpc.ap-southeast-7.aliyuncs.com",
+    "cn-wulanchabu": "vpc.cn-wulanchabu.aliyuncs.com",
+    "cn-qingdao": "vpc.cn-qingdao.aliyuncs.com",
+    "cn-wuhan-lr": "vpc.cn-wuhan-lr.aliyuncs.com",
+    "cn-shanghai": "vpc.cn-shanghai.aliyuncs.com",
+    "cn-hongkong": "vpc.cn-hongkong.aliyuncs.com",
+    "cn-shenzhen": "vpc.cn-shenzhen.aliyuncs.com",
+    "cn-nanjing": "vpc.cn-nanjing.aliyuncs.com",
+    "cn-fuzhou": "vpc.cn-fuzhou.aliyuncs.com",
+    "cn-chengdu": "vpc.cn-chengdu.aliyuncs.com",
+    "cn-guangzhou": "vpc.cn-guangzhou.aliyuncs.com",
+    "cn-huhehaote": "vpc.cn-huhehaote.aliyuncs.com",
+    "cn-hangzhou": "vpc.cn-hangzhou.aliyuncs.com",
+    "eu-west-1": "vpc.eu-west-1.aliyuncs.com",
+    "eu-central-1": "vpc.eu-central-1.aliyuncs.com",
+    "us-east-1": "vpc.us-east-1.aliyuncs.com",
+    "us-west-1": "vpc.us-west-1.aliyuncs.com",
+    "na-south-1": "vpc.na-south-1.aliyuncs.com",
+    "me-east-1": "vpc.me-east-1.aliyuncs.com",
+    "ap-south-1": "vpc.ap-south-1.aliyuncs.com",
+    "me-central-1": "vpc.me-central-1.aliyuncs.com",
+    "cn-shenzhen-finance-1": "vpc.cn-shenzhen-finance-1.aliyuncs.com",
+    "cn-beijing-finance-1": "vpc.cn-beijing-finance-1.aliyuncs.com",
+    "cn-shanghai-finance-1": "vpc.cn-shanghai-finance-1.aliyuncs.com",
+    "cn-heyuan-acdr-1": "vpc.cn-heyuan-acdr-1.aliyuncs.com"
+  }
+}

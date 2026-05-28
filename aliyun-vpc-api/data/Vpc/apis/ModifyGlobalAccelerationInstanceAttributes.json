@@ -1,0 +1,127 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyGlobalAccelerationInstanceAttributes",
+  "group": "global-acceleration",
+  "title": "修改全球加速实例属性",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例所在的地域。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "GlobalAccelerationInstanceId",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例的ID。",
+        "type": "string",
+        "required": true,
+        "example": "ga-14fdsf3****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例的名称。  \n\n长度为 2-128个字符，必须以字母或中文开头，可包含数字，点号（.），下划线（_）和短横线（-）。但不能以`http://` 或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "GA-1"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "全球加速实例的描述信息。  \n\n长度为 2-256个字符，必须以字母或中文开头，但不能以`http://` 或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "My GA"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "BD5BCEE8-F62C-40C2-9AC3-89XXXXXXXXX"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidBandwidth.ValueNotSupported",
+        "errorMessage": "The specified Bandwidth is not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidGlobalAccelerationInstanceId.NotFound",
+        "errorMessage": "The specified GlobalAccelerationInstanceId is not found.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.ChargeTypeIsPrepaid",
+        "errorMessage": "It?s forbidden to change prepaid EIP?s bandwidth by API.  It can be changed on Aliyun web console.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidGlobalAccelerationInstanceName.Malformed",
+        "errorMessage": "The specified Name is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidGlobalAccelerationInstanceDescription.Malformed",
+        "errorMessage": "The specified Description is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParameter",
+        "errorMessage": "The parameter is invalid.",
+        "description": "参数不合法。"
+      },
+      {
+        "errorCode": "InvalidGlobalAccelerationInstance.NotFound",
+        "errorMessage": "The specified global acceleration instance is not found.",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified region is not supported.",
+        "description": ""
+      }
+    ]
+  }
+}

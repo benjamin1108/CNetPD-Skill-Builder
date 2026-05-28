@@ -1,0 +1,118 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteSslVpnClientCert",
+  "group": "ssl-client",
+  "title": "删除SSL-VPN客户端证书",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "- 删除SSL-VPN客户端证书会导致SSL服务端下所有客户端的SSL-VPN连接断开，如果客户端需要继续使用SSL-VPN连接，客户端需重新发起SSL-VPN连接。\n\n  例如SSL服务端下创建了SSL-VPN客户端证书1和SSL-VPN客户端证书2，在删除SSL-VPN客户端证书1后，SSL-VPN客户端证书1和SSL-VPN客户端证书2下关联的所有客户端都会断开SSL-VPN连接。\n\n  - 如果SSL-VPN客户端证书1关联的客户端需要继续使用SSL-VPN连接，客户端需要安装其他证书然后重新发起SSL-VPN连接。\n\n  - 如果SSL-VPN客户端证书2关联的客户端需要继续使用SSL-VPN连接，客户端重新发起SSL-VPN连接即可。\n- **DeleteSslVpnClientCert**接口属于异步接口，即系统返回一个请求ID，但该SSL-VPN客户端证书尚未删除成功，系统后台的删除任务仍在进行。您可以调用DescribeVpnGateway查询SSL-VPN服务端关联的VPN网关实例的状态，来确认SSL-VPN客户端证书的删除状态：\n    - 当VPN网关实例处于**updating**状态时，表示SSL-VPN客户端证书正在删除中。\n    - 当VPN网关实例处于**active**状态时，表示SSL-VPN客户端证书删除成功。\n- **DeleteSslVpnClientCert**接口不支持在同一VPN网关实例下并发删除SSL-VPN客户端证书。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "SSL-VPN客户端证书所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-0016e04115b"
+      }
+    },
+    {
+      "name": "SslVpnClientCertId",
+      "in": "query",
+      "schema": {
+        "description": "SSL-VPN客户端证书的ID。",
+        "type": "string",
+        "required": true,
+        "example": "vsc-bp1n8wcf134yl0osr****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "606998F0-B94D-48FE-8316-ACA81BB230DA"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "VpnGateway.Configuring",
+        "errorMessage": "The specified service is configuring.",
+        "description": ""
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified region is not found during access authentication.",
+        "description": "接入认证时未找到指定区域。"
+      },
+      {
+        "errorCode": "InvalidSslVpnClientCertId.NotFound",
+        "errorMessage": "The specified SSL VPN client cert id does not exist.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"606998F0-B94D-48FE-8316-ACA81BB230DA\"\n}",
+      "errorExample": "{\n  \"RequestId\":\"606998F0-B94D-48FE-8316-ACA81BB230DA\"\n}"
+    },
+    {
+      "type": "xml",
+      "example": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteSslVpnClientCertResponse>\n    <RequestId>606998F0-B94D-48FE-8316-ACA81BB230DA</RequestId>\n</DeleteSslVpnClientCertResponse>",
+      "errorExample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteSslVpnClientCertResponse>\n    <RequestId>606998F0-B94D-48FE-8316-ACA81BB230DA</RequestId>\n</DeleteSslVpnClientCertResponse>"
+    }
+  ]
+}

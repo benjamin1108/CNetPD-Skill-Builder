@@ -1,0 +1,314 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyNatGatewayAttribute",
+  "group": "nat",
+  "title": "修改NAT网关的属性",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "本接口查询的NAT网关包括公网NAT网关和VPC NAT网关，文中出现的“NAT网关”不做具体的区分。",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要修改的NAT网关所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "NatGatewayId",
+      "in": "query",
+      "schema": {
+        "description": "要修改的NAT网关的ID。",
+        "type": "string",
+        "required": true,
+        "example": "ngw-2ze0dcn4mq31qx2jc****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "要修改的NAT网关名称。\n\n名称长度为1～128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "nat123"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "要修改的NAT网关描述信息。\n\n描述长度为1～128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "Description"
+      }
+    },
+    {
+      "name": "IcmpReplyEnabled",
+      "in": "query",
+      "schema": {
+        "description": "是否开启ICMP代回。取值：\n\n- **true**（默认值）：开启。\n- **false**：不开启。",
+        "type": "boolean",
+        "required": false,
+        "example": "true"
+      }
+    },
+    {
+      "name": "EipBindMode",
+      "in": "query",
+      "schema": {
+        "description": "修改NAT网关的EIP绑定模式。取值：可以为空，非空时只允许为**NAT**，表示绑定模式为EIP普通模式。\n\n\n> - 只支持将**MULTI_BINDED**模式修改为**NAT**模式，不支持将**NAT**模式修改为**MULTI_BINDED**模式。关于**MULTI_BINDED**模式的具体信息，请参见CreateNatGateway。\n- 在EIP绑定模式切换过程中网络连接会出现秒级别闪断（闪断时间随着EIP数量增加而变长，目前最多支持绑定5个EIP的NAT网关进行配置变更），请您尽量在业务低峰期执行切换操作。\n- EIP绑定模式变更为**NAT**后，公网NAT网关将兼容IPv4网关，但绑定一个公网EIP时将占用NAT网关所在交换机的一个私网IP，请确保NAT网关所在交换机内私网IP地址充足，如果NAT网关所在的交换机没有可用的空闲私网地址时，将无法绑定新的EIP。",
+        "type": "string",
+        "required": false,
+        "example": "NAT",
+        "enum": [
+          "NAT"
+        ]
+      }
+    },
+    {
+      "name": "EnableSessionLog",
+      "in": "query",
+      "schema": {
+        "description": "是否开启会话日志，取值：\n\n- **true**：已开启会话日志。\n\n- **false**：已关闭会话日志。",
+        "type": "boolean",
+        "required": false,
+        "example": "true"
+      }
+    },
+    {
+      "name": "LogDelivery",
+      "in": "query",
+      "style": "json",
+      "schema": {
+        "description": "会话日志配置信息。",
+        "type": "object",
+        "properties": {
+          "LogDeliveryType": {
+            "description": "会话日志写入类型。取值：**sls**，阿里云日志服务SLS。",
+            "type": "string",
+            "required": false,
+            "example": "sls"
+          },
+          "LogDestination": {
+            "description": "会话日志写入地址。取值：acs:log:${regionName}:${projectOwnerAliUid}:project/${projectName}/logstore/${logstoreName}",
+            "type": "string",
+            "required": false,
+            "example": "acs:log:cn-hangzhou:0000:project/nat_session_log_project/logstore/session_log_test"
+          }
+        },
+        "required": false
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "AB5F62CF-2B60-4458-A756-42C9DFE108D1"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "UnsupportedFeature.PrivateLinkMode",
+        "errorMessage": "The feature of %s is not supported.",
+        "description": "暂不支持反向访问特性。"
+      },
+      {
+        "errorCode": "IncorrectStatus.NATGW",
+        "errorMessage": "NATGW status is invalid.",
+        "description": "NAT网关的状态不正确。"
+      },
+      {
+        "errorCode": "ExclusiveParam.%sAnd%s",
+        "errorMessage": "The param of %s and %s are mutually exclusive.",
+        "description": "参数 %s 和 %s 相互排斥。"
+      },
+      {
+        "errorCode": "IncorrectStatus.NatGateway",
+        "errorMessage": "The status of natgateway is incorrect.",
+        "description": "NAT网关的状态不正确。"
+      },
+      {
+        "errorCode": "DependencyViolation.PrivateLinkMode",
+        "errorMessage": "The specified resource of %s depends on %s, so the operation cannot be completed.",
+        "description": "%s 资源依赖于 %s，因此本操作不能完成。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.IcmpReplyEnabled",
+        "errorMessage": "The feature of IcmpReplyEnabled is not supported.",
+        "description": "Icmp 代答使能功能修改不支持。"
+      },
+      {
+        "errorCode": "InvalidParams.NotNull",
+        "errorMessage": "The parameter must not be null, name or description or icmpReplyEnabled",
+        "description": "名称、描述以及icmp代答使能参数不能同时为空。"
+      },
+      {
+        "errorCode": "InvalidParameter.Name.Malformed",
+        "errorMessage": "The specified Name is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParameter.Description.Malformed",
+        "errorMessage": "The specified Description is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "UnsupportedFeature.IndirectConvertForVpcNat",
+        "errorMessage": "The VPC NAT gateway is not support to change EIP bond type.",
+        "description": "VPC NAT网关不支持修改EIP的绑定类型。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.NormalNatModifyEipBindMode",
+        "errorMessage": "The normal NAT gateway is not support to change EIP bond type.",
+        "description": "普通型NAT网关不支持修改EIP绑定类型。"
+      },
+      {
+        "errorCode": "OperationDenied.EipBondTypeIsAlreadyNAT",
+        "errorMessage": "The EIP bond type is already NAT type.",
+        "description": "EIP绑定类型已经是NAT类型。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.IndirectConvertForFwNat",
+        "errorMessage": "The security protection enabled NAT gateway is not support change EIP bond type.",
+        "description": "开启防护功能的公网NAT不支持修改EIP绑定类型。"
+      },
+      {
+        "errorCode": "QuotaExceeded.EipNumForModifyEipBondType",
+        "errorMessage": "The quota of %s is exceeded, binded: %s, quota: %s.",
+        "description": "修改EIP绑定类型时允许的EIP个数超限"
+      },
+      {
+        "errorCode": "ResourceNotEnough.SwitchAvailableIps",
+        "errorMessage": "The available private Ip number is not enough in your subnet.",
+        "description": "子网中可用的私网IP不足。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.VpcNatSecurityProtectionEnabled",
+        "errorMessage": "The VPC NAT gateway is not supported to enable security protection.",
+        "description": "VPC NAT网关不支持开启安全防护。"
+      },
+      {
+        "errorCode": "OperationDenied.NatGatewayStatusInvalid",
+        "errorMessage": "The NAT gateway status is invalid.",
+        "description": "NAT网关的状态无效。"
+      },
+      {
+        "errorCode": "OperationDenied.EipStatusInvalid",
+        "errorMessage": "The NAT gateway has EIP in invalid status.",
+        "description": "NAT网关绑定的EIP状态无效。"
+      },
+      {
+        "errorCode": "OperationDenied.SnatEntryStatusInvalid",
+        "errorMessage": "The NAT gateway has SNAT entry in invalid status.",
+        "description": "NAT网关配置的SNAT条目状态无效。"
+      },
+      {
+        "errorCode": "OperationDenied.DnatEntryStatusInvalid",
+        "errorMessage": "The NAT gateway has DNAT entry in invalid status.",
+        "description": "NAT网关配置的DNAT状态无效。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.MutilBindedTypeNatEnableFw",
+        "errorMessage": "The NAT with Mutil-Binded Eip bind type is not support enable firewall.",
+        "description": "以Mutil-Binded方式绑定EIP的NAT不允许开启防火墙。"
+      },
+      {
+        "errorCode": "Forbidden.FinancialLocked",
+        "errorMessage": "The instance is locked due to outstanding payments.",
+        "description": "该实例已欠费锁定，无法操作"
+      },
+      {
+        "errorCode": "OperationFailed.PrivateLinkMode",
+        "errorMessage": "The NAT gateway is not support to change PrivateLinkMode.",
+        "description": "当前NAT网关不支持修改PrivateLinkMode。"
+      },
+      {
+        "errorCode": "IllegalParam.SessionLogDeliveryDestination",
+        "errorMessage": "The specified Delivery Destination is illegal.",
+        "description": "会话日志投递目标参数(SessionLogDeliveryDestination)配置格式无效"
+      },
+      {
+        "errorCode": "OperationFailed.LogDeliveryIsUnAuthorized",
+        "errorMessage": "Operation failed because the user is not authorized to deliver NAT session log.",
+        "description": "操作失败因为您未授权NAT会话日志投递权限"
+      },
+      {
+        "errorCode": "IllegalParam.SessionLogDeliveryType",
+        "errorMessage": "The specified Delivery Type is illegal.",
+        "description": "会话日志投递目标类型参数SessionLogDeliveryType输入不符合要求"
+      },
+      {
+        "errorCode": "UnsupportedFeature.EnableSessionLog",
+        "errorMessage": "The feature of EnableSessionLog is not supported.",
+        "description": "当前实例不支持打开NAT网关会话日志。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbidden.ModifyEipBondType",
+        "errorMessage": "Authentication is failed for modify EIP bond type.",
+        "description": "不允许修改EIP绑定类型。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNatGatewayId.NotFound",
+        "errorMessage": "The specified NatGatewayId does not exist in our records.",
+        "description": ""
+      }
+    ],
+    "500": [
+      {
+        "errorCode": "OperationFailed.ConfigSessionLog",
+        "errorMessage": "Failed to configure session log due to a temporary failure of the server.",
+        "description": "由于内部服务错误引起配置会话日志失败."
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"AB5F62CF-2B60-4458-A756-42C9DFE108D1\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ModifyNatGatewayAttributeResponse>\n    <RequestId>AB5F62CF-2B60-4458-A756-42C9DFE108D1</RequestId>\n</ModifyNatGatewayAttributeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

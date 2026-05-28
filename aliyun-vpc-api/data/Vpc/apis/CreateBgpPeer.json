@@ -1,0 +1,307 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "CreateBgpPeer",
+  "group": "bgp",
+  "title": "向指定的BGP组中添加BGP邻居",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "BGP组所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "BgpGroupId",
+      "in": "query",
+      "schema": {
+        "description": "BGP组的ID。",
+        "type": "string",
+        "required": true,
+        "example": "bgpg-wz9f62v4fbg****"
+      }
+    },
+    {
+      "name": "PeerIpAddress",
+      "in": "query",
+      "schema": {
+        "description": "BGP邻居的IP地址。",
+        "type": "string",
+        "required": false,
+        "example": "116.62.XX.XX"
+      }
+    },
+    {
+      "name": "EnableBfd",
+      "in": "query",
+      "schema": {
+        "description": "是否开启BFD功能，取值：\n\n- **true**：开启BFD功能。\n\n- **false**：不开启BFD功能。",
+        "type": "boolean",
+        "required": false,
+        "example": "true",
+        "default": "false"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n由客户端生成该参数值，要保证在不同请求间唯一，最大值不超过64个ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "IpVersion",
+      "in": "query",
+      "schema": {
+        "description": "IP版本。取值：\n\n- **IPv4**（默认值）：IPv4版本。\n- **IPv6**：IPv6版本，只有当创建BGP组的VBR开通IPv6功能时，支持IPv6版本。",
+        "type": "string",
+        "required": false,
+        "example": "IPv4"
+      }
+    },
+    {
+      "name": "BfdMultiHop",
+      "in": "query",
+      "schema": {
+        "description": "BFD跳数。取值范围：**1**~**255**。\n\n选择开启BFD功能时，需要配置此参数。\n输入BFD跳数，即数据从源端到目标端传输时经过的最大设备数量。您可以根据真实的物理链路因素配置不同的跳数。\n\n> 当您在多云环境或光纤直连组网中使用BFD，中间无任何桥接设备时，则需要将BFD的默认跳数从**255**改成**1**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "3"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "BgpPeerId": {
+            "description": "BGP邻居的ID。",
+            "type": "string",
+            "example": "bgp-m5eoyp2mwegk8ce9v****"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "D4B7649A-61BB-4C64-A586-1DFF1EDA6A42"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "QuotaExceeded.Bgp",
+        "errorMessage": "bgp peer count per vbr quota exceed.",
+        "description": "边界路由器的BGP邻居数量已达到配额。"
+      },
+      {
+        "errorCode": "QuotaExceeded.Nqa",
+        "errorMessage": "nqa count per vbr quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidAccessDeviceId.NotFound",
+        "errorMessage": "There is no Access_Device_Id in our records",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.BfdSession",
+        "errorMessage": "Your Bfd Session number reaches the upper limit.",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.BgpNetwork",
+        "errorMessage": "bgp network count per vbr quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidPeerIpAddress",
+        "errorMessage": "multi pconn peer ip can not be null.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVbrNetwork",
+        "errorMessage": "vbr netowrk not exists",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpGroup",
+        "errorMessage": "bgp group not exists",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpName.Malformed",
+        "errorMessage": "Specified Bgp Group name is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpDiscription.Malformed",
+        "errorMessage": "Specified Bgp Group description is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpAuthkey.Malformed",
+        "errorMessage": "Specified Bgp Group authkey is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIP.Malformed",
+        "errorMessage": "Ip malformed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidPeerAsn.Malformed",
+        "errorMessage": "invalid peer asn cannot equals aliyun asn:45104",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.NotNull",
+        "errorMessage": "invalid peer asn cannot equals aliyun asn:45104",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.NotFound",
+        "errorMessage": "instance not found",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.AlreadyExists",
+        "errorMessage": "bgp network already exists",
+        "description": "BGP网络已经存在。"
+      },
+      {
+        "errorCode": "InvalidStatus.CannotOperate",
+        "errorMessage": "invalid status cannot operate",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.PeerIpAddressMustPointOut",
+        "errorMessage": "vbr has 0 or more than 1 subif ,point out peerIpAddress.",
+        "description": "请指出PeerIpAddress"
+      },
+      {
+        "errorCode": "InvalidParams.PeerIpAddressInUse",
+        "errorMessage": "peer ip address in use ,cannot create bgp peer.",
+        "description": "对等IP地址正在使用，无法创建BGP对等。"
+      },
+      {
+        "errorCode": "BgpPeer.Already.Exists",
+        "errorMessage": "bgp peer already exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParam.EnableBfd",
+        "errorMessage": "The parameter EnableBfd is missing.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.IPV6ForThisRegion",
+        "errorMessage": "This Region is unsupported IPV6.",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.BfdMultiHop",
+        "errorMessage": "BfdMultiHop is illegal.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.PconnTrafficNotEnable",
+        "errorMessage": "The operation is failed because of PconnTrafficNotEnable.",
+        "description": "操作失败，因为出方向流量未开通。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.Vpconn",
+        "errorMessage": "The feature of Vpconn is not supported.",
+        "description": "不支持Vpconn类型。"
+      },
+      {
+        "errorCode": "DuplicatedParam.PeerIpAddress",
+        "errorMessage": "The param of PeerIpAddress is duplicated.",
+        "description": "BGP邻居IP地址重复。"
+      },
+      {
+        "errorCode": "DuplicatedParam.LocalIpAddress",
+        "errorMessage": "The LocalIpAddress already exists.",
+        "description": "本端IP地址参数有重复，请更换本端IP后重试。"
+      },
+      {
+        "errorCode": "DuplicatedParam.PeerIpv6Address",
+        "errorMessage": "The PeerIpv6Address already exists.",
+        "description": "对端IP地址参数有重复，请更换对端IP后重试。"
+      },
+      {
+        "errorCode": "DuplicatedParam.LocalIpv6Address",
+        "errorMessage": "The LocalIpv6Address already exists.",
+        "description": "本端IP地址参数有重复，请更换本端IP后重试。"
+      },
+      {
+        "errorCode": "IllegalParam.LocalGatewayIpAndMask",
+        "errorMessage": "The LocalGatewayIpAndMask value is invalid.",
+        "description": "本端网关IP和掩码非法，请更正后重试。"
+      },
+      {
+        "errorCode": "IllegalParam.PeeringIpv6SubnetMask",
+        "errorMessage": "The PeeringIpv6SubnetMask value is invalid.",
+        "description": "掩码非法，请更正后重试。"
+      },
+      {
+        "errorCode": "IllegalParam.IpVersion",
+        "errorMessage": "The param of IPV6 is illegal.",
+        "description": "参数 IpVersion 异常,请核对参数后重试."
+      },
+      {
+        "errorCode": "IllegalParam.PeerIpAddress",
+        "errorMessage": "The param of PeerIpAddress is illegal.",
+        "description": "对端Ip地址非法。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "Specified value of \"regionId\" is not supported.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"BgpPeerId\": \"bgp-m5eoyp2mwegk8ce9v****\",\n  \"RequestId\": \"D4B7649A-61BB-4C64-A586-1DFF1EDA6A42\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<CreateBgpPeerResponse>\n    <BgpPeerId>bgp-m5eoyp2mwegk8ce9v****</BgpPeerId>\n    <RequestId>D4B7649A-61BB-4C64-A586-1DFF1EDA6A42</RequestId>\n</CreateBgpPeerResponse>",
+      "errorExample": ""
+    }
+  ]
+}

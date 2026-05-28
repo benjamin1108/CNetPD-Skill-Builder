@@ -1,0 +1,292 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeNatGatewayAssociateNetworkInterfaces",
+  "group": "nat",
+  "title": "查询VPC NAT关联的弹性网卡列表",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "list",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "NAT网关所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "NatGatewayId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的NAT网关的ID。",
+        "type": "string",
+        "required": true,
+        "example": "ngw-bp1uewa15k4iy5770****"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "资源组ID。",
+        "type": "string",
+        "required": false,
+        "example": "rg-acfmxazdjdhd****"
+      }
+    },
+    {
+      "name": "Tag",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "资源标签列表。",
+        "type": "array",
+        "items": {
+          "description": "标签列表。",
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "实例的标签键。最多支持输入20个标签键。一旦传入该值，则不允许为空字符串。\n\n最多支持64个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceDept"
+            },
+            "Value": {
+              "description": "实例的标签键。最多支持输入20个标签键。一旦传入该值，则不允许为空字符串。\n\n最多支持64个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceJoshua"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 21
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "5A2CFF0E-5718-45B5-9D4D-70B3FF****"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "NAT网关所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "Filter",
+      "in": "query",
+      "style": "flat",
+      "schema": {
+        "description": "过滤信息，支持传入键值对查询结果进行过滤。",
+        "type": "array",
+        "items": {
+          "description": "过滤信息。",
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "入参中的Filter Key的取值：\n\n- ResourceId\n>Value中需要填入需要查询的服务资源ID。\n- NetworkInterfaceId\n>Value中需要填入需要查询的弹性网卡ID。\n- ResourceOwnerId\n>Value中需要填入需要查询的服务资源归属的用户UID。",
+              "type": "string",
+              "required": false,
+              "example": "ResourceId"
+            },
+            "Value": {
+              "description": "Value支持传入多个值，逗号隔开",
+              "type": "string",
+              "required": false,
+              "example": "ep-8psre8c8936596cd****"
+            }
+          },
+          "required": false
+        },
+        "required": false
+      }
+    },
+    {
+      "name": "NextToken",
+      "in": "query",
+      "schema": {
+        "description": "是否拥有下一次查询的令牌（Token）。取值：\n\n- 第一次查询和没有下一次查询时，均无需填写。\n\n- 如果有下一次查询，取值为上一次 API 调用返回的 **NextToken** 值。",
+        "type": "string",
+        "required": false,
+        "example": "caeba0bbb2be03f84eb48b699f0a****"
+      }
+    },
+    {
+      "name": "MaxResults",
+      "in": "query",
+      "schema": {
+        "description": "分批次查询时每次显示的条目数。取值范围：**1~100**，默认值为 **20**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "20"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求 ID。",
+            "type": "string",
+            "example": "2315DEB7-5E92-423A-91F7-4C1EC9AD****"
+          },
+          "NextToken": {
+            "description": "是否拥有下一个查询的令牌（Token）。取值：\n\n- 如果 **NextToken** 为空表示没有下一次查询。\n\n- 如果 **NextToken** 有返回值，该取值表示下一个查询开始的令牌。",
+            "type": "string",
+            "example": "caeba0bbb2be03f84eb48b699f0a****"
+          },
+          "MaxResults": {
+            "description": "分批次查询时每次显示的条目数。取值范围：**1~100**，默认值为 **20**。",
+            "type": "integer",
+            "format": "int32",
+            "example": "20"
+          },
+          "NatGatewayId": {
+            "description": "VPC NAT 网关的实例 ID。",
+            "type": "string",
+            "example": "ngw-bp1uewa15k4iy5770****"
+          },
+          "TotalCount": {
+            "description": "总记录数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "AssociateNetworkInterfaces": {
+            "type": "object",
+            "itemNode": true,
+            "properties": {
+              "AssociateNetworkInterface": {
+                "description": "VPC NAT网关关联的弹性网卡列表。",
+                "type": "array",
+                "items": {
+                  "description": "关联弹性网卡信息详情。",
+                  "type": "object",
+                  "properties": {
+                    "NetworkInterfaceId": {
+                      "description": "弹性网卡 ID。",
+                      "type": "string",
+                      "example": "eni-gw8g131ef2dnbu3k****"
+                    },
+                    "ResourceId": {
+                      "description": "服务资源 ID。",
+                      "type": "string",
+                      "example": "ep-8psre8c8936596cd****"
+                    },
+                    "ResourceType": {
+                      "description": "服务资源类型。",
+                      "type": "string",
+                      "example": "PrivateLink"
+                    },
+                    "ResourceOwnerId": {
+                      "description": "服务资源归属的用户UID。",
+                      "type": "string",
+                      "example": "138859086900****"
+                    },
+                    "IPv4Sets": {
+                      "type": "object",
+                      "itemNode": true,
+                      "properties": {
+                        "IPv4Set": {
+                          "description": "弹性网卡的IPv4地址集合。",
+                          "type": "array",
+                          "items": {
+                            "description": "弹性网卡IPv4地址信息。",
+                            "type": "object",
+                            "properties": {
+                              "IPv4Address": {
+                                "description": "弹性网卡的私网 IP 地址。",
+                                "type": "string",
+                                "example": "172.17.**.**"
+                              },
+                              "Primary": {
+                                "description": "是否是主私网 IP 地址。可能值：\n\n- true：主私网 IP\n\n- false：辅助私网 IP",
+                                "type": "boolean",
+                                "example": "true"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "description": ""
+                    },
+                    "TunnelIndex": {
+                      "description": "隧道索引 ID。",
+                      "type": "string",
+                      "example": "41a5489ea2a0****"
+                    },
+                    "ResourceVpcId": {
+                      "description": "服务资源VPC ID。",
+                      "type": "string",
+                      "example": "vpc-bp1di7uewzmtvfuq8****"
+                    }
+                  }
+                }
+              }
+            },
+            "description": ""
+          },
+          "Count": {
+            "description": "关联网卡个数",
+            "type": "integer",
+            "format": "int32",
+            "example": "0"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InstanceNotExist.NatGatewayId",
+        "errorMessage": "The NAT gateway instance is not exist.",
+        "description": "NAT网关实例不存在"
+      },
+      {
+        "errorCode": "IllegalParam.ResourceOwnerId",
+        "errorMessage": "The param of resource owner ID is illegal.",
+        "description": "资源所属用户ID参数输入非法."
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"2315DEB7-5E92-423A-91F7-4C1EC9AD****\",\n  \"NextToken\": \"caeba0bbb2be03f84eb48b699f0a****\",\n  \"MaxResults\": 20,\n  \"NatGatewayId\": \"ngw-bp1uewa15k4iy5770****\",\n  \"TotalCount\": 1,\n  \"AssociateNetworkInterfaces\": {\n    \"AssociateNetworkInterface\": [\n      {\n        \"NetworkInterfaceId\": \"eni-gw8g131ef2dnbu3k****\",\n        \"ResourceId\": \"ep-8psre8c8936596cd****\",\n        \"ResourceType\": \"PrivateLink\",\n        \"ResourceOwnerId\": \"138859086900****\",\n        \"IPv4Sets\": {\n          \"IPv4Set\": [\n            {\n              \"IPv4Address\": \"172.17.**.**\",\n              \"Primary\": true\n            }\n          ]\n        },\n        \"TunnelIndex\": \"41a5489ea2a0****\",\n        \"ResourceVpcId\": \"vpc-bp1di7uewzmtvfuq8****\"\n      }\n    ]\n  },\n  \"Count\": 0\n}",
+      "type": "json"
+    }
+  ]
+}

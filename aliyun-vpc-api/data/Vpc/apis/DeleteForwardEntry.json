@@ -1,0 +1,141 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteForwardEntry",
+  "group": "nat",
+  "title": "删除指定的DNAT条目",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "**DeleteForwardEntry**接口属于异步接口，即系统会先返回一个请求ID，但DNAT条目并未删除完成，系统后台的删除任务仍在进行。您可以调用DescribeForwardTableEntries查询DNAT条目的状态：\n\n- 当DNAT条目处于**Deleting**状态时，表示DNAT条目正在删除中，在该状态下，您只能执行查询操作，不能执行其他操作。\n\n- 当查询不到该DNAT条目时，表示DNAT条目已删除完成。\n\n>  如果DNAT表中有DNAT条目的状态为**Pending**时，无法删除该DNAT表中的DNAT条目。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "NAT网关所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ForwardTableId",
+      "in": "query",
+      "schema": {
+        "description": "DNAT条目所属的DNAT列表ID。",
+        "type": "string",
+        "required": true,
+        "example": "ftb-8vbx8xu2lqj9qb334****"
+      }
+    },
+    {
+      "name": "ForwardEntryId",
+      "in": "query",
+      "schema": {
+        "description": "要删除的DNAT条目ID。",
+        "type": "string",
+        "required": true,
+        "example": "fwd-8vbn3bc8roygjp0gy****"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "0ED8D006-F706-4D23-88ED-E11ED28DCAC0"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IncorretForwardEntryStatus",
+        "errorMessage": "Some Forward entry status blocked this operation..",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParameter",
+        "errorMessage": "Missing mandatory parameter",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectStatus.NATGW",
+        "errorMessage": "The status of the specified NAT gateway is abnormal.",
+        "description": "NAT网关状态异常。"
+      },
+      {
+        "errorCode": "IncorrectStatus.ForwardEntry",
+        "errorMessage": "The status of %s [%s] is incorrect.",
+        "description": "要删除的DNAT条目实例状态不对"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidForwardEntryId.NotFound",
+        "errorMessage": "Specified forward entry ID does not exist",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidForwardTableId.NotFound",
+        "errorMessage": "Specified forward table does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "ResourceNotFound.ForwardEntry",
+        "errorMessage": "The specified resource of %s is not found.",
+        "description": "找不到指定的%s资源。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"0ED8D006-F706-4D23-88ED-E11ED28DCAC0\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DeleteForwardEntryResponse>\n    <RequestId>0ED8D006-F706-4D23-88ED-E11ED28DCAC0</RequestId>\n</DeleteForwardEntryResponse>",
+      "errorExample": ""
+    }
+  ]
+}

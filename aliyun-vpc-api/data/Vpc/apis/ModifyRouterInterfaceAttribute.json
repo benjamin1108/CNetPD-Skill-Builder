@@ -1,0 +1,275 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyRouterInterfaceAttribute",
+  "group": "router-interface",
+  "title": "修改路由器接口的配置",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "RouterInterfaceId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口ID。",
+        "type": "string",
+        "required": true,
+        "example": "ri-2zeo3xzyf38r4urz****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口的名称。\n\n长度为2～128个字符，必须以字母或中文开头，可包含数字、下划线（_）和短划线（-）。",
+        "type": "string",
+        "required": false,
+        "example": "TEST"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口的描述信息。 \n\n长度为2～256个字符，必须以字母或中文开头，但不能以`http:// `或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "路由器接口"
+      }
+    },
+    {
+      "name": "OppositeInterfaceId",
+      "in": "query",
+      "schema": {
+        "description": "对端路由器接口ID。",
+        "type": "string",
+        "required": false,
+        "example": "ri-2zeo3xzyf38r4urz****"
+      }
+    },
+    {
+      "name": "OppositeRouterId",
+      "in": "query",
+      "schema": {
+        "description": "对端路由器ID。",
+        "type": "string",
+        "required": false,
+        "example": "vrt-bp1jcg5cmxjbl9xgc****"
+      }
+    },
+    {
+      "name": "OppositeRouterType",
+      "in": "query",
+      "schema": {
+        "description": "要连接的对端路由器接口所属的路由器类型。取值：\n\n- **VRouter**：路由器。\n\n- **VBR**（默认值）：边界路由器。",
+        "type": "string",
+        "required": false,
+        "example": "VBR"
+      }
+    },
+    {
+      "name": "OppositeInterfaceOwnerId",
+      "in": "query",
+      "schema": {
+        "description": "对端路由器接口的账号ID。",
+        "type": "integer",
+        "format": "int64",
+        "required": false,
+        "example": "28768383240243****"
+      }
+    },
+    {
+      "name": "HealthCheckSourceIp",
+      "in": "query",
+      "schema": {
+        "description": "健康检查源IP地址，必须是本端VPC内的一个未被使用的IP地址。\n\n> 物理专线接入场景下可指定该参数。",
+        "type": "string",
+        "required": false,
+        "example": "116.62.XX.XX"
+      }
+    },
+    {
+      "name": "HealthCheckTargetIp",
+      "in": "query",
+      "schema": {
+        "description": "健康检查目的IP地址。 \n\n> 指定**HealthCheckSourceIp**后，该参数为必选。",
+        "type": "string",
+        "required": false,
+        "example": "116.62.XX.XX"
+      }
+    },
+    {
+      "name": "HcThreshold",
+      "in": "query",
+      "schema": {
+        "description": "健康检查阈值。单位：个。推荐值为**8**。表示指定健康检查时发送探测报文的个数。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "8"
+      }
+    },
+    {
+      "name": "HcRate",
+      "in": "query",
+      "schema": {
+        "description": "健康检查速率。单位：毫秒。推荐值为**2000**。表示指定健康检查时发送连续探测报文的时间间隔。\n\n本示例**HcThreshold**设置为**8**、**HcRate**设置为**2000**，即在健康检查时每2000毫秒从**HealthCheckSourceIp**（健康检查源IP地址）向**HealthCheckTargetIp**（健康检查目的IP地址）发送一次探测报文，如果连续8次探测报文都无响应，则健康检查失败。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "2000"
+      }
+    },
+    {
+      "name": "DeleteHealthCheckIp",
+      "in": "query",
+      "schema": {
+        "description": "是否删除该路由器接口上配置的健康检查IP。取值：\n\n- **true**：删除健康检查IP。\n \n- **false**（默认值）：不删除健康检查IP。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "4EC47282-1B74-4534-BD0E-403F3EE64CAF"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "Forbidden.FinancialLocked",
+        "errorMessage": "This RouterInterface is financiel locked because of bills outstanding.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidName.Malformed",
+        "errorMessage": "The attribute name is illegal.",
+        "description": "该名称格式不合法。"
+      },
+      {
+        "errorCode": "InvalidOppositeRouterType.ValueNotSupported",
+        "errorMessage": "The specified OppositeRouterType is not valid.",
+        "description": "参数OppositeRouterType的值不合法。"
+      },
+      {
+        "errorCode": "InvalidDescription.Malformed",
+        "errorMessage": "The Description is illegal.",
+        "description": "指定的资源描述格式不合法。长度为2-256个字符，不能以http://和https://开头。"
+      },
+      {
+        "errorCode": "Forbbiden",
+        "errorMessage": "The Router instance owner error",
+        "description": ""
+      },
+      {
+        "errorCode": "LinkRole.NotSupport",
+        "errorMessage": "This linkrole is not supported",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbbiden.ModifyIdAndType",
+        "errorMessage": "Opposite is VBR, cannot modify the ID and type",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParam.ModifyRouterInterface",
+        "errorMessage": "Modify routerinterface param invalid",
+        "description": "编辑路由器接口参数不合法。"
+      },
+      {
+        "errorCode": "INSTANCE_IN_PROCESSIONG",
+        "errorMessage": "Instance is in processing,please wait and try again",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.HcThreshold",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.HcRate",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidHealthCheckIP.Malformd",
+        "errorMessage": "Healthcheck sourceip or targetip is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.HcSourceIp",
+        "errorMessage": "The specified healthCheck Ip is not valid.",
+        "description": "健康检查IP不合法。"
+      },
+      {
+        "errorCode": "OperationFailed.OperationLocked",
+        "errorMessage": "Operation failed because OperationLocked.",
+        "description": "操作失败因为实例已经被运维锁定。"
+      },
+      {
+        "errorCode": "IncorrectStatus.RouterInterface",
+        "errorMessage": "This openeration would not be allowed because status of this RouterInterface is not correct.",
+        "description": "当前实例的状态无法进行删除，请等待状态变更后再次进行操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRouterInterfaceId.NotFound",
+        "errorMessage": "The specified RouterInterfaceId does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"4EC47282-1B74-4534-BD0E-403F3EE64CAF\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ModifyRouterInterfaceAttributeResponse>\n    <RequestId>4EC47282-1B74-4534-BD0E-403F3EE64CAF</RequestId>\n</ModifyRouterInterfaceAttributeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

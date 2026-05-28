@@ -1,0 +1,192 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteBgpPeer",
+  "group": "bgp",
+  "title": "删除指定的BGP邻居",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "BGP组所在的地域。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "BgpPeerId",
+      "in": "query",
+      "schema": {
+        "description": "BGP邻居的ID。",
+        "type": "string",
+        "required": true,
+        "example": "bgp-wz977wcrmb69a********"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "611CB80C-B6A9-43DB-9E38-0B0AC3D9B58F"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "QuotaExceeded.Bgp",
+        "errorMessage": "bgp peer count per vbr quota exceed.",
+        "description": "边界路由器的BGP邻居数量已达到配额。"
+      },
+      {
+        "errorCode": "QuotaExceeded.Nqa",
+        "errorMessage": "nqa count per vbr quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.BgpNetwork",
+        "errorMessage": "bgp network count per vbr quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidPeerIpAddress",
+        "errorMessage": "multi pconn peer ip can not be null.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVbrNetwork",
+        "errorMessage": "vbr netowrk not exists",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpGroup",
+        "errorMessage": "bgp group not exists",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpName.Malformed",
+        "errorMessage": "Specified Bgp Group name is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpDiscription.Malformed",
+        "errorMessage": "Specified Bgp Group description is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpAuthkey.Malformed",
+        "errorMessage": "Specified Bgp Group authkey is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIP.Malformed",
+        "errorMessage": "Ip malformed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidPeerAsn.Malformed",
+        "errorMessage": "invalid peer asn cannot equals aliyun asn:45104",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.NotNull",
+        "errorMessage": "invalid peer asn cannot equals aliyun asn:45104",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.NotFound",
+        "errorMessage": "instance not found",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.AlreadyExists",
+        "errorMessage": "bgp network already exists",
+        "description": "BGP网络已经存在。"
+      },
+      {
+        "errorCode": "InvalidStatus.CannotOperate",
+        "errorMessage": "invalid status cannot operate",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.PeerIpAddressMustPointOut",
+        "errorMessage": "vbr has 0 or more than 1 subif ,point out peerIpAddress.",
+        "description": "请指出PeerIpAddress"
+      },
+      {
+        "errorCode": "InvalidParams.PeerIpAddressInUse",
+        "errorMessage": "peer ip address in use ,cannot create bgp peer.",
+        "description": "对等IP地址正在使用，无法创建BGP对等。"
+      },
+      {
+        "errorCode": "InvalidBgpPeer.NotFound",
+        "errorMessage": "Bgp peer not found.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectStatus.BgpPeer",
+        "errorMessage": "Invalid BgpPeer status cannot operate.",
+        "description": "无效的BgpPeer状态无法运行。"
+      },
+      {
+        "errorCode": "OperationFailed.ResourceLockedBySystem",
+        "errorMessage": "The specified resource is locked by system.",
+        "description": "操作的资源已经被系统锁定，暂时无法操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "Specified value of \"regionId\" is not supported.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"611CB80C-B6A9-43DB-9E38-0B0AC3D9B58F\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DeleteBgpPeerResponse>\n    <RequestId>611CB80C-B6A9-43DB-9E38-0B0AC3D9B58F</RequestId>\n</DeleteBgpPeerResponse>",
+      "errorExample": ""
+    }
+  ]
+}

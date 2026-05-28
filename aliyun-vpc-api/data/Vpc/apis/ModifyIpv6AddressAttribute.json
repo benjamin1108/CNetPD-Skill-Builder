@@ -1,0 +1,131 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyIpv6AddressAttribute",
+  "group": "ipv6-gateway",
+  "title": "修改IPv6地址的名称和描述",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6地址所在的地域。您可以通过调用DescribeRegions获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-huhehaote"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6地址所在的地域。您可以通过调用DescribeRegions获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-huhehaote"
+      }
+    },
+    {
+      "name": "Ipv6AddressId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6地址的实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "ipv6-hp32vv2klzw4yerdf****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "IPv6地址的名称。\n\n长度为0-128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "test"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "IPv6地址的描述信息。\n\n长度为0-256个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "test"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求。取值：\n- **true**：发送检查请求，不会查询可使用的IP地址池信息。检查项包括是否填写了必需参数、请求格式、业务限制。如果检查不通过，则返回对应错误。如果检查通过，则返回错误码`DryRunOperation`。\n- **false**（默认值）：发送正常请求，通过检查后返回HTTP 2xx状态码并直接进行操作。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "d7d24a21-f4ba-4454-9173-b3828dae492b"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回信息。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "D560AF68-4CE8-4A5C-B3FE-469F558094D0"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidIpv6AddressId.NotFound",
+        "errorMessage": "The specified resource of %s is not found.",
+        "description": "指定的Ipv6InstanceId不存在，请确认您的输入是否正确"
+      },
+      {
+        "errorCode": "IllegalParam.Name",
+        "errorMessage": "The param of Name [%s] is illegal.",
+        "description": "参数 Name 不合法，请根据请求参数规定重新输入。"
+      },
+      {
+        "errorCode": "IllegalParam.Description",
+        "errorMessage": "The param of Description [%s] is illegal.",
+        "description": "参数Description 不合法，请根据请求参数规定重新输入。"
+      }
+    ]
+  }
+}

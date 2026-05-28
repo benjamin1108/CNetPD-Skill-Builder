@@ -1,0 +1,123 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteIpv6EgressOnlyRule",
+  "group": "ipv6-gateway",
+  "title": "删除仅主动出规则",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "- **DeleteIpv6EgressOnlyRule**接口属于异步接口，即系统返回一个请求ID，但该仅主动出规则尚未删除成功，系统后台的删除任务仍在进行。您可以调用DescribeIpv6EgressOnlyRules接口查询仅主动出规则的删除状态：\n    - 当仅主动出规则处于**Deleting**状态时，表示仅主动出规则正在删除中。\n    - 当查询不到指定的仅主动出规则时，表示仅主动出规则删除成功。\n- **DeleteIpv6EgressOnlyRule**接口不支持并发删除同一个仅主动出规则。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6网关所属的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-huhehaote"
+      }
+    },
+    {
+      "name": "Ipv6EgressOnlyRuleId",
+      "in": "query",
+      "schema": {
+        "description": "要删除的仅主动出规则ID。",
+        "type": "string",
+        "required": true,
+        "example": "ipv6py-hp3w98rmlbqp0xxxxxxxx"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123456"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6网关所属的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-huhehaote"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "type": "boolean"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "9DFEDBEE-E5AB-49E8-A2DC-CC114C67AF75"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IncorrectStatus.EgressOnlyRule",
+        "errorMessage": "The status of the specified IPv6EgressOnlyRule is incorrect.",
+        "description": "指定的IPv6EgressOnlyRule未处于稳态。\n"
+      },
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The RegionId provided does not exist in our records.",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "ResourceNotFound.Ipv6EgressOnlyRule",
+        "errorMessage": "The specified resource of IPv6 Gateway Rule is not found.",
+        "description": "指定的IPv6仅主动出规则实例不存在。\n"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"9DFEDBEE-E5AB-49E8-A2DC-CC114C67AF75\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DeleteIpv6EgressOnlyRuleResponse>\n    <RequestId>9DFEDBEE-E5AB-49E8-A2DC-CC114C67AF75</RequestId>\n</DeleteIpv6EgressOnlyRuleResponse>",
+      "errorExample": ""
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteExpressConnectTrafficQosRule",
+  "group": "qos-policy",
+  "title": "删除高速通道QoS规则",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。**ClientToken**只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-00****"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。**ClientToken**只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-00****"
+      }
+    },
+    {
+      "name": "QosId",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略ID。",
+        "type": "string",
+        "required": true,
+        "example": "qos-2giu0a6vd5x0mv****"
+      }
+    },
+    {
+      "name": "QueueId",
+      "in": "query",
+      "schema": {
+        "description": "QoS队列ID。",
+        "type": "string",
+        "required": true,
+        "example": "qos-queue-9nyx2u7n71s2rc****"
+      }
+    },
+    {
+      "name": "RuleId",
+      "in": "query",
+      "schema": {
+        "description": "QoS规则ID。",
+        "type": "string",
+        "required": true,
+        "example": "qos-rule-iugg0l9x27f2no****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "C44F62BE-9CE7-4277-B117-69243F3988BF"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IllegalParam.%s",
+        "errorMessage": "The param of %s is illegal.",
+        "description": "指定的参数非法"
+      },
+      {
+        "errorCode": "IncorrectStatus.Qos",
+        "errorMessage": "The status of QoS is incorrect.",
+        "description": "当前QoS策略状态异常，无法进行操作，请稍等后尝试。"
+      },
+      {
+        "errorCode": "EcQoSConflict",
+        "errorMessage": "The specified QoS is conflict with other QoS.",
+        "description": "当前Qos配置与其他配置冲突，请稍后再试。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"C44F62BE-9CE7-4277-B117-69243F3988BF\"\n}",
+      "type": "json"
+    }
+  ]
+}

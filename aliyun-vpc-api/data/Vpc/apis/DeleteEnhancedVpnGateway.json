@@ -1,0 +1,129 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteEnhancedVpnGateway",
+  "group": "misc",
+  "title": "删除指定的增强型VPN网关",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "> 无法删除已有 IPsec 连接的增强型 VPN 网关。",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "增强型 VPN 网关实例所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。<br>\n由客户端生成该参数值，要保证在不同请求间唯一，最大值不超过 64 个 ASCII 字符。\n> 若您未指定，则系统自动使用 API 请求的 **RequestId** 作为 **ClientToken** 标识。每次 API 请求的 **RequestId** 不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-0016e04115b"
+      }
+    },
+    {
+      "name": "VpnGatewayId",
+      "in": "query",
+      "schema": {
+        "description": "增强型 VPN 网关实例的 ID。",
+        "type": "string",
+        "required": true,
+        "example": "vpn-bp1q8bgx4xnkm2ogj****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回结果。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求 ID。",
+            "type": "string",
+            "example": "E9A8AABE-A84B-4AF2-A68A-8E2EA190E7AE"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "DependencyViolation.VpnConnection",
+        "errorMessage": "There are vpn connections on specified customer gateway not deleted.",
+        "description": "指定的用户网关上有 vpn 连接未删除。"
+      },
+      {
+        "errorCode": "VpnGateway.Configuring",
+        "errorMessage": "The specified service is configuring.",
+        "description": ""
+      },
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error, exception or failure.",
+        "description": ""
+      },
+      {
+        "errorCode": "TaskConflict",
+        "errorMessage": "The eip operate too frequent, TaskConflict.",
+        "description": "操作过于频繁，任务冲突。"
+      },
+      {
+        "errorCode": "InvalidVpnGatewayInstanceId.NotFound",
+        "errorMessage": "The specified vpn gateway instance id does not exist.",
+        "description": "指定的 VPN 网关不存在，请您检查 VPN 网关是否正确。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbidden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": "您没有权限操作该资源，请您申请操作权限后再试。"
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      },
+      {
+        "errorCode": "ForbiddenRelease",
+        "errorMessage": "Forbidden to release a prepaid instance within validity period",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidVpnGatewayInstanceId.NotFound",
+        "errorMessage": "The specified vpn gateway instance id does not exist.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"E9A8AABE-A84B-4AF2-A68A-8E2EA190E7AE\"\n}",
+      "type": "json"
+    }
+  ]
+}

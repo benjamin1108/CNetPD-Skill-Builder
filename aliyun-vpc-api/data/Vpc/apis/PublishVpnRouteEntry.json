@@ -1,0 +1,427 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "PublishVpnRouteEntry",
+  "group": "vpn-attachment",
+  "title": "发布或者撤销VPN路由",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关实例所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n由客户端生成该参数值，要保证在不同请求间唯一，最大值不超过64个ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "d7d24a21-f4ba-4454-9173-b382****"
+      }
+    },
+    {
+      "name": "VpnGatewayId",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "vpn-bp1a3kqjiiq9legfx****"
+      }
+    },
+    {
+      "name": "RouteDest",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关路由条目的目标网段。",
+        "type": "string",
+        "required": true,
+        "example": "10.0.0.0/24"
+      }
+    },
+    {
+      "name": "NextHop",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关路由条目的下一跳。",
+        "type": "string",
+        "required": true,
+        "example": "vco-bp15oes1py4i66rmd****"
+      }
+    },
+    {
+      "name": "RouteType",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关路由条目类型。取值：\n\n- **pbr**：策略路由。\n\n- **dbr**：目的路由。",
+        "type": "string",
+        "required": true,
+        "example": "pbr"
+      }
+    },
+    {
+      "name": "PublishVpc",
+      "in": "query",
+      "schema": {
+        "description": "发布或撤销路由。取值：\n\n- **true**：发布。\n\n  该参数取值为**true**，表示将目的路由或策略路由发布到VPC的系统路由表中。\n\n- **false**：撤销。\n\n  该参数取值为**false**，表示将已发布的目的路由或策略路由从VPC系统路由表中撤销。\n\n\n> 如果策略路由表和目的路由表中存在目标网段相同的路由条目，并且这两条路由条目被发布到同一个VPC中，当您在策略路由表下撤销发布该路由条目时，目的路由表下的该路由条目也会被同时撤销发布。当您在目的路由表下撤销发布该路由条目时，策略路由表下的该路由条目也会被同时撤销发布。",
+        "type": "boolean",
+        "required": true,
+        "example": "true"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回结果。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "5BE01CD7-5A50-472D-AC14-CA181C5C03BE\t"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "Resource.QuotaFull",
+        "errorMessage": "The quota of resource is full",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnGateway.Configuring",
+        "errorMessage": "The specified service is configuring.",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnGateway.FinancialLocked",
+        "errorMessage": "The specified service is financial locked.",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnRouteEntry.AlreadyExists",
+        "errorMessage": "The specified route entry is already exist.",
+        "description": "该路由已存在。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.Conflict",
+        "errorMessage": "The specified route entry has conflict.",
+        "description": "路由条目存在冲突。"
+      },
+      {
+        "errorCode": "InvalidVpnRouteEntry.NotFound",
+        "errorMessage": "The specified route entry does not exist.",
+        "description": "指定的路由条目不存在。"
+      },
+      {
+        "errorCode": "OperationFailed.InvalidStatus",
+        "errorMessage": "Route entry is not allowed to operate in current status.",
+        "description": "当前状态下禁止操作该路由条目。"
+      },
+      {
+        "errorCode": "OperationFailed.RouteConflict",
+        "errorMessage": "Operation failed because there is already a route in VPC route table to another VPN on the same network block.",
+        "description": "在VPC路由表中同一网段上已经存在一条指向另一个VPN网关的路由。"
+      },
+      {
+        "errorCode": "OperationFailed.InvalidCidrBlock",
+        "errorMessage": "Operation failed because the specified network block is invalid.",
+        "description": "网段不合法。"
+      },
+      {
+        "errorCode": "QuotaExceeded.VpnRouteEntry",
+        "errorMessage": "The number of route entries to the VPN gateway in the VPC routing table has reached the quota limit.",
+        "description": "VPC路由表中指向VPN网关的路由条目已经达到配额限制。"
+      },
+      {
+        "errorCode": "TaskConflict",
+        "errorMessage": "The operation is too frequent, please wait a moment and try again.",
+        "description": "操作过于频繁，请稍等一会再重试"
+      },
+      {
+        "errorCode": "IllegalParam.CidrBlock",
+        "errorMessage": "The specified CidrBlock is illegal.",
+        "description": "CidrBlock参数非法。"
+      },
+      {
+        "errorCode": "QuotaExceeded",
+        "errorMessage": "Route entry quota exceeded in this route table.",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParameter",
+        "errorMessage": "Miss mandatory parameter.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidCidrBlock.Malformed",
+        "errorMessage": "Specified CIDR block is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidCIDRBlock.Duplicate",
+        "errorMessage": "Specified CIDR block is already exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectVpcStatus",
+        "errorMessage": "Current VPC status does not support this operation.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectInstanceStatus",
+        "errorMessage": "Current instance status does not support this operation.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectRouteEntryStatus",
+        "errorMessage": "Some route entry status blocked this operation.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectVSwitchStatus",
+        "errorMessage": "The current virtual switch status does not support this operation.",
+        "description": "该vSwitch处于pending状态，无法删除。"
+      },
+      {
+        "errorCode": "InvalidCidrBlock",
+        "errorMessage": "Specified CIDR block is not valid.",
+        "description": "可能的报错原因：\n1. 您不在10.0.0.0/8的路由网段的白名单中，不能使用该网段。\n2. 添加的自定义路由目标网段不能从属于同一个VPC下面所有交换机的网段。\n3. 由于100.64.0.0/10是云服务地址，您不能再添加该网段指向云下IDC。\n4. 除100.64.0.0/10以外，100.64.0.0/11、100.96.0.0/11等明细路由网段均不能使用在云下IDC。"
+      },
+      {
+        "errorCode": "InvalidNextHopType",
+        "errorMessage": "Specified parameter \"NextHopType\" is not valid",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNextHop.NotFound",
+        "errorMessage": "Specified next hop does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVRouter.NotFound",
+        "errorMessage": "vRouter not exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVPC.NotFound",
+        "errorMessage": "vpc not exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthopTypeAndList.BothNull",
+        "errorMessage": "both nexthopType and nextHopList are null.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthopTypeAndList.BothNotNull",
+        "errorMessage": "both nexthopType and nextHopList are not null.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRouterInterface",
+        "errorMessage": "invalid router interface.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidOppositeRouterType",
+        "errorMessage": "nexthop list cannot only contain router interface whose opposite router interface is on vbr.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthopListSize",
+        "errorMessage": "nexthop size is illegal. Must be between 2 and 4.",
+        "description": "必须指定2~4个路由器接口作为下一跳。"
+      },
+      {
+        "errorCode": "InvalidEntryRuleQuota.NotFound",
+        "errorMessage": "Route entry quota rule not exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.CheckEntryRuleQuota",
+        "errorMessage": "Route entry quota rule check error.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVBRStatus",
+        "errorMessage": "invalid virtual border router status.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidPhysicalConnectionBusinessStatus",
+        "errorMessage": "invalid physical connection business status.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectHaVipStatus",
+        "errorMessage": "This operation is denied because satus of the specified HaVip is neither Available nor InUse.",
+        "description": "无法执行该操作，因为HaVip的状态是Available或InUse。"
+      },
+      {
+        "errorCode": "CountLimitExceed.HaVipRouteEntry",
+        "errorMessage": "There can be 5 route entry to HaVip at most in one route table.",
+        "description": "指向该HaVip实例的路由条目数量已达上限。"
+      },
+      {
+        "errorCode": "InvalidRouteEntry.Duplicate",
+        "errorMessage": "The route entry already exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "INVALID_WEIGHT_PARAM",
+        "errorMessage": "Specified value of weight invalid",
+        "description": ""
+      },
+      {
+        "errorCode": "FORBIDDEN_USE_VPC_AS_INTERNET_GATEWAY",
+        "errorMessage": "The Specified CIDR must be in vpc CIDR.",
+        "description": ""
+      },
+      {
+        "errorCode": "INVALID_VPC_ID",
+        "errorMessage": "The Specified VpcId not match.",
+        "description": "该VPC不存在，请您检查输入的VPC是否正确。"
+      },
+      {
+        "errorCode": "InvalidRouteEntrySize",
+        "errorMessage": "The Specified routerEntry size not legal.",
+        "description": "等价路由需要选择2~4个路由器接口作为路由下一跳。"
+      },
+      {
+        "errorCode": "RouteConflict.AlreadyExist",
+        "errorMessage": "Route conflict exists in routing table.",
+        "description": "路由表中存在路由冲突。"
+      },
+      {
+        "errorCode": "InvalidRouteEntryName.Malformed",
+        "errorMessage": "Specified RouteEntry name is not valid.",
+        "description": "无法修改，因为指定的路由条目名称无效"
+      },
+      {
+        "errorCode": "Duplicated.VpcNextHop",
+        "errorMessage": "Route entry nexthop duplicate.",
+        "description": "下一个重复的路由条目。"
+      },
+      {
+        "errorCode": "InvalidNexthop.DirectEni",
+        "errorMessage": "The direct Eni cannot be nexthop.",
+        "description": "直通Eni不能作为下一跳"
+      },
+      {
+        "errorCode": "InvalidAttachment.NotFound",
+        "errorMessage": "The attachment is not found.",
+        "description": "Attachment不存在。"
+      },
+      {
+        "errorCode": "OperationFailed.ActiveNetworkInterfaceNotFound",
+        "errorMessage": "No active network interface is found on the attachment.",
+        "description": "Attachment上不存在可用的弹性网卡。"
+      },
+      {
+        "errorCode": "InvalidNetworkInterface.NotFound",
+        "errorMessage": "The network interface is not found on the attachment.",
+        "description": "Attachment上的弹性网卡不存在。"
+      },
+      {
+        "errorCode": "OperationFailed.QueryAttachmentInfo",
+        "errorMessage": "Failed to query attachment information.",
+        "description": "查询Attachment信息失败。"
+      },
+      {
+        "errorCode": "IllegalParam.AttachmentId",
+        "errorMessage": "The attachment is invalid.",
+        "description": "Attachment非法。"
+      },
+      {
+        "errorCode": "OperationFailed.NotSupportIPV6",
+        "errorMessage": "The specified next hop does not support IPv6.",
+        "description": "指定的下一跳不支持IPv6功能。"
+      },
+      {
+        "errorCode": "IncorrectStatus.Ipv6Address",
+        "errorMessage": "The IPv6 address of the specified next hop is being assigned or deleted.",
+        "description": "指定的下一跳的IPv6地址此时正在被创建或删除中。"
+      },
+      {
+        "errorCode": "OperationUnsupported.Ipv6EntryOnPrimaryNetworkInterface",
+        "errorMessage": "You cannot create IPv6 route entries on a primary network interface.",
+        "description": "不允许创建下一跳为主网卡的IPv6路由。"
+      },
+      {
+        "errorCode": "OperationUnsupported.SpecifyIpOnIpv6Entry",
+        "errorMessage": "You cannot specify the private IP address when you create IPv6 route entries.",
+        "description": "创建IPv6路由不允许指定private IP参数。"
+      },
+      {
+        "errorCode": "OperationUnsupported.MutipleIpv6Address",
+        "errorMessage": "You cannot specify a next hop that has bound multiple IPv6 addresses.",
+        "description": "不允许指定绑定了多个IPV6地址的下一跳。"
+      },
+      {
+        "errorCode": "OperationDenied.Ipv6EntryOnCustomTable",
+        "errorMessage": "You cannot create any IPv6 route entry on a custom route table.",
+        "description": "不允许在自定义路由表上创建IPv6路由。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidVpnGatewayInstanceId.NotFound",
+        "errorMessage": "The specified vpn gateway instance id does not exist.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"5BE01CD7-5A50-472D-AC14-CA181C5C03BE\\t\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<PublishVpnRouteEntryResponse>\n    <RequestId>5BE01CD7-5A50-472D-AC14-CA181C5C03BE\t</RequestId>\n</PublishVpnRouteEntryResponse>",
+      "errorExample": ""
+    }
+  ]
+}

@@ -1,0 +1,262 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "UpdateNatGatewayNatType",
+  "group": "nat",
+  "title": "将普通型NAT网关切换为增强型",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "deprecated": true,
+  "description": "## 使用说明\n\n调用UpdateNatGatewayNatType接口前，请先了解以下内容：\n\n- **UpdateNatGatewayNatType**接口属于异步接口，即系统会先返回一个请求ID，但NAT网关的网关类型并未升级完成，系统后台的升级任务仍在进行。您可以调用GetNatGatewayConvertStatus查询NAT网关的升级状态，更多信息，请参见GetNatGatewayConvertStatus。\n\n    - 当NAT网关的升级状态处于**processing**时，表示正在升级中，在该状态下，您只能执行查询操作，不能执行其他操作。\n\n    - 当NAT网关的升级状态处于**successful**时，表示NAT网关的网关类型升级完成。\n\n    - 当NAT网关的升级状态处于**failed**时，表示NAT网关的网关类型升级失败。\n\n-  **UpdateNatGatewayNatType**接口在同一个NAT网关中不支持并发升级NAT网关的网关类型。\n\n- 增强型NAT网关与普通型NAT网关的计费相同，升级过程和升级后计费方式不会改变。\n\n- 每个资源升级过程可能会持续5分钟，升级过程中会出现1~2次秒级闪断，业务重连即可恢复。重连机制为自动重连还是手动重连由业务本身决定。\n\n- 仅支持将普通型NAT网关升级至增强型NAT网关，不支持将增强型NAT网关降级至普通型NAT网关。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要升级的普通型公网NAT网关所属的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-qingdao"
+      }
+    },
+    {
+      "name": "NatGatewayId",
+      "in": "query",
+      "schema": {
+        "description": "要升级的普通型公网NAT网关实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "ngw-bp1b0lic8uz4r6vf2****"
+      }
+    },
+    {
+      "name": "VSwitchId",
+      "in": "query",
+      "schema": {
+        "description": "升级后增强型公网NAT网关所属的交换机。\n\n>如果不设置该参数，系统会随机将增强型公网NAT网关创建在VPC内的任意一台交换机。",
+        "type": "string",
+        "required": true,
+        "example": "vsw-bp17nszybg8epodke****"
+      }
+    },
+    {
+      "name": "NatType",
+      "in": "query",
+      "schema": {
+        "description": "公网NAT网关类型。取值：**Enhanced**，表示增强型公网NAT网关。",
+        "type": "string",
+        "required": true,
+        "example": "Enhanced"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求，取值：\n\n**true**：发送请求，不会升级公网NAT网关类型。检查项包括AccessKey是否有效、RAM用户的授权情况和是否填写了必需参数。如果检查不通过，则返回对应错误。如果检查通过，会返回错误码`DryRunOperation`。\n\n**false**（默认值）：发送正常请求，通过检查后返回2xx HTTP状态码并直接升级公网NAT网关类型。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "0c593ea1-3bea-11e9-b96b-88e9fe637760"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要升级的普通型公网NAT网关所属的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-qingdao"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "0ED8D006-F706-4D23-88ED-E11ED28DCAC0"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "OperationUnsupported.NatConvert",
+        "errorMessage": "The NAT gateway conversion function is not supported.",
+        "description": "NAT网关类型转换功能未支持。"
+      },
+      {
+        "errorCode": "OperationFailed.VpcNotExist",
+        "errorMessage": "The specified VPC does not exist.",
+        "description": "指定的VPC不存在。"
+      },
+      {
+        "errorCode": "OperationFailed.VswNotExist",
+        "errorMessage": "The specified VSwitch does not exist.",
+        "description": "指定的交换机不存在。"
+      },
+      {
+        "errorCode": "OperationFailed.NatTypeNotEnhanced",
+        "errorMessage": "Operation failed because the specified NAT gateway type is not enhanced.",
+        "description": "操作失败因为指定的NAT网关类型不是增强型。"
+      },
+      {
+        "errorCode": "OperationFailed.NatGwBindWithBandwidthPackage",
+        "errorMessage": "Operation failed because the NAT gateway is bound to bandwidth packages.",
+        "description": "操作失败因为NAT网关实例绑定了NAT带宽包。"
+      },
+      {
+        "errorCode": "IncorrectStatus.NatGateway",
+        "errorMessage": "The status of NAT gateway is incorrect.",
+        "description": "NAT网关状态不对。"
+      },
+      {
+        "errorCode": "OperationFailed.EipInMiddleStatus",
+        "errorMessage": "Operation failed because the status of EIP associated with the specified NAT gateway is abnormal.",
+        "description": "操作失败因为绑定在此NAT网关上的EIP状态异常。"
+      },
+      {
+        "errorCode": "OperationFailed.SnatInMiddleStatus",
+        "errorMessage": "Operation failed because the status of the SNAT entry of the specified NAT gateway is abnormal.",
+        "description": "操作失败因为指定的NAT网关的SNAT条目状态异常。"
+      },
+      {
+        "errorCode": "OperationFailed.DnatInMiddleStatus",
+        "errorMessage": "Operation failed because the status of the DNAT entry associated with the NAT gateway is abnormal.",
+        "description": "操作失败因为NAT网关的DNAT规则状态异常。"
+      },
+      {
+        "errorCode": "OperationFailed.NatGwRouteInMiddleStatus",
+        "errorMessage": "Operation failed because the status of the route entry associated with the NAT gateway is abnormal.",
+        "description": "操作失败因为NAT网关相关的路由条目状态异常。"
+      },
+      {
+        "errorCode": "OperationFailed.EnhancedInventoryNotEnough",
+        "errorMessage": "The enhanced NAT gateway inventory is insufficient in the specified zone.",
+        "description": "当前可用区增强NAT网关库存不足。"
+      },
+      {
+        "errorCode": "OperationFailed.EnhancedUserIsUnAuthorized",
+        "errorMessage": "Operation failed because the user is not authorized to create an enhanced NAT gateway.",
+        "description": "操作失败因为用户未授权创建增强型NAT网关。"
+      },
+      {
+        "errorCode": "OperationFailed.EnhancedRegion",
+        "errorMessage": "Operation failed because enhanced NAT gateways are not available for sale in the specified region.",
+        "description": "操作失败因为当前地域未开启增强型NAT网关售卖。"
+      },
+      {
+        "errorCode": "OperationFailed.EnhancedQuotaExceed",
+        "errorMessage": "Operation failed because the maximum number of enhanced NAT gateways in the same VPC is exceeded.",
+        "description": "操作失败因为当前VPC下的增强型NAT网关数量超过限制。"
+      },
+      {
+        "errorCode": "InvalidBandwidthPackageIdNumber.NotSupported",
+        "errorMessage": "The number of BandwidthPackageIds exceeds the limit.",
+        "description": "共享带宽包的数量超过Quota限制。"
+      },
+      {
+        "errorCode": "OperationFailed.VswNotBelongToVpc",
+        "errorMessage": "Operation failed because the specified VSwitch is not bound to the same VPC with NAT gateway.",
+        "description": "操作失败，因为交换机和NAT网关不属于同一个VPC。"
+      },
+      {
+        "errorCode": "OperationUnsupported.VpcAttachedCen",
+        "errorMessage": "Operation failed because the VPC is attached to CEN.",
+        "description": "操作失败因为VPC加入了CEN。"
+      },
+      {
+        "errorCode": "OperationUnsupported.RouterInterfaceExist",
+        "errorMessage": "Operation failed because the VPC has a router interface.",
+        "description": "操作失败因为VPC有路由器接口存在。"
+      },
+      {
+        "errorCode": "OperationFailed.VRouterNotExist",
+        "errorMessage": "Operation failed because the VRouter does not exist.",
+        "description": "操作失败因为虚拟路由器不存在。"
+      },
+      {
+        "errorCode": "OperationFailed.SnatQuotaExceed",
+        "errorMessage": "Operation failed because the maximum number of SNAT entry is exceeded.",
+        "description": "操作失败因为SNAT条目数量过多。"
+      },
+      {
+        "errorCode": "OperationFailed.DnatQuotaExceed",
+        "errorMessage": "Operation failed because the maximum number of forward entry is exceeded.",
+        "description": "操作失败因为DNAT条目数量过多。"
+      },
+      {
+        "errorCode": "OperationFailed.VswBindedRouteTable",
+        "errorMessage": "The operation failed because a custom route table that contains subnet routes is associated with the specified VSwitch.",
+        "description": "操作失败因为vSwitch绑定了子网路由表。"
+      },
+      {
+        "errorCode": "OperationFailed.VswBindedAcl",
+        "errorMessage": "The operation failed because a network ACL is associated with the specified VSwitch.",
+        "description": "操作失败因为指定的vSwitch绑定了网络ACL。"
+      },
+      {
+        "errorCode": "Forbidden.Convert",
+        "errorMessage": "User does not have permission to operate.",
+        "description": "该用户没有权限操作。"
+      },
+      {
+        "errorCode": "NATGW_NOT_EXIST",
+        "errorMessage": "The specified NAT gateway does not exist.",
+        "description": "该 NAT 网关不存在。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"0ED8D006-F706-4D23-88ED-E11ED28DCAC0\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<UpdateNatGatewayNatTypeResponse>\n    <RequestId>0ED8D006-F706-4D23-88ED-E11ED28DCAC0</RequestId>\n</UpdateNatGatewayNatTypeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

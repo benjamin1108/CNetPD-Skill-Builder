@@ -1,0 +1,153 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "GetNatIpAttribute",
+  "group": "misc",
+  "title": "查看单个NAT IP地址详细信息",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "get",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的NAT IP地址所属NAT网关实例的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "eu-central-1"
+      }
+    },
+    {
+      "name": "NatIpId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的NAT IP地址实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "vpcnatip-gw8y7q3cpk3fggs87****"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求，取值：\n\n- **true**：发送检查请求，不会查询NAT IP地址的信息。检查项包括AccessKey是否有效、RAM用户的授权情况和是否填写了必需参数。如果检查不通过，则返回对应错误。如果检查通过，会返回错误码`DryRunOperation`。\n\n- **false**（默认值）：发送正常请求，通过检查后返回2xx HTTP状态码并查询NAT IP地址的信息。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "5A2CFF0E-5718-45B5-9D4D-70B3FF3898"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的NAT IP地址所属NAT网关实例的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "eu-central-1"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "CreationTime": {
+            "description": "查询的NAT IP地址创建的时间。",
+            "type": "string",
+            "example": "2021-07-16T16:47Z"
+          },
+          "NatIp": {
+            "description": "查询的NAT IP地址。",
+            "type": "string",
+            "example": "192.168.0.34"
+          },
+          "NatIpCidr": {
+            "description": "查询的NAT IP地址所在的地址段。",
+            "type": "string",
+            "example": "192.168.0.0/24"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "9D55DB90-0D57-46AB-841D-1D4238514AC6"
+          },
+          "NatIpId": {
+            "description": "查询的NAT IP地址实例ID。",
+            "type": "string",
+            "example": "vpcnatip-gw8y7q3cpk3fggs87****"
+          },
+          "NatIpDescription": {
+            "description": "查询的NAT IP地址的描述信息。",
+            "type": "string",
+            "example": "123"
+          },
+          "NatGatewayId": {
+            "description": "查询的NAT IP地址所属的VPC NAT网关实例ID。",
+            "type": "string",
+            "example": "ngw-gw8v16wgvtq26vh59****"
+          },
+          "NatIpName": {
+            "description": "查询的NAT IP地址的名称。",
+            "type": "string",
+            "example": "test"
+          },
+          "NatIpStatus": {
+            "description": "查询的NAT IP地址的状态。取值：\n\n- **Available**：可用状态。\n- **Deleting**：删除中。\n- **Creating**：创建中。",
+            "type": "string",
+            "example": "Available"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"CreationTime\": \"2021-07-16T16:47Z\",\n  \"NatIp\": \"192.168.0.34\",\n  \"NatIpCidr\": \"192.168.0.0/24\",\n  \"RequestId\": \"9D55DB90-0D57-46AB-841D-1D4238514AC6\",\n  \"NatIpId\": \"vpcnatip-gw8y7q3cpk3fggs87****\",\n  \"NatIpDescription\": \"123\",\n  \"NatGatewayId\": \"ngw-gw8v16wgvtq26vh59****\",\n  \"NatIpName\": \"test\",\n  \"NatIpStatus\": \"Available\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<GetNatIpAttributeResponse>\n    <CreationTime>2021-07-16T16:47Z</CreationTime>\n    <NatIp>192.168.0.34</NatIp>\n    <NatIpCidr>192.168.0.0/24</NatIpCidr>\n    <RequestId>9D55DB90-0D57-46AB-841D-1D4238514AC6</RequestId>\n    <NatIpId>vpcnatip-gw8y7q3cpk3fggs87****</NatIpId>\n    <NatIpDescription>123</NatIpDescription>\n    <NatGatewayId>ngw-gw8v16wgvtq26vh59****</NatGatewayId>\n    <NatIpName>test</NatIpName>\n    <NatIpStatus>Available</NatIpStatus>\n</GetNatIpAttributeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

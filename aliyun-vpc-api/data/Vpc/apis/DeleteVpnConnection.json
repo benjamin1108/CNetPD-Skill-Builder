@@ -1,0 +1,133 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteVpnConnection",
+  "group": "vpn-attachment",
+  "title": "删除指定的IPsec连接",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "- **DeleteVpnConnection**接口属于异步接口，即系统返回一个请求ID，但该IPsec连接尚未删除成功，系统后台的删除任务仍在进行。您可以调用DescribeVpnGateway查询VPN网关实例的状态，来确定IPsec连接的删除状态：\n    - 当VPN网关实例处于**updating**状态时，表示IPsec连接正在删除中。\n    - 当VPN网关实例处于**active**状态时，表示IPsec连接删除成功。\n- **DeleteVpnConnection**接口不支持在同一VPN网关下并发删除指定的IPsec连接。\n\n> 删除IPsec连接后，本地IDC与阿里云之间的连接将中断。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPsec连接所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-0016e04115b"
+      }
+    },
+    {
+      "name": "VpnConnectionId",
+      "in": "query",
+      "schema": {
+        "description": "IPsec连接的ID。",
+        "type": "string",
+        "required": true,
+        "example": "vco-bp1bbi27hojx80nck****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "606998F0-B94D-48FE-8316-ACA81BB230DA"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "VpnGateway.Configuring",
+        "errorMessage": "The specified service is configuring.",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnTask.CONFLICT",
+        "errorMessage": "Vpn task has conflict.",
+        "description": "Vpn操作存在冲突，请稍后重试。"
+      },
+      {
+        "errorCode": "VpnGateway.FinancialLocked",
+        "errorMessage": "The specified service is financial locked.",
+        "description": ""
+      },
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error, exception or failure.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVpnGatewayInstanceId.NotFound",
+        "errorMessage": "The specified vpn gateway instance id does not exist.",
+        "description": "指定的 VPN 网关不存在，请您检查 VPN 网关是否正确。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidVpnConnectionInstanceId.NotFound",
+        "errorMessage": "The specified vpn connection instance id does not exist.",
+        "description": "指定的VPN连接不存在，请您检查该VPN连接ID是否正确。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"606998F0-B94D-48FE-8316-ACA81BB230DA\"\n}",
+      "errorExample": "{\n  \"RequestId\":\"606998F0-B94D-48FE-8316-ACA81BB230DA\"\n}"
+    },
+    {
+      "type": "xml",
+      "example": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteVpnConnectionResponse>\n    <RequestId>606998F0-B94D-48FE-8316-ACA81BB230DA</RequestId>\n</DeleteVpnConnectionResponse>",
+      "errorExample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteVpnConnection>\n    <RequestId>606998F0-B94D-48FE-8316-ACA81BB230DA</RequestId>\n</DeleteVpnConnection>"
+    }
+  ]
+}

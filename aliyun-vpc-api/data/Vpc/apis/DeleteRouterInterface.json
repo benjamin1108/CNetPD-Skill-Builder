@@ -1,0 +1,116 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteRouterInterface",
+  "group": "router-interface",
+  "title": "删除路由器接口",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "调用本接口删除路由器接口时，请注意： \n\n- 只能删除处于**Idle**和**Inactive**状态的路由器接口。 \n- 删除路由器接口之前，需要删除所有指向它的自定义路由条目。",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口所在的地域。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "RouterInterfaceId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口的ID。",
+        "type": "string",
+        "required": true,
+        "example": "ri-2zeo3xzyf38r4urz****"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "54B48E3D-DF70-471B-AA93-08E683A1B45"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidInstance.StatusError",
+        "errorMessage": "The router instance status error.",
+        "description": "实例状态错误。"
+      },
+      {
+        "errorCode": "OperationFailed.OperationLocked",
+        "errorMessage": "Operation failed because OperationLocked.",
+        "description": "操作失败因为实例已经被运维锁定。"
+      },
+      {
+        "errorCode": "RouterInterfaceReferredByRouteEntry",
+        "errorMessage": "Router interface referred by route entry.",
+        "description": "存在指向路由器接口的路由导致无法删除"
+      },
+      {
+        "errorCode": "ReferredByRouteEntry.RouterInterface",
+        "errorMessage": "Router interface referred by route entry.",
+        "description": "路由器接口被路由条目引用。"
+      },
+      {
+        "errorCode": "InvalidRouteTable.NotFound",
+        "errorMessage": "The specified routetable does not exist.",
+        "description": "路由表实例不存在。"
+      },
+      {
+        "errorCode": "Forbbiden.InvaildOwner",
+        "errorMessage": "Incorrect RouterInterface owner.",
+        "description": "该路由器不属于您的账号。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"54B48E3D-DF70-471B-AA93-08E683A1B45\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DeleteRouterInterfaceResponse>\n    <RequestId>54B48E3D-DF70-471B-AA93-08E683A1B45</RequestId>\n</DeleteRouterInterfaceResponse>",
+      "errorExample": ""
+    }
+  ]
+}

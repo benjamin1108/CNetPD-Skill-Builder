@@ -1,0 +1,295 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteVpc",
+  "group": "vpc",
+  "title": "删除一个VPC",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "调用该接口删除VPC时，请注意： \n\n- 删除VPC之前，需要先释放或转移VPC内的所有资源，包括交换机、云产品实例、高可用虚拟IP等。\n  \n- 只有处于**Available**状态的VPC才可以被删除。  \n\n- **DeleteVpc**接口属于异步接口，即系统会返回一个请求ID，但该VPC尚未删除成功，系统后台的删除任务仍在进行。您可以调用DescribeVpcAttribute查询VPC的删除状态：\n    - 当VPC处于**Deleting**状态时，表示VPC正在删除中。\n    - 当查询不到指定的VPC时，表示VPC删除成功。\n- **DeleteVpc**接口不支持并发删除同一个VPC。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "VpcId",
+      "in": "query",
+      "schema": {
+        "description": "要删除的VPC ID。",
+        "type": "string",
+        "required": true,
+        "example": "vpc-bp1m7v25emi1h5mtc****"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要删除的VPC所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": false,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ForceDelete",
+      "in": "query",
+      "schema": {
+        "description": "是否强制删除VPC。取值：\n\n- **true**：强制删除。\n- **false**（默认值）：不强制删除。\n\n当VPC下仅存在以下资源时可强制删除VPC：\n- 该VPC下仅存在IPv4网关及指向IPv4网关的路由。\n- 该VPC下仅存在IPv6网关及指向IPv6网关的路由。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求。取值：\n- **true**：发送检查请求，不会删除专有网络VPC。检查项包括是否填写了必需参数、请求格式、业务限制。如果检查不通过，则返回对应错误。如果检查通过，则返回错误码`DryRunOperation`。\n- **false**（默认值）：发送正常请求，通过检查后返回HTTP 2xx状态码并直接进行删除。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "0ED8D006-F706-4D23-88ED-E11ED28DCAC0"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IncorrectStatus.VpcDhcpStatus",
+        "errorMessage": "The DhcpOptionsSet status of vpc  does not support this operation.",
+        "description": "当前VPC中的DHCP选项集实例状态不支持删除VPC"
+      },
+      {
+        "errorCode": "DependencyViolation.GatewayEndpoint",
+        "errorMessage": "The VPC contains endpoints and cannot be deleted.",
+        "description": "VPC中还有终端节点，不能被删除，请先删除该VPC中的终端节点再删除VPC。"
+      },
+      {
+        "errorCode": "IncorrectVpcStatus",
+        "errorMessage": "Current VPC status does not support this operation.",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.RouteEntry",
+        "errorMessage": "Specified object has dependent resources",
+        "description": "当前VPC还存在未删除的自定义路由规则，VPC删除失败。"
+      },
+      {
+        "errorCode": "DependencyViolation.Instance",
+        "errorMessage": "Specified object has dependent resources",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.VSwitch",
+        "errorMessage": "Specified object has dependent resources",
+        "description": "当前VPC还存在未删除的交换机，VPC删除失败，删除VPC下的交换机后再尝试删除VPC。"
+      },
+      {
+        "errorCode": "DependencyViolation.RouteInterface",
+        "errorMessage": "Specified object has dependent route interface .",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.Tunnel",
+        "errorMessage": "Specified object has dependent tunnel.",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.NatGateway",
+        "errorMessage": "Specified object has dependent resources NatGateway.",
+        "description": "VPC中还有NAT网关，不能被删除，请先删除该VPC中的NAT网关再删除VPC。"
+      },
+      {
+        "errorCode": "DependencyViolation.RouterInterface",
+        "errorMessage": "Specified object has dependent resources RouterInterface.",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.SecurityGroup",
+        "errorMessage": "Specified object has dependent resources SecurityGroup.",
+        "description": "当前VPC还存在未删除的安全组，VPC删除失败，请先删除该VPC下的安全组后再删除VPC。"
+      },
+      {
+        "errorCode": "Forbidden.VpcNotFound",
+        "errorMessage": "Specified VPC can not found.",
+        "description": "指定的VPC不存在，请您检查VPC是否正确。"
+      },
+      {
+        "errorCode": "Forbbiden",
+        "errorMessage": "Active custom route in vpc.",
+        "description": ""
+      },
+      {
+        "errorCode": "TaskConflict",
+        "errorMessage": "The eip operate too frequent, TaskConflict.",
+        "description": "操作过于频繁，任务冲突。"
+      },
+      {
+        "errorCode": "InvalidAction",
+        "errorMessage": "The VPC has been connected to the classic network ECS. Please cancel the connection before proceeding.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectStatus.cbnStatus",
+        "errorMessage": "Current CBN status does not support this operation.",
+        "description": "CBN当前状态不正确"
+      },
+      {
+        "errorCode": "DependencyViolation.RouteTable",
+        "errorMessage": "Specified object has dependent custom routeTable.",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.NetworkAcl",
+        "errorMessage": "Specified object has dependent resources network acl.",
+        "description": "指定的对象具有从属资源网络acl。"
+      },
+      {
+        "errorCode": "DependencyViolation.ClassicLinkInstance",
+        "errorMessage": "Specified object has active classicLink instance.",
+        "description": ""
+      },
+      {
+        "errorCode": "System.ServiceBusy",
+        "errorMessage": "System is busy, please try later.",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.DhcpOptionsSet",
+        "errorMessage": "The VPC cannot be deleted when it is associated with dhcpOptionsSet.",
+        "description": "当前VPC还存在未删除的DHCP选项集实例，不允许删除"
+      },
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified region is not found.",
+        "description": "指定地域不存在。"
+      },
+      {
+        "errorCode": "DependencyViolation.CustomRouteTable",
+        "errorMessage": "CustomRouteTable already exists.",
+        "description": "依赖冲突，存在自定义路由表。"
+      },
+      {
+        "errorCode": "DependencyViolation.Ipv4Gateway",
+        "errorMessage": "The VPC cannot be deleted when it has ipv4Gateway.",
+        "description": "该VPC下存在IPV4网关，无法删除。"
+      },
+      {
+        "errorCode": "DependencyViolation.GatewayRouteTable",
+        "errorMessage": "Specified object has dependent resources gatewayRouteTable.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationDenied.VpcPeerExists",
+        "errorMessage": "The operation is not allowed because the VpcPeer exists.",
+        "description": "指定操作被禁止，因为VPC内存在VPC对等连接。"
+      },
+      {
+        "errorCode": "DependencyViolation.AppAccess",
+        "errorMessage": "Specified object has dependent resources app access.",
+        "description": "该VPC存在反向访问授权关系，无法删除"
+      },
+      {
+        "errorCode": "DependencyViolation.OppositeRouterInterface",
+        "errorMessage": "Failed to delete the VPC because it has peer router interfaces.",
+        "description": "该VPC存在对端RouterInterface未删除，删除VPC失败。"
+      },
+      {
+        "errorCode": "DependencyViolation.TransitRouter",
+        "errorMessage": "Specified object has attached to Transit Router.",
+        "description": "您指定的资源被其他的资源依赖，不允许进行当前操作。"
+      },
+      {
+        "errorCode": "DependencyViolation.Ipv6Gateway",
+        "errorMessage": "The VPC contains IPv6Gateway and cannot be deleted.",
+        "description": "该VPC存在IPv6网关，无法删除。"
+      },
+      {
+        "errorCode": "DependencyViolation.CloudServiceResource",
+        "errorMessage": "The VPC contains CloudServiceResource and cannot be deleted.",
+        "description": "该VPC存在云服务资源，无法删除。"
+      },
+      {
+        "errorCode": "IncorrectStatus.VpcDnsHostnameStatus",
+        "errorMessage": "The DnsHostname status of vpc does not support this operation.",
+        "description": "当前VPC的私网域名状态不支持该操作。"
+      },
+      {
+        "errorCode": "OperationDenied.AttachedToECR",
+        "errorMessage": "The operation is not allowed because the VPC is attached to ECR %s.",
+        "description": "VPC关联到了专线网关%s，不允许删除。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "OperationDenied",
+        "errorMessage": "The operation is not supported in this status.",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidVpcId.NotFound",
+        "errorMessage": "Specified VPC does not exist.",
+        "description": ""
+      }
+    ],
+    "500": [
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"0ED8D006-F706-4D23-88ED-E11ED28DCAC0\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DeleteVpcResponse>\n    <RequestId>0ED8D006-F706-4D23-88ED-E11ED28DCAC0</RequestId>\n</DeleteVpcResponse>",
+      "errorExample": ""
+    }
+  ]
+}

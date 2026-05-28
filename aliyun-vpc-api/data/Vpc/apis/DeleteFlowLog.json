@@ -1,0 +1,148 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteFlowLog",
+  "group": "flow-log",
+  "title": "删除流日志",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "- **DeleteFlowLog**接口属于异步接口，即系统返回一个实例ID，但流日志尚未删除成功，系统后台的删除任务仍在进行。您可以调用DescribeFlowLogs查询流日志的删除状态：\n    - 当流日志处于**Deleting**状态时，表示流日志正在删除中。\n    - 当查询不到指定的流日志时，表示流日志删除成功。\n- **DeleteFlowLog**接口不支持并发删除同一个流日志。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "流日志所属的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-qingdao"
+      }
+    },
+    {
+      "name": "FlowLogId",
+      "in": "query",
+      "schema": {
+        "description": "流日志ID。",
+        "type": "string",
+        "required": true,
+        "example": "fl-m5e8vhz2t21sel1nq****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "Success": {
+            "description": "是否调用成功。取值：\n\n- **true**：调用成功。\n- **false**：调用失败。",
+            "type": "string",
+            "example": "true"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "F7DDDC17-FA06-4AC2-8F35-59D2470FCFC1"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidInstanceId",
+        "errorMessage": "Instance does not exist.",
+        "description": "实例不存在。"
+      },
+      {
+        "errorCode": "ProjectOrLogstoreNotExist",
+        "errorMessage": "The specified project or logstore does not exist.",
+        "description": "指定的项目或logstore不存在。"
+      },
+      {
+        "errorCode": "SourceProjectNotExist",
+        "errorMessage": "The Source Project or logstore does not exist.",
+        "description": "SLS源项目或日志库不存在。"
+      },
+      {
+        "errorCode": "Unauthorized",
+        "errorMessage": "This api does not support sub user or role.",
+        "description": "此API不支持子用户或角色。"
+      },
+      {
+        "errorCode": "ParameterInvalid",
+        "errorMessage": "Invalid parameter.",
+        "description": "入参非法"
+      },
+      {
+        "errorCode": "InvalidStatus",
+        "errorMessage": "The specfied instance's status is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidHdMonitorStatus",
+        "errorMessage": "Current instance status is not valid for this action.",
+        "description": ""
+      },
+      {
+        "errorCode": "FlowLogNumberOverLimit",
+        "errorMessage": "This user has reached the maximum instance number of flowlog.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The RegionId provided does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidInstanceId.NotFound",
+        "errorMessage": "The specfied instance is not existed.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectStatus.flowlog",
+        "errorMessage": "Invalid flowlog status.",
+        "description": "flowlog状态无效，无法停止"
+      },
+      {
+        "errorCode": "InvalidResourceId.NotFound",
+        "errorMessage": "Resource id is empty.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.OperateManagedFlowLog",
+        "errorMessage": "Authentication is failed for operate managed flowlog.",
+        "description": "操作托管的流日志，鉴权失败。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"Success\": \"true\",\n  \"RequestId\": \"F7DDDC17-FA06-4AC2-8F35-59D2470FCFC1\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DeleteFlowLogResponse>\n    <Success>true</Success>\n    <RequestId>F7DDDC17-FA06-4AC2-8F35-59D2470FCFC1</RequestId>\n</DeleteFlowLogResponse>",
+      "errorExample": ""
+    }
+  ]
+}

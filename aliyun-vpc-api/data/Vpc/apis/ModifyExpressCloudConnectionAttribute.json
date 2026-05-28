@@ -1,0 +1,198 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyExpressCloudConnectionAttribute",
+  "group": "express-connect",
+  "title": "修改高速上云服务连接",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "高速上云服务说明。",
+        "type": "string",
+        "required": false,
+        "example": "ECC"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "高速上云服务实例所在的地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "高速上云服务实例名称。",
+        "type": "string",
+        "required": false,
+        "example": "doctest"
+      }
+    },
+    {
+      "name": "EccId",
+      "in": "query",
+      "schema": {
+        "description": "高速上云连接实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "ecc-bp1t9osmuln*******"
+      }
+    },
+    {
+      "name": "BgpAs",
+      "in": "query",
+      "schema": {
+        "description": "指智能接入网关设备上需要配置的本地BGP的AS号。",
+        "type": "string",
+        "required": false,
+        "example": "sag-ejfge***"
+      }
+    },
+    {
+      "name": "PeIp",
+      "in": "query",
+      "schema": {
+        "description": "指智能接入网关设备和云上对接时的本地IP。",
+        "type": "string",
+        "required": false,
+        "example": "10.10.**.**"
+      }
+    },
+    {
+      "name": "CeIp",
+      "in": "query",
+      "schema": {
+        "description": "指智能接入网关设备和云上对接时的云端IP。",
+        "type": "string",
+        "required": false,
+        "example": "172.16.**.**"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "E6385514-B0CC-48E3-B9F9-F7BFF64460A2"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidEccId.NotFound",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.AliUid",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParam.RegionNo",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.EccId",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidEccApplication.NotFound",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.Description",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.Name",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidServiceProvider.Malformed",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.PortType",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.Distance",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.CircuitCode",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.Type",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.Type",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidAccessPoint.NotFound",
+        "errorMessage": "%s",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"E6385514-B0CC-48E3-B9F9-F7BFF64460A2\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n<ModifyExpressCloudConnectionAttributeResponse>\r\n   <RequestId>E6385514-B0CC-48E3-B9F9-F7BFF64460A2</RequestId>\r\n</ModifyExpressCloudConnectionAttributeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

@@ -1,0 +1,448 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifySslVpnServer",
+  "group": "ssl-server",
+  "title": "修改SSL-VPN服务端的配置信息",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "- 如果您需要为SSL服务端开启双因子认证功能，请先确保VPN网关实例支持该功能，您可能需要升级VPN网关实例。更多信息，请参见SSL-VPN双因子认证支持IDaaS EIAM 2.0。\n- 当只修改SSL-VPN服务端**Name**信息时该接口为同步接口，如果还修改了除**Name**之外的配置，该接口为异步接口。\n- **ModifySslVpnServer**接口为异步接口时，即系统先返回一个请求ID，但该SSL-VPN服务端的配置信息尚未修改成功，系统后台的修改任务仍在进行。您可以调用DescribeVpnGateway接口查询SSL-VPN服务端关联的VPN网关实例的状态，来确认SSL-VPN服务端配置信息的修改状态：\n    - 当VPN网关实例处于**updating**状态时，表示SSL-VPN服务端的配置信息正在修改中。\n    - 当VPN网关实例处于**active**状态时，表示SSL-VPN服务端的配置信息修改成功。\n\n- **ModifySslVpnServer**接口不支持在同一VPN网关下并发修改SSL-VPN服务端的配置信息。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-0016e04115b"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "SslVpnServerId",
+      "in": "query",
+      "schema": {
+        "description": "SSL-VPN服务端实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "vss-bp18q7hzj6largv4v****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "SSL-VPN服务端的名称。  \n\n长度为1～100个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "test"
+      }
+    },
+    {
+      "name": "ClientIpPool",
+      "in": "query",
+      "schema": {
+        "description": "客户端网段。\n\n是给客户端虚拟网卡分配访问地址的地址段，不是指客户端已有的内网网段。\n\n当客户端通过SSL-VPN连接访问本端时，VPN网关会从指定的客户端网段中分配一个IP地址给客户端使用，客户端将会使用分配的IP地址访问云上资源。\n\n在您指定客户端网段时需保证客户端网段所包含的IP地址个数是当前VPN网关SSL连接数的4倍及以上。\n<details>\n<summary>单击查看原因。</summary>\n例如您指定的客户端网段为192.168.0.0/24，系统在为客户端分配IP地址时，会先从192.168.0.0/24网段中划分出一个子网掩码为30的子网段，例如192.168.0.4/30，然后从192.168.0.4/30中分配一个IP地址供客户端使用，剩余三个IP地址会被系统占用以保证网络通信，此时一个客户端会耗费4个IP地址。因此，为保证您的客户端均能分配到IP地址，请确保您指定的客户端网段所包含的IP地址个数是VPN网关SSL连接数的4倍及以上。\n</details>\n\n<details>\n<summary>单击查看不支持配置的网段。</summary>\n\n- 100.64.0.0~100.127.255.255\n- 127.0.0.0~127.255.255.255\n- 169.254.0.0~169.254.255.255\n- 224.0.0.0~239.255.255.255\n- 255.0.0.0~255.255.255.255\n\n</details>\n\n<details>\n<summary>单击查看每个SSL连接数建议的客户端网段。</summary>\n\n- 若SSL连接数为5，则客户端网段的子网掩码位数建议小于或等于27。例如：10.0.0.0/27、10.0.0.0/26。\n- 若SSL连接数为10，则客户端网段的子网掩码位数建议小于或等于26。例如：10.0.0.0/26、10.0.0.0/25。\n- 若SSL连接数为20，则客户端网段的子网掩码位数建议小于或等于25。例如：10.0.0.0/25、10.0.0.0/24。\n- 若SSL连接数为50，则客户端网段的子网掩码位数建议小于或等于24。例如：10.0.0.0/24、10.0.0.0/23。\n- 若SSL连接数为100，则客户端网段的子网掩码位数建议小于或等于23。例如：10.0.0.0/23、10.0.0.0/22。\n- 若SSL连接数为200，则客户端网段的子网掩码位数建议小于或等于22。例如：10.0.0.0/22、10.0.0.0/21。\n- 若SSL连接数为500，则客户端网段的子网掩码位数建议小于或等于21。例如：10.0.0.0/21、10.0.0.0/20。\n- 若SSL连接数为1000，则客户端网段的子网掩码位数建议小于或等于20。例如：10.0.0.0/20、10.0.0.0/19。\n\n</details>\n\n> - 客户端网段的子网掩码位数在16至29位之间。\n> - 请确保客户端网段与本端网段、VPC网段以及与客户端终端关联的任何路由网段均没有重叠。\n> - 在指定客户端网段时，建议您使用10.0.0.0/8、172.16.0.0/12和192.168.0.0/16网段及其子网网段。如果您的客户端网段需要指定为公网网段，您需要将公网网段设置为VPC的用户网段，以确保VPC可以访问到该公网网段。关于用户网段的更多信息，请参见专有网络FAQ。\n> - 创建SSL服务端后，系统后台会自动将客户端网段的路由添加在VPC实例的路由表中，请勿再手动将客户端网段的路由添加到VPC实例的路由表，否则会导致SSL-VPN连接流量传输异常。",
+        "type": "string",
+        "required": false,
+        "example": "10.30.30.0/24"
+      }
+    },
+    {
+      "name": "LocalSubnet",
+      "in": "query",
+      "schema": {
+        "description": "本端网段。\n\n是客户端通过SSL-VPN连接要访问的地址段。\n\n本端网段可以是VPC的网段、交换机的网段、通过专线和VPC互连的IDC的网段、云服务如对象存储服务OSS（Object Storage Service）等的网段。\n\n本端网段的子网掩码位数在8至32位之间。以下网段不支持指定为本端网段：\n\n- 127.0.0.0~127.255.255.255\n- 169.254.0.0~169.254.255.255\n- 224.0.0.0~239.255.255.255\n- 255.0.0.0~255.255.255.255",
+        "type": "string",
+        "required": false,
+        "example": "10.20.20.0/24"
+      }
+    },
+    {
+      "name": "Proto",
+      "in": "query",
+      "schema": {
+        "description": "SSL-VPN服务端所使用的协议，取值：\n\n- **TCP**（默认值）：TCP协议。\n\n- **UDP**：UDP协议。",
+        "type": "string",
+        "required": false,
+        "example": "UDP"
+      }
+    },
+    {
+      "name": "Cipher",
+      "in": "query",
+      "schema": {
+        "description": "SSL-VPN使用的加密算法，取值： \n\n- **AES-128-CBC**（默认值）：AES-128-CBC算法。\n\n- **AES-192-CBC**：AES-192-CBC算法。\n\n- **AES-256-CBC**：AES-256-CBC算法。\n\n- **none**：不使用加密算法。",
+        "type": "string",
+        "required": false,
+        "example": "AES-128-CBC"
+      }
+    },
+    {
+      "name": "Port",
+      "in": "query",
+      "schema": {
+        "description": "SSL-VPN服务端所使用的端口。端口取值范围：**1**~**65535**。默认值：**1194**。\n\n不支持使用以下端口：**22**、**2222**、**22222**、**9000**、**9001**、**9002**、**7505**、**80**、**443**、**53**、**68**、**123**、**4510**、**4560**、**500**、**4500**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "1194"
+      }
+    },
+    {
+      "name": "Compress",
+      "in": "query",
+      "schema": {
+        "description": "指定是否对通信进行压缩， 取值：\n\n- **true**（默认值）：对通信进行压缩。\n\n- **false**：对通信不进行压缩。",
+        "type": "boolean",
+        "required": false,
+        "example": "true"
+      }
+    },
+    {
+      "name": "EnableMultiFactorAuth",
+      "in": "query",
+      "schema": {
+        "description": "是否开启双因子认证。如果您选择开启双因子认证功能，您还需要配置**IDaaSInstanceId**、**IDaaSRegionId**和**IDaaSApplicationId**。取值：\n\n- **true**：开启。\n\n- **false**：不开启。\n\n>- 如果您是首次使用双因子认证功能，请先完成[授权](https://ram.console.aliyun.com/role/authorization?request=%7B%22Services%22%3A%5B%7B%22Service%22%3A%22VPN%22%2C%22Roles%22%3A%5B%7B%22RoleName%22%3A%22AliyunVpnAccessingIdaasRole%22%2C%22TemplateId%22%3A%22IdaasRole%22%7D%5D%7D%5D%2C%22ReturnUrl%22%3A%22https%3A%2F%2Fvpc.console.aliyun.com%2Fsslvpn%2Fcn-shanghai%2Fvpn-servers%22%7D)后再创建SSL服务端。\n>- 在阿联酋（迪拜）地域创建SSL服务端时，推荐您绑定新加坡地域的IDaaS EIAM 2.0实例，以减少跨地域时延。\n>- IDaaS EIAM 1.0实例不再支持新购。如果您的阿里云账号下存在IDaaS EIAM 1.0实例，开启双因子认证功能后，依旧支持绑定IDaaS EIAM 1.0实例。如果您的阿里云账号下不存在IDaaS EIAM 1.0实例，开启双因子认证功能后，仅支持绑定IDaaS EIAM 2.0实例。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "IDaaSInstanceId",
+      "in": "query",
+      "schema": {
+        "description": "IDaaS EIAM实例ID。",
+        "type": "string",
+        "required": false,
+        "example": "idaas-cn-hangzhou-****"
+      }
+    },
+    {
+      "name": "IDaaSRegionId",
+      "in": "query",
+      "schema": {
+        "description": "IDaaS EIAM实例所属地域ID。",
+        "type": "string",
+        "required": false,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "IDaaSApplicationId",
+      "in": "query",
+      "schema": {
+        "description": "IDaaS应用ID。\n\n- 如果您绑定的是IDaaS EIAM 2.0实例，需输入IDaaS应用ID。\n- 如果您绑定的是IDaaS EIAM 1.0实例，无需输入IDaaS应用ID。",
+        "type": "string",
+        "required": false,
+        "example": "app_my6g4qmvnwxzj2f****"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求。取值：\n- **true**：发送检查请求，不会修改SSL服务端配置。检查项包括是否填写了必需参数、请求格式、业务限制。如果检查不通过，则返回对应错误。如果检查通过，则返回错误码`DryRunOperation`。\n- **false**（默认值）：发送正常请求，通过检查后返回HTTP 2xx状态码并直接进行操作。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回结果。",
+        "type": "object",
+        "properties": {
+          "InternetIp": {
+            "description": "公网IP。",
+            "type": "string",
+            "example": "47.98.XX.XX"
+          },
+          "IDaaSInstanceId": {
+            "description": "IDaaS EIAM实例ID。",
+            "type": "string",
+            "example": "idaas-cn-hangzhou-****"
+          },
+          "CreateTime": {
+            "description": "SSL-VPN服务端的创建时间。",
+            "type": "integer",
+            "format": "int64",
+            "example": "1492753580000"
+          },
+          "VpnGatewayId": {
+            "description": "VPN网关实例ID。",
+            "type": "string",
+            "example": "vpn-bp1q8bgx4xnkm2ogj****"
+          },
+          "Compress": {
+            "description": "是否压缩通信。",
+            "type": "boolean",
+            "example": "false"
+          },
+          "Port": {
+            "description": "SSL-VPN服务端的端口。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1194"
+          },
+          "LocalSubnet": {
+            "description": "本端网段。",
+            "type": "string",
+            "example": "10.20.20.0/24"
+          },
+          "RegionId": {
+            "description": "SSL-VPN服务端的地域ID。",
+            "type": "string",
+            "example": "cn-hangzhou"
+          },
+          "Cipher": {
+            "description": "使用的加密算法。",
+            "type": "string",
+            "example": "AES-128-CBC"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "DF11D6F6-E35A-41C3-9B20-6FC8A901FE65"
+          },
+          "Connections": {
+            "description": "当前连接数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "0"
+          },
+          "SslVpnServerId": {
+            "description": "SSL-VPN服务端的ID。",
+            "type": "string",
+            "example": "vss-bp18q7hzj6largv4v****"
+          },
+          "MaxConnections": {
+            "description": "最大连接数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "5"
+          },
+          "Name": {
+            "description": "SSL-VPN服务端的名称。",
+            "type": "string",
+            "example": "test"
+          },
+          "EnableMultiFactorAuth": {
+            "description": "是否开启了双因子认证。\n\n- **true**：已开启。\n\n- **false**（默认值）：未开启。",
+            "type": "boolean",
+            "example": "false"
+          },
+          "ClientIpPool": {
+            "description": "客户端网段。",
+            "type": "string",
+            "example": "10.30.30.0/24"
+          },
+          "Proto": {
+            "description": "SSL-VPN服务端使用的协议。",
+            "type": "string",
+            "example": "UDP"
+          },
+          "ResourceGroupId": {
+            "description": "SSL-VPN服务端所属的资源组ID。\n\nSSL-VPN服务端与其关联的VPN网关实例的资源组相同。您可以调用ListResourceGroups接口查询资源组信息。",
+            "type": "string",
+            "example": "rg-acfmzs372yg****"
+          },
+          "IDaaSApplicationId": {
+            "description": "IDaaS应用ID。",
+            "type": "string",
+            "example": "app_my6g4qmvnwxzj2f****"
+          },
+          "IDaaSInstanceVersion": {
+            "description": "IDaaS EIAM实例的版本。\n\n- 仅当SSL服务端绑定的是IDaaS EIAM 2.0实例，系统才会返回该参数。仅取值：**EIAM 2.0**。\n- 如果SSL服务端绑定的是IDaaS EIAM 1.0实例，系统不会返回该参数。",
+            "type": "string",
+            "example": "EIAM 2.0"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidName",
+        "errorMessage": "The name is not valid",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnGateway.Configuring",
+        "errorMessage": "The specified service is configuring.",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnGateway.FinancialLocked",
+        "errorMessage": "The specified service is financial locked.",
+        "description": ""
+      },
+      {
+        "errorCode": "IpConflict",
+        "errorMessage": "Client IP pool conflict with local IP range.",
+        "description": "客户端IP池与本地IP范围冲突。"
+      },
+      {
+        "errorCode": "SslVpnServer.AddRouteError",
+        "errorMessage": "Add route error whose destination is client IP pool, please check vpc route entry and relevant quota.",
+        "description": "添加指向客户端网段的路由失败，请查看VPC路由条目及相关配额。"
+      },
+      {
+        "errorCode": "ClientIpPool.NetmaskInvalid",
+        "errorMessage": "The netmask length of client IP pool must be greater than or equal to 16 and less than or equal to 29.",
+        "description": "客户端 IP 池的网络掩码长度必须大于等于 16 且小于等于 29。"
+      },
+      {
+        "errorCode": "ClientIpPool.SubnetInvalid",
+        "errorMessage": "The specified client IP pool cannot be used.",
+        "description": "当前客户端网段不可用。"
+      },
+      {
+        "errorCode": "MissingParameter.IDaaSInstanceId",
+        "errorMessage": "The input parameter IDaaSInstanceId is mandatory when enable multi-factor authentication.",
+        "description": "启动双因子认证时请输入IDaaSInstanceId参数。"
+      },
+      {
+        "errorCode": "OperationFailed.GetIDaaSInfo",
+        "errorMessage": "Failed to get secret key from your IDaaS instance.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.NoRamPermission",
+        "errorMessage": "Vpn Service has no permission to operate your IDaaS instances.",
+        "description": "Vpn服务没有权限操作您的IDaaS实例"
+      },
+      {
+        "errorCode": "OperationUnsupported.NotSupportMultiFactorAuth",
+        "errorMessage": "Current version of the VPN does not support multi-factor authentication.",
+        "description": ""
+      },
+      {
+        "errorCode": "SystemBusy",
+        "errorMessage": "The system is busy. Please try again later.",
+        "description": ""
+      },
+      {
+        "errorCode": "SslVpnServerPort.Illegal",
+        "errorMessage": "The server port is not in the range of [1-65535].",
+        "description": "SSL VPN 服务端端口号需要在[1-65535]之间。"
+      },
+      {
+        "errorCode": "EnableHaCheck.SslVpnServerClientCidrContainsVpcRouteDest",
+        "errorMessage": "Ssl vpn client cidr contains vpc route prefix. The vpc route prefix is %s.",
+        "description": "vpc路由表中存在路由的前缀%s被包含在ssl vpn 客户端 cidr 中。"
+      },
+      {
+        "errorCode": "InvalidInstanceId.NotFound",
+        "errorMessage": "InstanceId is not found.",
+        "description": "物理专线实例ID不存在。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.Conflict",
+        "errorMessage": "The specified route entry has conflict.",
+        "description": "路由条目存在冲突。"
+      },
+      {
+        "errorCode": "IllegalParam.IDaaSApplicationId",
+        "errorMessage": "The specified IDaaS application Id is not illegal, the application instance needs to be created based on the dedicated SSL VPN template.",
+        "description": "指定的IDaaS应用实例ID不合法，应用实例需要基于专属SSL VPN的模板创建。"
+      },
+      {
+        "errorCode": "MissingParam.IDaaSApplicationId",
+        "errorMessage": "The input parameter IDaaSApplicationId is mandatory when enable multi-factor authentication.",
+        "description": "启动双因子认证时请输入IDaaSApplicationId参数。"
+      },
+      {
+        "errorCode": "SslVpnIDaaS2.NotSupport",
+        "errorMessage": "Current version of the VPN does not support IDaaS2.0.",
+        "description": "当前VPN实例版本不支持使用IDaaS2.0。"
+      },
+      {
+        "errorCode": "MissingParam.IDaaSRegionId",
+        "errorMessage": "The input parameter IDaaSRegionId is mandatory when enable multi-factor authentication.",
+        "description": "启动双因子认证时请输入IDaaSRegionId参数。"
+      },
+      {
+        "errorCode": "DryRunOperation",
+        "errorMessage": "Request validation has been passed with DryRun flag set.",
+        "description": "DryRun校验通过。"
+      },
+      {
+        "errorCode": "IllegalParam.LocalSubnet",
+        "errorMessage": "The specified \"LocalSubnet\" (%s) is invalid.",
+        "description": "本端网段(%s)不合法。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified region is not found during access authentication.",
+        "description": "接入认证时未找到指定区域。"
+      },
+      {
+        "errorCode": "InvalidIDaaSInstanceId.NotFound",
+        "errorMessage": "The specified IDaaS instance ID does not exist.",
+        "description": "指定的IDaaS实例ID不存在"
+      },
+      {
+        "errorCode": "InvalidIDaaSApplicationId.NotFound",
+        "errorMessage": "The specified IDaaS application Id does not exist.",
+        "description": "指定的IDaaS应用实例ID不存在。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"InternetIp\": \"47.98.XX.XX\",\n  \"IDaaSInstanceId\": \"idaas-cn-hangzhou-****\",\n  \"CreateTime\": 1492753580000,\n  \"VpnGatewayId\": \"vpn-bp1q8bgx4xnkm2ogj****\",\n  \"Compress\": false,\n  \"Port\": 1194,\n  \"LocalSubnet\": \"10.20.20.0/24\",\n  \"RegionId\": \"cn-hangzhou\",\n  \"Cipher\": \"AES-128-CBC\",\n  \"RequestId\": \"DF11D6F6-E35A-41C3-9B20-6FC8A901FE65\",\n  \"Connections\": 0,\n  \"SslVpnServerId\": \"vss-bp18q7hzj6largv4v****\",\n  \"MaxConnections\": 5,\n  \"Name\": \"test\",\n  \"EnableMultiFactorAuth\": false,\n  \"ClientIpPool\": \"10.30.30.0/24\",\n  \"Proto\": \"UDP\",\n  \"ResourceGroupId\": \"rg-acfmzs372yg****\",\n  \"IDaaSApplicationId\": \"app_my6g4qmvnwxzj2f****\",\n  \"IDaaSInstanceVersion\": \"EIAM 2.0\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ModifySslVpnServerResponse>\n    <InternetIp>47.98.XX.XX</InternetIp>\n    <IDaaSInstanceId>idaas-cn-hangzhou-****</IDaaSInstanceId>\n    <CreateTime>1492753580000</CreateTime>\n    <VpnGatewayId>vpn-bp1q8bgx4xnkm2ogj****</VpnGatewayId>\n    <Compress>false</Compress>\n    <Port>1194</Port>\n    <LocalSubnet>10.20.20.0/24</LocalSubnet>\n    <RegionId>cn-hangzhou</RegionId>\n    <Cipher>AES-128-CBC</Cipher>\n    <RequestId>DF11D6F6-E35A-41C3-9B20-6FC8A901FE65</RequestId>\n    <Connections>0</Connections>\n    <SslVpnServerId>vss-bp18q7hzj6largv4v****</SslVpnServerId>\n    <MaxConnections>5</MaxConnections>\n    <Name>test</Name>\n    <EnableMultiFactorAuth>false</EnableMultiFactorAuth>\n    <ClientIpPool>10.30.30.0/24</ClientIpPool>\n    <Proto>UDP</Proto>\n</ModifySslVpnServerResponse>",
+      "errorExample": ""
+    }
+  ]
+}

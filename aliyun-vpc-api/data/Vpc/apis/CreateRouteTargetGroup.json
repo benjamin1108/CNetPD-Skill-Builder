@@ -1,0 +1,221 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "CreateRouteTargetGroup",
+  "group": "route-target-group",
+  "title": "创建路由目标组",
+  "methods": [
+    "post"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "description": "- **CreateRouteTargetGroup**接口属于异步接口，即系统会返回一个实例ID，但该路由目标组实例尚未创建完成，系统后台的创建任务仍在进行。您可以调用**ListRouteTargetGroup**查询路由目标组的创建状态：\n    - 当路由目标组处于**Pending**状态时，表示路由目标组创建中。\n    - 当路由目标组处于**Available**、**Unavailable**、**Switched**、**Abnormal**状态时，表示路由目标组创建完成。\n\n- **主备模式**：创建路由目标组时，需配置位于不同可用区、类型一致的主备实例。\n\n- **主实例**：权重为100。正常情况下承载所有流量，在健康检查正常时生效。\n\n- **备实例**：权重为0。主实例故障后接管流量，作为容灾备份。",
+  "parameters": [
+    {
+      "name": "VpcId",
+      "in": "query",
+      "schema": {
+        "description": "路由目标组所属的VPC的ID。",
+        "type": "string",
+        "required": true,
+        "example": "vpc-xxxx"
+      }
+    },
+    {
+      "name": "RouteTargetGroupName",
+      "in": "query",
+      "schema": {
+        "description": "路由目标组的名称。\n\n名称长度为1～128个字符，不能以http://或https://开头。",
+        "type": "string",
+        "required": false,
+        "example": "myRouteTargetGroupName"
+      }
+    },
+    {
+      "name": "RouteTargetGroupDescription",
+      "in": "query",
+      "schema": {
+        "description": "路由目标组的描述信息。\n描述长度为1～256个字符，不能以http://或https://开头。",
+        "type": "string",
+        "required": false,
+        "example": "myRouteTargetGroupDescription"
+      }
+    },
+    {
+      "name": "RouteTargetMemberList",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "路由目标组的成员列表。\n\n主备模式下，对路由目标组成员有如下限制：\n\n1. 路由目标组成员数量必须为2\n2. 路由目标组成员必须属于不同可用区",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "MemberId": {
+              "description": "路由目标组成员实例ID。",
+              "type": "string",
+              "required": true,
+              "example": "ep-xxxx"
+            },
+            "MemberType": {
+              "description": "路由目标组的成员类型。\n\n当前支持的类型：\n\n- **GatewayLoadBalancerEndpoint**\n\n主备模式下，路由目标组所有成员的类型必须相同。",
+              "type": "string",
+              "required": true,
+              "example": "GatewayLoadBalancerEndpoint"
+            },
+            "Weight": {
+              "description": "路由目标组成员的权重值。取值：\n\n- **100**：表示成员为主实例。\n- **0**：表示成员为备实例。\n\n权重值仅支持在创建时设置，不支持修改。",
+              "type": "integer",
+              "format": "int32",
+              "required": true,
+              "example": "100"
+            }
+          },
+          "required": true,
+          "description": ""
+        },
+        "required": true,
+        "maxItems": 16
+      }
+    },
+    {
+      "name": "ConfigMode",
+      "in": "query",
+      "schema": {
+        "description": "路由目标组的配置模式，支持模式如下：\n\n- **Active-Standby**: 主备模式。",
+        "type": "string",
+        "required": true,
+        "example": "Active-Standby"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "路由目标组所属的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "资源组ID。\n\n关于资源组的更多信息，请参见什么是资源组。",
+        "type": "string",
+        "required": false,
+        "example": "rg-acfmxazffggds****"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。说明 若您未指定，则系统自动使用API请求的RequestId作为ClientToken标识。每次API请求的RequestId不一样。",
+        "type": "string",
+        "required": false,
+        "example": "0c593ea1-3bea-11e9-b96b-88e9fe6****"
+      }
+    },
+    {
+      "name": "Tag",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "资源的标签。",
+        "type": "array",
+        "items": {
+          "description": "资源的标签。",
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "资源的标签键。最多支持输入20个标签键。如需传入该值，则不能输入空字符串。\n\n一个标签键最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceDept"
+            },
+            "Value": {
+              "description": "资源的标签值。最多支持输入20个标签值。如需传入该值，可以输入空字符串。\n\n最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceJoshua"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 21
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "Schema of Response",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "Id of the request",
+            "type": "string",
+            "example": "8AA5CE21-2E6A-4530-BDF5-F055849476E6"
+          },
+          "RouteTargetGroupId": {
+            "description": "路由目标组的实例ID。",
+            "type": "string",
+            "example": "rtg-xxxx"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "UnsupportedFeature.RouteTargetGroup",
+        "errorMessage": "The feature of RouteTargetGroup is not supported.",
+        "description": "当前地域不支持路由目标组功能。"
+      },
+      {
+        "errorCode": "Mismatch.GroupVpcIdAndInstanceVpcId",
+        "errorMessage": "The RouteTargetGroup VPC %s and the RouteTargetConfig VPC %s are mismatched.",
+        "description": "路由目标组所属的VPC和路由目标配置实例所属的VPC不一致。"
+      },
+      {
+        "errorCode": "OperationDenied.MemberWithSameAz",
+        "errorMessage": "The operation is not allowed because of all members being in the same availability zone.",
+        "description": "路由目标组成员实例禁止属于同一个可用区。"
+      },
+      {
+        "errorCode": "InvalidVpcId.NotFound",
+        "errorMessage": "Specified value of VpcId is not found in our record.",
+        "description": ""
+      },
+      {
+        "errorCode": "ResourceNotFound.GatewayLoadBalancerEndpoint",
+        "errorMessage": "GatewayLoadBalancerEndpoint instance %s not found.",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.RouteTargetGroup",
+        "errorMessage": "The quota of %s is exceeded, usage %s/%s.",
+        "description": "已超出VPC内支持创建的路由目标组最大数量，请提升配额后操作。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"8AA5CE21-2E6A-4530-BDF5-F055849476E6\",\n  \"RouteTargetGroupId\": \"rtg-xxxx\"\n}",
+      "type": "json"
+    }
+  ]
+}

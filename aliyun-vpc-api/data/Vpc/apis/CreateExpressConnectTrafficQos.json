@@ -1,0 +1,161 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "CreateExpressConnectTrafficQos",
+  "group": "qos-policy",
+  "title": "创建高速通道QoS策略",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "description": "- 当前高速通道QoS功能处于邀测状态，调用本接口需要先联系商务经理开通白名单\n\n- 每个用户能够创建的QoS策略数量有配额限制，如果需要扩充配额，请联系商务经理",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "QosName",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略的名称。\n\n长度为0～128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "qos-test"
+      }
+    },
+    {
+      "name": "QosDescription",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略的描述信息。\n\n长度为0～256个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "qos-test\n"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "资源组ID。",
+        "type": "string",
+        "required": false,
+        "example": "rg-acfmxazfdgdg****"
+      }
+    },
+    {
+      "name": "Tags",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "资源的标签。",
+        "type": "array",
+        "items": {
+          "description": "标签。",
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "资源的标签键。至少输入 1 个标签键，最多支持输入 20 个标签键。如需传入该值，不能输入空字符串。\n\n一个标签键最多支持 128 个字符，不能以aliyun和acs:开头，不能包含http://或者https://。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceDept"
+            },
+            "Value": {
+              "description": "资源的标签值。最多支持输入 20 个标签值。如需传入该值，可以输入空字符串。\n\n最多支持 128 个字符，不能以aliyun和acs:开头，不能包含http://或者https://。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceJoshua"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 20
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回信息。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "DC668356-BCB4-42FD-9BC3-FA2B2E04B634"
+          },
+          "QosId": {
+            "description": "QoS策略ID。",
+            "type": "string",
+            "example": "qos-2giu0a6vd5x0mv****"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IllegalParam.%s",
+        "errorMessage": "The param of %s is illegal.",
+        "description": "指定的参数非法"
+      },
+      {
+        "errorCode": "OperationUnsupported.Qos",
+        "errorMessage": "QoS is unsupported.",
+        "description": "当前用户不支持创建QoS，请联系商务经理"
+      },
+      {
+        "errorCode": "QuotaExceeded.Qos",
+        "errorMessage": "The quota of QoS is exceeded.",
+        "description": "当前用户的QoS策略数量超过限制，请联系商务经理解决。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"DC668356-BCB4-42FD-9BC3-FA2B2E04B634\",\n  \"QosId\": \"qos-2giu0a6vd5x0mv****\"\n}",
+      "type": "json"
+    }
+  ]
+}

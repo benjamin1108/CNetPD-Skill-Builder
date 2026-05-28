@@ -1,0 +1,145 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "UnassociatePhysicalConnectionFromVirtualBorderRouter",
+  "group": "virtual-border-router",
+  "title": "解绑VBR和物理专线",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "物理专线所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "VbrId",
+      "in": "query",
+      "schema": {
+        "description": "要与物理专线解绑的VBR的实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "vbr-bp16ksp61j7e0tkn*****"
+      }
+    },
+    {
+      "name": "PhysicalConnectionId",
+      "in": "query",
+      "schema": {
+        "description": "物理专线ID。",
+        "type": "string",
+        "required": true,
+        "example": "pc-bp1qrb3044eqixog****"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "980960B0-2969-40BF-8542-EBB34FD358AB"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "PARAMETER_MUST_NOT_NULL",
+        "errorMessage": "The specified physical connection id or vbrId must not be null.",
+        "description": ""
+      },
+      {
+        "errorCode": "PHYSICAL_NOT_ASSOCIATE_TO_VBR",
+        "errorMessage": "The specified PhysicalConnection have not associate to the vbr.",
+        "description": "该物理专线没有创建边界路由器。"
+      },
+      {
+        "errorCode": "ROUTER_INTERFACE_REFERED_BY_ROUTEENTRY",
+        "errorMessage": "The specified VlanInterface has been used by routeEntry.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidStatus.NotAllowed",
+        "errorMessage": "Invalid virtual border router status.",
+        "description": ""
+      },
+      {
+        "errorCode": "PHYSICAL_NOT_ALLOW_ASSOCIATE_VBR",
+        "errorMessage": "The specified operation not allow.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.OperationNotAllowed",
+        "errorMessage": "The caller must be PhysicalConnection or VirtualBorderRouter's owner.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.ResourceLockedBySystem",
+        "errorMessage": "The specified resource is locked by system.",
+        "description": "操作的资源已经被系统锁定，暂时无法操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The RegionId provided does not exist in our records.",
+        "description": "指定的RegionId不存在"
+      },
+      {
+        "errorCode": "InvalidVbrId.NotFound",
+        "errorMessage": "The specified VirutalBorderRouter does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"980960B0-2969-40BF-8542-EBB34FD358AB\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<UnassociatePhysicalConnectionFromVirtualBorderRouterResponse>\n    <RequestId>980960B0-2969-40BF-8542-EBB34FD358AB</RequestId>\n</UnassociatePhysicalConnectionFromVirtualBorderRouterResponse>",
+      "errorExample": ""
+    }
+  ]
+}

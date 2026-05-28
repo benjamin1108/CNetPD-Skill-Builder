@@ -1,0 +1,105 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DisassociateMacSecKey",
+  "group": "misc",
+  "title": "取消关联MacSec密钥",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "- 取消关联当前处于 Associated 状态的密钥，会自动关联最近生效的密钥\n- 取消关联当前处于 Disassociated 状态的密钥，会对密钥进行删除",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "物理专线所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "PhysicalConnectionId",
+      "in": "query",
+      "schema": {
+        "description": "物理专线 ID。",
+        "type": "string",
+        "required": true,
+        "example": "pc-bp1hp0wr072f6****\n"
+      }
+    },
+    {
+      "name": "Ckn",
+      "in": "query",
+      "schema": {
+        "description": "密钥名称，只支持十六进制字符，小写会自动转换为大写，当加密算法类型是GCM-AES-128或者GCM-AES-XPN-128时，长度要求为32个十六进制字符，当加密算法类型是GCM-AES-256或者GCM-AES-XPN-256时，长度要求为64个十六进制字符",
+        "type": "string",
+        "required": true,
+        "example": "0123456789ABCDEF0123456789ABCDEF"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "D32B3C26-6C6C-4988-93E9-D2A6444CE6AE"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IllegalParam.%s",
+        "errorMessage": "The param of %s is illegal.",
+        "description": "指定的参数非法"
+      },
+      {
+        "errorCode": "ResourceNotFound.PhysicalConnectionId",
+        "errorMessage": "The specified resource of [%s] is not found.",
+        "description": "PhysicalConnection不存在。"
+      },
+      {
+        "errorCode": "IncorrectStatus.PhysicalConnection",
+        "errorMessage": "The status of %s [%s] is incorrect.",
+        "description": "物理专线的状态不支持此操作。"
+      },
+      {
+        "errorCode": "IncorrectStatus.PconnMacsec",
+        "errorMessage": "The status of %s [%s] is incorrect.",
+        "description": "不允许进行操作因为有MACSec秘钥处于非稳态。"
+      },
+      {
+        "errorCode": "ResourceNotFound.PconnMacsec",
+        "errorMessage": "The specified resource of %s is not found.",
+        "description": "需要解绑的Ckn不存在。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"D32B3C26-6C6C-4988-93E9-D2A6444CE6AE\"\n}",
+      "type": "json"
+    }
+  ]
+}

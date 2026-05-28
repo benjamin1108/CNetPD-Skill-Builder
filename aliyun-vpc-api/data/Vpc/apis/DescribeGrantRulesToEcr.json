@@ -1,0 +1,209 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeGrantRulesToEcr",
+  "group": "virtual-border-router",
+  "title": "查询VBR的专线网关跨账号授权列表",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "list",
+  "parameters": [
+    {
+      "name": "PageNumber",
+      "in": "query",
+      "schema": {
+        "description": "列表的页码，默认值为1。",
+        "type": "integer",
+        "format": "int64",
+        "required": false,
+        "example": "1"
+      }
+    },
+    {
+      "name": "PageSize",
+      "in": "query",
+      "schema": {
+        "description": "分页查询时每页的行数，最大值为**50**，默认值为**10**。",
+        "type": "integer",
+        "format": "int64",
+        "required": false,
+        "example": "20"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "InstanceId",
+      "in": "query",
+      "schema": {
+        "description": "VBR ID。",
+        "type": "string",
+        "required": true,
+        "example": "vbr-xxxxxx"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "VBR所属的资源组的ID。",
+        "type": "string",
+        "required": false,
+        "example": "rg-acfmxazdjdhd****"
+      }
+    },
+    {
+      "name": "Tags",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "VBR的标签列表。",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "资源的标签键。至少输入1个标签键，最多支持输入20个标签键。如需传入该值，则不能输入空字符串。\n\n一个标签键最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceDept"
+            },
+            "Value": {
+              "description": "标签值。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceJoshua"
+            }
+          },
+          "required": false,
+          "description": ""
+        },
+        "required": false,
+        "maxItems": 20
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "Schema of Response",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "C1CCAB91-6AE6-50E3-AAA3-D0E5A2BC6ADE"
+          },
+          "EcrGrantRules": {
+            "description": "专线网关跨账号授权列表。",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "EcrUid": {
+                  "description": "专线网关跨账号授权用户ID。",
+                  "type": "integer",
+                  "format": "int64",
+                  "example": "11111111111"
+                },
+                "CreateTime": {
+                  "description": "授权时间。按照 ISO8601 标准表示，并需要使用 UTC 时间。格式为：YYYY-MM-DDThh:mm:ssZ。",
+                  "type": "string",
+                  "example": "2025-09-15T14:00:00Z"
+                },
+                "EcrInstanceId": {
+                  "description": "专线网关跨账号授权实例ID。",
+                  "type": "string",
+                  "example": "ecr-xxxxxx"
+                }
+              },
+              "description": ""
+            }
+          },
+          "TotalCount": {
+            "description": "列表条目数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "0"
+          },
+          "Count": {
+            "description": "查询的结果数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "0"
+          },
+          "PageNumber": {
+            "description": "列表的页码，默认值为**1**。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "PageSize": {
+            "description": "分页查询时每页的行数，最大值为50，默认值为10。",
+            "type": "integer",
+            "format": "int32",
+            "example": "20"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidParam.NotNull",
+        "errorMessage": "The parameter must not be null.",
+        "description": ""
+      },
+      {
+        "errorCode": "Parameter.Illegal",
+        "errorMessage": "The parameter is illegal.",
+        "description": "参数非法"
+      },
+      {
+        "errorCode": "Instance.StatusError",
+        "errorMessage": "The status of instance error.\t",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "VRouterId.NotFound",
+        "errorMessage": "The VRouter not found.",
+        "description": "此VRouter实例未找到。"
+      },
+      {
+        "errorCode": "Instance.NotExist",
+        "errorMessage": "The instance not exist.",
+        "description": "实例不存在。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"C1CCAB91-6AE6-50E3-AAA3-D0E5A2BC6ADE\",\n  \"EcrGrantRules\": [\n    {\n      \"EcrUid\": 11111111111,\n      \"CreateTime\": \"2025-09-15T14:00:00Z\",\n      \"EcrInstanceId\": \"ecr-xxxxxx\"\n    }\n  ],\n  \"TotalCount\": 0,\n  \"Count\": 0,\n  \"PageNumber\": 1,\n  \"PageSize\": 20\n}",
+      "type": "json"
+    }
+  ]
+}

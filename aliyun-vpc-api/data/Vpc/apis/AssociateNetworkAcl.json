@@ -1,0 +1,236 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "AssociateNetworkAcl",
+  "group": "network-acl",
+  "title": "绑定网络ACL到交换机",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "- **AssociateNetworkAcl**接口属于异步接口，即系统返回一个请求ID，但该网络ACL尚未绑定成功，系统后台的绑定任务仍在进行。您可以调用DescribeNetworkAclAttributes查询网络ACL的绑定状态：\n    - 当网络ACL处于**BINDING**状态时，表示网络ACL正在绑定中。\n    - 当网络ACL处于**BINDED**状态时，表示网络ACL绑定成功。\n- **AssociateNetworkAcl**接口不支持并发绑定同一个网络ACL。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "Resource",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "关联的资源信息。",
+        "type": "array",
+        "items": {
+          "description": "关联的资源信息。",
+          "type": "object",
+          "properties": {
+            "ResourceType": {
+              "description": "关联资源的类型。取值：**VSwitch**，交换机。\n\n**N**的取值为**0**~**29**，即最多可以关联30个资源。",
+              "type": "string",
+              "required": true,
+              "example": "VSwitch"
+            },
+            "ResourceId": {
+              "description": "关联资源的ID。",
+              "type": "string",
+              "required": true,
+              "example": "vsw-bp1de348lntdw****"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 100
+      }
+    },
+    {
+      "name": "NetworkAclId",
+      "in": "query",
+      "schema": {
+        "description": "网络ACL的ID。",
+        "type": "string",
+        "required": true,
+        "example": "nacl-a2do9e413e0sp****"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "网络ACL所在的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否检测此次请求。取值：\n- true：发送检查请求。\n- false（默认值）：发送正常请求。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "网络ACL所在的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "4CF20CC7-D1FC-425B-A15B-DF7C8E2131A7"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "ParameterMissing.AliUid",
+        "errorMessage": "ParameterMissing.AliUid",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterMissing.Bid",
+        "errorMessage": "ParameterMissing.Bid",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterMissing.RegionId",
+        "errorMessage": "ParameterMissing.RegionId",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterEmpty.RegionId",
+        "errorMessage": "ParameterEmpty.RegionId",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterMissing.NetworkAclId",
+        "errorMessage": "ParameterMissing.NetworkAclId",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterEmpty.NetworkAclId",
+        "errorMessage": "ParameterEmpty.NetworkAclId",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterMissing.Resources",
+        "errorMessage": "ParameterMissing.Resources",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterEmpty.Resources",
+        "errorMessage": "ParameterEmpty.Resources",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNetworkAcl.NotFound",
+        "errorMessage": "The special Network Acl is not found.",
+        "description": "未找到指定的网络Acl"
+      },
+      {
+        "errorCode": "NetworkStatus.Modifying",
+        "errorMessage": "The special Network Acl is in modifying.",
+        "description": "特殊网络Acl正在修改中。"
+      },
+      {
+        "errorCode": "ResourceStatus.Error",
+        "errorMessage": "The binding instance is in middle status.",
+        "description": "绑定实例处于中间状态。"
+      },
+      {
+        "errorCode": "InvalidResource.NotFound",
+        "errorMessage": "The binding instance is not found.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidResource.VpcError",
+        "errorMessage": "The network acl and resource not in same vpc.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidResource.BindingExist",
+        "errorMessage": "The binding instance has been binded.",
+        "description": "待绑定的实例已经处于绑定状态了"
+      },
+      {
+        "errorCode": "NotSupport.NetworkAcl",
+        "errorMessage": "Network acl is not support now.",
+        "description": ""
+      },
+      {
+        "errorCode": "ParameterIllegal.ResourceType",
+        "errorMessage": "The specified resource type is illegal.",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParam.Resource",
+        "errorMessage": "Missing parameter Resource.",
+        "description": "参数Resource缺失"
+      },
+      {
+        "errorCode": "OperationDenied.NetworkAclAttachmentInMiddleStatus",
+        "errorMessage": "The network ACL is being bound to or unbound from the switch.",
+        "description": "网络ACL 正在与交换机绑定中或者解绑中"
+      }
+    ],
+    "500": [
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"4CF20CC7-D1FC-425B-A15B-DF7C8E2131A7\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<AssociateNetworkAclResponse>\n    <RequestId>4CF20CC7-D1FC-425B-A15B-DF7C8E2131A7</RequestId>\n</AssociateNetworkAclResponse>",
+      "errorExample": ""
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "RemoveCommonBandwidthPackageIp",
+  "group": "shared-bandwidth",
+  "title": "移除共享带宽实例中的EIP",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽实例所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "BandwidthPackageId",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽实例的ID。",
+        "type": "string",
+        "required": true,
+        "example": "cbwp-2ze2ic1xd2qeqk145****"
+      }
+    },
+    {
+      "name": "IpInstanceId",
+      "in": "query",
+      "schema": {
+        "description": "EIP实例的ID。 \n\n您可以通过调用DescribeEipAddresses接口查询EIP实例的ID。",
+        "type": "string",
+        "required": true,
+        "example": "eip-2zeerraiwb7uj6i0d****"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "type": "boolean"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回信息列表。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "54B48E3D-DF70-471B-AA93-08E683A1B45"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IpInstanceId.NotBandwidthPackage",
+        "errorMessage": "The specified IpInstanceId does not in bandwidthPackage.",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.ip",
+        "errorMessage": "The specified BandwidthPackageId has eip in it.",
+        "description": ""
+      },
+      {
+        "errorCode": "EIP_BIND_NATGATEWAY",
+        "errorMessage": "The eip have bind natgateway.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectStatus.Eip",
+        "errorMessage": "Eip status error.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.SnatPoolIp",
+        "errorMessage": "Multi ip in snat pool cannot remove ip from bandwidth package.",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.RouteEntry",
+        "errorMessage": "vpc route table has route entry.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.DistibuteLock",
+        "errorMessage": "Distibute lock fail.",
+        "description": "操作被其他请求加锁；"
+      },
+      {
+        "errorCode": "Trade_Sync_Create_Sub_ERROR",
+        "errorMessage": "SyncOrderToSub error.",
+        "description": ""
+      },
+      {
+        "errorCode": "FAILED_INVOKE_INNER_API",
+        "errorMessage": "Failed to invoke inner api.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIP.IpInSnatPool",
+        "errorMessage": "Multi ip in snat pool cannot remove ip from bandwidth package.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidInstanceId.NotFound",
+        "errorMessage": "The specified bandwidthPackageId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.IpNotInCbwp",
+        "errorMessage": "The specified eip not exist in the commonBandwidthPackage.",
+        "description": "带宽包中不存在该EIP"
+      },
+      {
+        "errorCode": "InvalidIpInstanceId.Malformed",
+        "errorMessage": "The specified IpInstanceId is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.EipBindRemote",
+        "errorMessage": "Eip bind remote ecs/slb, cannot remove it from bandwidthPackage.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidthPackageId.NotFound",
+        "errorMessage": "The specified BandwidthPackageId not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidEIPStatus.BizDisabled",
+        "errorMessage": "The EIP has been locked.",
+        "description": "EIP实例被锁定"
+      },
+      {
+        "errorCode": "Forbidden.FinancialLocked",
+        "errorMessage": "The ip business status is invalid.",
+        "description": "该实例已欠费锁定，无法操作"
+      },
+      {
+        "errorCode": "OperationFailed.SystemBusy",
+        "errorMessage": "Operation failed because system is busy.",
+        "description": "系统繁忙，请稍后重试"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidthPackageId.NotFound",
+        "errorMessage": "The specified bandwidthPackageId does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"54B48E3D-DF70-471B-AA93-08E683A1B45\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<RemoveCommonBandwidthPackageIpResponse>\n    <RequestId>54B48E3D-DF70-471B-AA93-08E683A1B45</RequestId>\n</RemoveCommonBandwidthPackageIpResponse>",
+      "errorExample": ""
+    }
+  ]
+}

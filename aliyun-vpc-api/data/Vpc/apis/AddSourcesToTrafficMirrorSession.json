@@ -1,0 +1,202 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "AddSourcesToTrafficMirrorSession",
+  "group": "traffic-mirror",
+  "title": "为镜像会话增加镜像源",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "- **AddSourcesToTrafficMirrorSession**接口属于异步接口，即系统返回一个请求ID，但该镜像源尚未增加成功，系统后台的增加任务仍在进行。您可以调用ListTrafficMirrorSessions查询镜像源的增加状态：\n    - 当镜像会话处于**Modifying**状态时，表示镜像源正在增加中。\n    - 当镜像会话处于**Created**状态时，表示镜像源增加成功。\n- **AddSourcesToTrafficMirrorSession**接口不支持并发为同一个镜像会话增加镜像源。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "0c593ea1-3bea-11e9-b96b-88e9fe63****"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求，取值：\n\n- **true**：发送检查请求，不会添加镜像源。检查项包括是否填写了必需参数、请求格式和限制。如果检查不通过，则返回对应错误。如果检查通过，则返回错误码`DryRunOperation`。\n\n- **false**（默认值）：发送正常请求，通过检查后直接添加镜像源。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "TrafficMirrorSessionId",
+      "in": "query",
+      "schema": {
+        "description": "需要增加镜像源的镜像会话实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "tms-j6cla50buc44ap8tu****"
+      }
+    },
+    {
+      "name": "TrafficMirrorSourceIds",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "需要增加的镜像源的实例ID，目前支持弹性网卡作为镜像源。其中**N**的默认值为**1**，即一个镜像会话只支持添加一个镜像源。",
+        "type": "array",
+        "items": {
+          "description": "需要增加的镜像源的实例ID，目前支持弹性网卡作为镜像源。其中**N**的默认值为**1**，即一个镜像会话只支持添加一个镜像源。",
+          "type": "string",
+          "required": false,
+          "example": "eni-j6c8znm5l1yt4sox****"
+        },
+        "required": true,
+        "example": "eni-j6ccmrl8z3xkvxgw****",
+        "maxLength": 128,
+        "maxItems": 30
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "镜像会话的所属地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。\n\n关于流量镜像支持的地域，请参见流量镜像概述。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hongkong"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "87F70089-5B38-41A8-BAD8-0B55E2F8DC57"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IncorrectBusinessStatus.TrafficMirror",
+        "errorMessage": "The business status of traffic mirror is incorrect.",
+        "description": "流量镜像的商业状态不正确。"
+      },
+      {
+        "errorCode": "OptInRequired.TrafficMirror",
+        "errorMessage": "You need to subscribe to the traffic mirror service first.",
+        "description": "未开通流量镜像服务。"
+      },
+      {
+        "errorCode": "DuplicatedParam.SourceInstanceIds",
+        "errorMessage": "The parameter of source instance IDs contains duplicate values.",
+        "description": "流量镜像源实例ID参数中包含重复值。"
+      },
+      {
+        "errorCode": "ResourceNotFound.TrafficMirrorSession",
+        "errorMessage": "The specified resource of traffic mirror session is not found.",
+        "description": "指定的流量镜像会话不存在。"
+      },
+      {
+        "errorCode": "IncorrectStatus.TrafficMirrorSession",
+        "errorMessage": "The status of traffic mirror session is incorrect.",
+        "description": "流量镜像会话状态不正确。"
+      },
+      {
+        "errorCode": "ResourceAlreadyAssociated.TrafficMirrorSource",
+        "errorMessage": "The specified traffic mirror source and session are already associated.",
+        "description": "指定的流量镜像源和会话已经绑定。"
+      },
+      {
+        "errorCode": "ResourceNotFound.NetworkInterface",
+        "errorMessage": "The specified resource of %s is not found.",
+        "description": "指定的NetworkInterface %s 不存在"
+      },
+      {
+        "errorCode": "ResourceNotFound.EcsInstance",
+        "errorMessage": "The specified resource of ECS instance is not found.",
+        "description": "指定的ECS实例不存在。"
+      },
+      {
+        "errorCode": "OperationDenied.EcsNotSupportTrafficMirror",
+        "errorMessage": "The ECS instance does not support traffic mirroring.",
+        "description": "ECS实例不支持流量镜像功能。"
+      },
+      {
+        "errorCode": "OperationDenied.DuplicateRole",
+        "errorMessage": "The network interface must not be the source and the target of traffic mirror sessions at the same time.",
+        "description": "网卡不能同时作为流量镜像会话的源和目的。"
+      },
+      {
+        "errorCode": "QuotaExceeded.NetworkInterfaceRelatedSession",
+        "errorMessage": "The quota of the number of traffic mirror sessions related to one network interface is exceeded.",
+        "description": "单个网卡所能关联的流量镜像会话数量配额超限。"
+      },
+      {
+        "errorCode": "OperationDenied.FreeNetworkInterface",
+        "errorMessage": "The network interface is not attached to any ECS instance.",
+        "description": "指定的网卡未绑定任何ECS实例。"
+      },
+      {
+        "errorCode": "QuotaExceeded.SourceNumPerSession",
+        "errorMessage": "The quota of the number of traffic mirror sources per session is exceeded.",
+        "description": "每个流量镜像会话所允许关联的源的数量配额超限。"
+      },
+      {
+        "errorCode": "QuotaExceeded.SourceNumPerTarget",
+        "errorMessage": "The maximum number of traffic mirror sources for a target is exceeded.",
+        "description": "该镜像目标关联的镜像源数量超过限额。"
+      },
+      {
+        "errorCode": "OperationUnsupported.BondingNetworkInterface",
+        "errorMessage": "The specified traffic mirror source is bonding eni without slave.",
+        "description": "当前操作不支持无slave的bonding网卡。"
+      },
+      {
+        "errorCode": "OperationDenied.UnsupportedTargetType",
+        "errorMessage": "Traffic mirror target must be SLB if traffic mirror sources contain nat gateway network interface.",
+        "description": "流量镜像源中存在NAT网关网卡时，流量镜像目的必须为SLB类型"
+      },
+      {
+        "errorCode": "OperationDenied.InvalidSourceBondEniType",
+        "errorMessage": "The traffic mirroring source does not support the entered bond ENI type.",
+        "description": "流量镜像源不支持所输入的托管弹性网卡类型。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"87F70089-5B38-41A8-BAD8-0B55E2F8DC57\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<AddSourcesToTrafficMirrorSessionResponse>\n    <RequestId>87F70089-5B38-41A8-BAD8-0B55E2F8DC57</RequestId>\n</AddSourcesToTrafficMirrorSessionResponse>",
+      "errorExample": ""
+    }
+  ]
+}

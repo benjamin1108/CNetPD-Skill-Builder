@@ -1,0 +1,927 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "CreateRouteEntry",
+  "group": "route-table",
+  "title": "创建自定义路由条目",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "description": "- **CreateRouteEntry**接口属于异步接口，即系统会返回一个实例ID，但该路由的添加尚未完成，系统后台的启动任务仍在进行。您可以调用DescribeRouteEntryList查询路由的添加状态：\n    - 当路由处于**Creating**状态时，表示路由添加中。\n    - 当路由处于**Created**状态时，表示路由添加完成。\n- **CreateRouteEntry**接口不支持在同一个VPC或者同一个VBR中并发添加自定义路由条目。\n- **CreateRouteEntry**接口在并发情况下可能返回**TaskConflict**错误码，请酌情重试。\n\n**使用该接口为VPC路由器的路由表添加自定义路由条目时，请注意以下事项：**\n> 当添加的路由为前缀列表路由时，路由配额的计算为现存路由与前缀列表路由的最大路由条目数之和是否超过路由配额的限制。\n- 同一个路由表中自定义路由条目不能超过200条。  \n\n- 自定义路由条目的目标网段（**DestinationCidrBlock**）不能和VPC内的交换机的网段相同，可以包含交换机的网段但是不能被交换机的网段包含。   \n\n- 自定义路由条目的目标网段（**DestinationCidrBlock**）可以配置为比云服务系统路由网段`100.64.0.0/10`更明细的网段，但不支持和该网段相同。\n<notice>由于目标网段为`100.64.0.0/10`的系统路由用于VPC内的云产品通信，建议您谨慎配置更明细的路由，如果配置错误将导致云产品服务无法正常访问和使用。</notice>\n\n- 同一路由表下的路由条目的目标网段（**DestinationCidrBlock**）不允许相同。   \n\n- 如果指定的目标网段（**DestinationCidrBlock**）是一个IP地址，会按照32位掩码来处理。   \n\n- 多条自定义路由条目可以指向同一个下一跳（**NextHopId**）。  \n\n- 自定义路由条目的下一跳（**NextHopId**）必须和路由表在同一个VPC。  \n\n- 支持通过**NextHopList**参数配置ECMP路由： \n        \n\n  * 添加普通（非ECMP）自定义路由时，需指定**DestinationCidrBlock**、**NextHopType**和**NextHopId**参数，且不能指定**NextHopList**参数。   \n \n  * 添加ECMP路由时，需指定**DestinationCidrBlock**和**NextHopList**参数，且不能指定**NextHopType**和**NextHopId**参数。   \n\n\n**使用该接口为边界路由器的路由表添加自定义路由条目时，请注意以下事项：**\n\n- 同一个路由表中自定义路由条目不能超过200条。  \n       \n- 不支持**NextHopList**参数。   \n       \n- 自定义路由条目的目标网段（**DestinationCidrBlock**）可以配置为比云服务系统路由网段`100.64.0.0/10`更明细的网段，但不支持和该网段相同。\n<notice>由于目标网段为`100.64.0.0/10`的系统路由用于VPC内的云产品通信，建议您谨慎配置更明细的路由，如果配置错误将导致云产品服务无法正常访问和使用。</notice>\n      \n- 同一路由表下的路由条目的目标网段（**DestinationCidrBlock**）不允许相同。   \n       \n- 如果指定的目标网段（**DestinationCidrBlock**）是一个IP地址，会按照32位掩码来处理。   \n      \n- 多条自定义路由条目可以指向同一个下一跳（**NextHopId**）。  \n      \n- 自定义路由条目的下一跳（**NextHopId**）必须是该VBR关联的路由器接口。  \n       \n- 只允许在VBR状态是**Active**，而且对应的物理专线状态是**Enabled**且没有被欠费锁定的情况下在VBR上新建路由条目。  \n      \n- 仅支持添加普通路由（非ECMP），需指定**DestinationCidrBlock**、**NextHopType**和**NextHopId**参数，且不能指定**NextHopList**参数。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "路由表所属地域的ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": false,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "RouteTableId",
+      "in": "query",
+      "schema": {
+        "description": "要添加自定义路由条目的路由表ID。",
+        "type": "string",
+        "required": true,
+        "example": "vtb-bp145q7glnuzd****"
+      }
+    },
+    {
+      "name": "DestinationCidrBlock",
+      "in": "query",
+      "schema": {
+        "description": "自定义路由条目的目标网段，支持IPv4、IPv6、前缀列表的目标网段和前缀列表的实例ID。需满足以下要求：\n          \n- 目标网段不能指向100.64.0.0/10或被100.64.0.0/10包含。  \n \n- 同一张路由表内的不同路由条目的目标网段不能相同。",
+        "type": "string",
+        "required": true,
+        "example": "192.168.0.0/24"
+      }
+    },
+    {
+      "name": "NextHopId",
+      "in": "query",
+      "schema": {
+        "description": "自定义路由条目的下一跳实例的ID。\n> 若选择NextHopType为ECR，您可以通过DescribeExpressConnectRouterAssociation接口获取AssociationId作为下一跳ID。\n> -",
+        "type": "string",
+        "required": false,
+        "example": "i-j6c2fp57q8rr4jlu****"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，请确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-001****"
+      }
+    },
+    {
+      "name": "RouteEntryName",
+      "in": "query",
+      "schema": {
+        "description": "要添加的自定义路由条目的名称。\n\n名称长度为1～128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "test"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "自定义路由条目的描述信息。\n\n描述长度为1～256个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "test"
+      }
+    },
+    {
+      "name": "NextHopType",
+      "in": "query",
+      "schema": {
+        "description": "自定义路由条目的下一跳的类型，取值： \n\n- **Instance**（默认值）：ECS实例。\n\n- **HaVip**：高可用虚拟IP。  \n\n- **RouterInterface**：路由器接口。\n\n- **NetworkInterface**：弹性网卡。\n\n- **VpnGateway**：VPN网关。\n\n- **IPv6Gateway**：IPv6网关。\n\n- **NatGateway**：NAT网关。\n\n- **Attachment**：转发路由器。\n\n- **VpcPeer**：VPC对等连接。\n- **Ipv4Gateway**：IPv4网关。\n- **GatewayEndpoint**：网关终端节点。\n- **Ecr**：专线网关。\n- **GatewayLoadBalancerEndpoint**：网关型负载均衡终端节点。",
+        "type": "string",
+        "required": false,
+        "enumValueTitles": {
+          "HaVip": "HaVip",
+          "VpnGateway": "VpnGateway",
+          "GatewayLoadBalancerEndpoint": "GatewayLoadBalancerEndpoint",
+          "VpcPeer": "VpcPeer",
+          "Instance": "Instance",
+          "NetworkInterface": "NetworkInterface",
+          "NatGateway": "NatGateway",
+          "Attachment": "Attachment",
+          "Ipv4Gateway": "Ipv4Gateway",
+          "GatewayEndpoint": "GatewayEndpoint",
+          "Ecr": "Ecr",
+          "RouterInterface": "RouterInterface",
+          "IPv6Gateway": "IPv6Gateway"
+        },
+        "example": "RouterInterface"
+      }
+    },
+    {
+      "name": "NextHopList",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "下一跳的信息。",
+        "type": "array",
+        "items": {
+          "description": "下一跳的信息。",
+          "type": "object",
+          "properties": {
+            "NextHopId": {
+              "description": "ECMP路由的下一跳实例的ID。",
+              "type": "string",
+              "required": false,
+              "example": "ri-2zeo3xzyf3cd8r4****"
+            },
+            "Weight": {
+              "description": "ECMP路由的下一跳的路由权重。",
+              "type": "integer",
+              "format": "int32",
+              "required": false,
+              "example": "10"
+            },
+            "NextHopType": {
+              "description": "ECMP路由的下一跳的类型，目前仅取值：**RouterInterface**（路由器接口）。",
+              "type": "string",
+              "required": false,
+              "example": "RouterInterface"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 16
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求。取值：\n- **true**：发送检查请求，不会创建路由条目。检查项包括是否填写了必需参数、请求格式、业务限制。如果检查不通过，则返回对应错误。如果检查通过，则返回错误码`DryRunOperation`。\n- **false**（默认值）：发送正常请求，通过检查后返回HTTP 2xx状态码并直接进行操作。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "自定义路由条目的ID。",
+        "type": "object",
+        "properties": {
+          "RouteEntryId": {
+            "description": "自定义路由条目的ID。",
+            "type": "string",
+            "example": "rte-sn6vjkioxte1gz83z****"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "0ED8D006-F706-4D23-88ED-E11ED28DCAC0"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IllegalParam.CidrBlock",
+        "errorMessage": "The specified CidrBlock is illegal.",
+        "description": "CidrBlock参数非法。"
+      },
+      {
+        "errorCode": "QuotaExceeded",
+        "errorMessage": "Route entry quota exceeded in this route table.",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParameter",
+        "errorMessage": "Miss mandatory parameter.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidCidrBlock.Malformed",
+        "errorMessage": "Specified CIDR block is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidCIDRBlock.Duplicate",
+        "errorMessage": "Specified CIDR block is already exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectVpcStatus",
+        "errorMessage": "Current VPC status does not support this operation.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectInstanceStatus",
+        "errorMessage": "Current instance status does not support this operation.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectRouteEntryStatus",
+        "errorMessage": "Some route entry status blocked this operation.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectVSwitchStatus",
+        "errorMessage": "The current virtual switch status does not support this operation.",
+        "description": "该vSwitch处于pending状态，无法删除。"
+      },
+      {
+        "errorCode": "InvalidCidrBlock",
+        "errorMessage": "Specified CIDR block is not valid.",
+        "description": "可能的报错原因：\n1. 您不在10.0.0.0/8的路由网段的白名单中，不能使用该网段。\n2. 添加的自定义路由目标网段不能从属于同一个VPC下面所有交换机的网段。\n3. 由于100.64.0.0/10是云服务地址，您不能再添加该网段指向云下IDC。\n4. 除100.64.0.0/10以外，100.64.0.0/11、100.96.0.0/11等明细路由网段均不能使用在云下IDC。"
+      },
+      {
+        "errorCode": "InvalidNextHop.NotFound",
+        "errorMessage": "Specified next hop does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVRouter.NotFound",
+        "errorMessage": "vRouter not exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVPC.NotFound",
+        "errorMessage": "vpc not exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthopTypeAndList.BothNull",
+        "errorMessage": "both nexthopType and nextHopList are null.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthopTypeAndList.BothNotNull",
+        "errorMessage": "both nexthopType and nextHopList are not null.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRouterInterface",
+        "errorMessage": "invalid router interface.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidOppositeRouterType",
+        "errorMessage": "nexthop list cannot only contain router interface whose opposite router interface is on vbr.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthopListSize",
+        "errorMessage": "nexthop size is illegal. Must be between 2 and 4.",
+        "description": "必须指定2~4个路由器接口作为下一跳。"
+      },
+      {
+        "errorCode": "InvalidEntryRuleQuota.NotFound",
+        "errorMessage": "Route entry quota rule not exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.CheckEntryRuleQuota",
+        "errorMessage": "Route entry quota rule check error.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVBRStatus",
+        "errorMessage": "invalid virtual border router status.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidPhysicalConnectionBusinessStatus",
+        "errorMessage": "invalid physical connection business status.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRouterType",
+        "errorMessage": "Cannot specify nexthop list in vbr's route table.",
+        "description": "VBR路由表中不存在指定的下一跳"
+      },
+      {
+        "errorCode": "IncorrectHaVipStatus",
+        "errorMessage": "This operation is denied because satus of the specified HaVip is neither Available nor InUse.",
+        "description": "无法执行该操作，因为HaVip的状态是Available或InUse。"
+      },
+      {
+        "errorCode": "CountLimitExceed.HaVipRouteEntry",
+        "errorMessage": "The count of route entry to HaVip in one route table is exceeded.",
+        "description": "同路由表中指向HaVip的路由数超过限制。"
+      },
+      {
+        "errorCode": "InvalidRouteEntry.Duplicate",
+        "errorMessage": "The route entry already exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParam",
+        "errorMessage": "The Ecmp routerEntry with router interfaces local vgw vip not match.",
+        "description": ""
+      },
+      {
+        "errorCode": "INVALID_WEIGHT_PARAM",
+        "errorMessage": "Specified value of weight invalid",
+        "description": ""
+      },
+      {
+        "errorCode": "FORBIDDEN_USE_VPC_AS_INTERNET_GATEWAY",
+        "errorMessage": "The Specified CIDR must be in vpc CIDR.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthop",
+        "errorMessage": "The Specified nexthop illegal.",
+        "description": ""
+      },
+      {
+        "errorCode": "INVALID_VPC_ID",
+        "errorMessage": "The Specified VpcId not match.",
+        "description": "该VPC不存在，请您检查输入的VPC是否正确。"
+      },
+      {
+        "errorCode": "InvalidRouteEntrySize",
+        "errorMessage": "The Specified routerEntry size not legal.",
+        "description": "等价路由需要选择2~4个路由器接口作为路由下一跳。"
+      },
+      {
+        "errorCode": "TaskConflict",
+        "errorMessage": "The operation is too frequent, please wait a moment and try again.",
+        "description": "操作过于频繁，请稍等一会再重试"
+      },
+      {
+        "errorCode": "InvalidRouteEntry",
+        "errorMessage": "Specified routeEntry not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidDestinationCidrBlock",
+        "errorMessage": "The specified destinationCidrBlock must not included in black list cidr.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.VRouterNotFound",
+        "errorMessage": "Specified virtual switch is not found during access authentication.",
+        "description": ""
+      },
+      {
+        "errorCode": "DefaultValidate.Error",
+        "errorMessage": "validte fail.",
+        "description": ""
+      },
+      {
+        "errorCode": "Region.NotSupport",
+        "errorMessage": "The specified region does not currently support nextHopType for networkInterface",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.NotifyCenCreate",
+        "errorMessage": "Failed to notify cen when create route entry.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.PrivateIpNotFound",
+        "errorMessage": "Private ip address not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.InactiveMode",
+        "errorMessage": "Vpc multi scope route only support active standby.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRouteEntryName.Malformed",
+        "errorMessage": "Specified RouteEntry name is not valid.",
+        "description": "无法修改，因为指定的路由条目名称无效"
+      },
+      {
+        "errorCode": "IncorrectStatus.MultiScopeRiRouteEntry",
+        "errorMessage": "MultiScope ri status must not in idle.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.MoreThanOneVpnOrHavip",
+        "errorMessage": "MultiScope can not support more than one vpn/havip.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.EcmpRiTypeOrNumber",
+        "errorMessage": "Emcp entry not supported if vpc-vbr or vbr-vlan ri does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "Duplicated.VpcNextHop",
+        "errorMessage": "Route entry nexthop duplicate.",
+        "description": "下一个重复的路由条目。"
+      },
+      {
+        "errorCode": "OperationUnsupported.SubRouteTableECMP",
+        "errorMessage": "Vpc subRouteTable don't support ecmp or multiScope.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthop.NotFound",
+        "errorMessage": "VRouterEntry nexthop does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.NextHopId",
+        "errorMessage": "Instance not exists or not vpc vm.",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.HaVipRouteEntry",
+        "errorMessage": "Vpc havip route entry quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNexthop.DirectEni",
+        "errorMessage": "The direct Eni cannot be nexthop.",
+        "description": "直通Eni不能作为下一跳"
+      },
+      {
+        "errorCode": "OperationFailed.InvalidNexthop",
+        "errorMessage": "vpc multi scope route must has a enable nexthop.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.NotifyCenDelete",
+        "errorMessage": "Failed to notify cen when delete route entry.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNatGateway.NotFound",
+        "errorMessage": "Natgateway not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.CxpRouteExist",
+        "errorMessage": "Cxp route alreay existed.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.GetEniInfo",
+        "errorMessage": "Failed to get networkInterface info.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.InvalidRouterInterfaceType",
+        "errorMessage": "Only vpc vbr interface support ecmp route.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidHaVip.NotFound",
+        "errorMessage": "The specified HaVip does not exist in the specified region.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.MultiScopeType",
+        "errorMessage": "The specified nexthop type is not support in multiScope.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.DistibuteLock",
+        "errorMessage": "Distibute lock fail.",
+        "description": "操作被其他请求加锁；"
+      },
+      {
+        "errorCode": "QuotaExceeded.VpnRouteEntry",
+        "errorMessage": "Vpn route entry quota exceeded.",
+        "description": "创建路由条目失败，因为vpn路由条目超出限制"
+      },
+      {
+        "errorCode": "InvalidAttachment.NotFound",
+        "errorMessage": "The attachment is not found.",
+        "description": "Attachment不存在。"
+      },
+      {
+        "errorCode": "OperationFailed.ActiveNetworkInterfaceNotFound",
+        "errorMessage": "No active network interface is found on the attachment.",
+        "description": "Attachment上不存在可用的弹性网卡。"
+      },
+      {
+        "errorCode": "InvalidNetworkInterface.NotFound",
+        "errorMessage": "The network interface is not found on the attachment.",
+        "description": "Attachment上的弹性网卡不存在。"
+      },
+      {
+        "errorCode": "OperationFailed.QueryAttachmentInfo",
+        "errorMessage": "Failed to query attachment information.",
+        "description": "查询Attachment信息失败。"
+      },
+      {
+        "errorCode": "IllegalParam.AttachmentId",
+        "errorMessage": "The attachment is invalid.",
+        "description": "Attachment非法。"
+      },
+      {
+        "errorCode": "OperationFailed.NotSupportIPV6",
+        "errorMessage": "The specified next hop does not support IPv6.",
+        "description": "指定的下一跳不支持IPv6功能。"
+      },
+      {
+        "errorCode": "IncorrectStatus.Ipv6Address",
+        "errorMessage": "The IPv6 address of the specified next hop is being assigned or deleted.",
+        "description": "指定的下一跳的IPv6地址此时正在被创建或删除中。"
+      },
+      {
+        "errorCode": "OperationUnsupported.Ipv6EntryOnPrimaryNetworkInterface",
+        "errorMessage": "You cannot create IPv6 route entries on a primary network interface.",
+        "description": "不允许创建下一跳为主网卡的IPv6路由。"
+      },
+      {
+        "errorCode": "OperationUnsupported.SpecifyIpOnIpv6Entry",
+        "errorMessage": "You cannot specify the private IP address when you create IPv6 route entries.",
+        "description": "创建IPv6路由不允许指定private IP参数。"
+      },
+      {
+        "errorCode": "OperationUnsupported.MutipleIpv6Address",
+        "errorMessage": "You cannot specify a next hop that has bound multiple IPv6 addresses.",
+        "description": "不允许指定绑定了多个IPV6地址的下一跳。"
+      },
+      {
+        "errorCode": "OperationDenied.Ipv6EntryOnCustomTable",
+        "errorMessage": "You cannot create any IPv6 route entry on a custom route table.",
+        "description": "不允许在自定义路由表上创建IPv6路由。"
+      },
+      {
+        "errorCode": "OperationDenied.CloudBoxVbrEntryAllowedInCustomRouteTable",
+        "errorMessage": "The operation is not allowed because only the custom routing table can add a routing entry with the next hop pointing to the cloud box type VBR.",
+        "description": "指定操作被禁止，因为只有自定义路由表能够添加下一跳指向云盒类型VBR的路由条目。"
+      },
+      {
+        "errorCode": "OperationDenied.RouteTableAssociateNotCloudBoxVSwitch",
+        "errorMessage": "The operation is not allowed because of the routing table is bound to a non-cloud box type vswitch, and routing entries pointing to the cloud box VBR cannot be added.",
+        "description": "指定操作被禁止，因为路由表绑定到了非云盒类型的vSwitch上，不能添加指向云盒VBR的路由条目。"
+      },
+      {
+        "errorCode": "OperationDenied.VbrMisMatchCloudBox",
+        "errorMessage": "The operation is not allowed because the routing table is bound to a cloud box vswitch, and routing entries pointing to other cloud box VBRs cannot be added.",
+        "description": "指定操作被禁止，因为路由表绑定到了一个云盒vSwitch上，不能添加指向其他云盒VBR的路由条目。"
+      },
+      {
+        "errorCode": "OperationDenied.VbrIdle",
+        "errorMessage": "The operation is not allowed because the next hop of the added routing entry is a VBR type RI at the opposite end, which cannot be in an idle state.",
+        "description": "指定操作被禁止，因为添加的路由条目下一跳是对端为VBR类型的RI,不能处于空闲状态。"
+      },
+      {
+        "errorCode": "OperationDenied.RouterInterfaceToDifferentVpc",
+        "errorMessage": "The operation is not allowed because the router interface is connected to different VPCs.",
+        "description": "指定操作被禁止，因为路由器接口指向不同的VPC。"
+      },
+      {
+        "errorCode": "OperationDenied.RouterInterfaceFromDifferentZones",
+        "errorMessage": "The operation is not allowed because the router interface resides in different zones.",
+        "description": "指定操作被禁止，因为路由器接口来自不同的可用区。"
+      },
+      {
+        "errorCode": "OperationFailed.PconnTrafficNotEnable",
+        "errorMessage": "The operation is failed because of PconnTrafficNotEnable.",
+        "description": "操作失败，因为出方向流量未开通。"
+      },
+      {
+        "errorCode": "ResourceNotFound.VpcPeer",
+        "errorMessage": "The specified resource of %s is not found.",
+        "description": "无法找到指定的VpcPeer"
+      },
+      {
+        "errorCode": "IncorrectStatus.VpcPeer",
+        "errorMessage": "The status of %s [%s] is incorrect.",
+        "description": "%s[%s]的状态不正确。"
+      },
+      {
+        "errorCode": "OperationDenied.RouteTableTypeNotPermitted",
+        "errorMessage": "The operation is not allowed because the type of route table is not permitted.",
+        "description": "指定路由表类型不允许创建路由条目"
+      },
+      {
+        "errorCode": "OperationDenied.GatewayRouteTableNotPermitted",
+        "errorMessage": "The operation is not allowed to create a route pointing to this nextHop type on gateway route table.",
+        "description": "网关路由表中不支持创建指向此实例类型的路由条目。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.VpcPeerIpv6",
+        "errorMessage": "IPv6 route entries for VPC peering connections cannot be created in this region.",
+        "description": "此路由器接口对端是VPC，此地域不支持创建此类型下一跳的IPV6路由。"
+      },
+      {
+        "errorCode": "OperationDenied.VpcIpv6NotEnabled",
+        "errorMessage": "IPv6 has not been enabled for the VPC.",
+        "description": "由于该VPC未使能IPV6能力，操作被拒绝。"
+      },
+      {
+        "errorCode": "IncorrectStatus.Ipv4Gateway",
+        "errorMessage": "The status of Ipv4Gateway is incorrect.",
+        "description": ""
+      },
+      {
+        "errorCode": "ResourceNotFound.PrefixList",
+        "errorMessage": "The specified resource of prefixList is not found.",
+        "description": "输入的prefixList不存在"
+      },
+      {
+        "errorCode": "UnsupportedFeature.CreatePrefixListEcmpRouteEntry",
+        "errorMessage": "The feature of creating ecmp route entry with prefixList is not supported.",
+        "description": "目前不支持使用前缀列表创建Ecmp路由。"
+      },
+      {
+        "errorCode": "OperationDenied.RouterInterfaceIpv6NotEnabled",
+        "errorMessage": "Routerinterface does not support IPv6.",
+        "description": "routerinterface不支持ipv6"
+      },
+      {
+        "errorCode": "OperationDenied.NextHopTypeNotPermitted",
+        "errorMessage": "The operation is not allowed because the nextHop type is invalid.",
+        "description": "不允许创建下一跳为此类型的路由。"
+      },
+      {
+        "errorCode": "ResourceAlreadyAssociated.PrefixList",
+        "errorMessage": "The operation failed because the specified prefixList route entry already exists.",
+        "description": "操作失败，此前缀列表路由存在。"
+      },
+      {
+        "errorCode": "OperationFailed.CidrConflictWithPrefixList",
+        "errorMessage": "The specified CIDR block already exists in a prefixList route entry.",
+        "description": "路由Cidr与已存在的前缀列表路由冲突。"
+      },
+      {
+        "errorCode": "ResourceNotFound.Ipv4Gateway",
+        "errorMessage": "Specified Ipv4Gateway does not exist.",
+        "description": "传入的IPv4网关实例不存在。"
+      },
+      {
+        "errorCode": "Mismatch.HaVipIdAndRouteTableId",
+        "errorMessage": "The HaVip and RouteTable are mismatched.",
+        "description": "传入的高可用虚拟IP与路由表不属于同一个VPC。"
+      },
+      {
+        "errorCode": "OperationFailed.OperationLocked",
+        "errorMessage": "The operation failed because the nextHop instance is in the O&M lock state.",
+        "description": "路由下一跳实例处于运维锁定状态，无法操作。"
+      },
+      {
+        "errorCode": "Mismatch.Ipv4GatewayIdAndRouteTableId",
+        "errorMessage": "The specified IPv4Gateway and RouteTable are not matched.",
+        "description": "操作失败，传入的IPv4网关和路由表不属于同一VPC。"
+      },
+      {
+        "errorCode": "OperationUnsupported.DestinationCidrBlockOverlapWithVSwitch",
+        "errorMessage": "The destination IPv6 network segment specified in the route entry overlaps with the vSwitch network segment.",
+        "description": "路由条目中指定的目标IPv6网段与vSwitch网段重叠。"
+      },
+      {
+        "errorCode": "ResourceNotAssociated.Cen",
+        "errorMessage": "The Vpc and Cen are not associated.",
+        "description": "操作失败，本VPC未关联到此CEN中。"
+      },
+      {
+        "errorCode": "IncorrectStatus.CenRelation",
+        "errorMessage": "The status of Vpc in Cen is incorrect.",
+        "description": "操作失败，VPC在CEN中状态未达稳态。"
+      },
+      {
+        "errorCode": "OperationDenied.CenTypeInvalid",
+        "errorMessage": "The operation is not allowed because of Cen type is invalid..",
+        "description": "不支持在路由表中创建路由指向此类型的Cen。"
+      },
+      {
+        "errorCode": "ResourceNotFound.Cen",
+        "errorMessage": "The specified resource of Cen is not found.",
+        "description": "操作失败，传入Cen资源不存在。"
+      },
+      {
+        "errorCode": "ResourceNotFound.NetworkInterface",
+        "errorMessage": "The specified resource of network interface is not found.",
+        "description": "指定的网卡不存在。"
+      },
+      {
+        "errorCode": "RouteConflict.AlreadyExist",
+        "errorMessage": "Route conflict exists in routing table.",
+        "description": "路由表中存在路由冲突。"
+      },
+      {
+        "errorCode": "IncorrectStatus.RouterInterface",
+        "errorMessage": "The specified RouterInterface status is invalid.",
+        "description": "路由器接口状态异常。"
+      },
+      {
+        "errorCode": "InvalidNexthop.UnsupportedEniBizType",
+        "errorMessage": "The biz type of NetworkInterface is illegal.",
+        "description": "作为路由下一跳的网卡业务类型非法。"
+      },
+      {
+        "errorCode": "OperationDenied.RouterInterfaceIpv6",
+        "errorMessage": "RouterInterface does not support IPv6.",
+        "description": "RouterInterface 不支持 IPv6。"
+      },
+      {
+        "errorCode": "InvalidNextHopType",
+        "errorMessage": "Specified parameter \"NextHopType\" is not valid.",
+        "description": "NextHopType 参数非法。"
+      },
+      {
+        "errorCode": "OperationDenied.VbrAttachEcrInMiddleStatus",
+        "errorMessage": "The operation is not allowed because of VBR attach or detach ECR in middle status.",
+        "description": "由于边界路由器正处于加载或者卸载专线网关过程中，当前操作无法执行，请您稍等后重试。"
+      },
+      {
+        "errorCode": "ResourceNotAssociated.Ecr",
+        "errorMessage": "The ECR is not associated.",
+        "description": "当前资源未与专线网关关联，无法执行此操作，请核对后重试。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.RouterInterfaceIpv6",
+        "errorMessage": "The feature of ipv6 is not supported for the routerInterface.",
+        "description": "该路由器接口不支持ipv6"
+      },
+      {
+        "errorCode": "InvalidVpnInstanceId.NotFound",
+        "errorMessage": "The specified VPN was not found.",
+        "description": "指定的VPN实例未找到。"
+      },
+      {
+        "errorCode": "OperationFailed.ScopeActiveRouteEntryType",
+        "errorMessage": "Operation failed because the type of the active route entry is not supported.",
+        "description": "操作失败，不支持此活动路由条目的类型。"
+      },
+      {
+        "errorCode": "OperationFailed.ScopeStandbyRouteEntryQuota",
+        "errorMessage": "Operation failed because the quota for standby route entries in the scope has been exceeded.",
+        "description": "操作失败，因为超出了备用路由条目的配额。"
+      },
+      {
+        "errorCode": "OperationFailed.ScopeActiveRouteEntryQuota",
+        "errorMessage": "Operation failed because the quota for active route entries in the scope has been exceeded.",
+        "description": "操作失败，因为超出了活动路由条目的配额。"
+      },
+      {
+        "errorCode": "OperationUnsupported.ScopeInvalidRouteType",
+        "errorMessage": "The specified route type is unsupported.",
+        "description": "不支持此路由类型。"
+      },
+      {
+        "errorCode": "OperationFailed.EcmpInvalidRouterInterfaceOppositeType",
+        "errorMessage": "Operation failed because the opposite type of the router interface is invalid for ECMP configuration.",
+        "description": "操作失败，该ri的对端类型对于ECMP是无效的。"
+      },
+      {
+        "errorCode": "OperationUnsupported.Ipv6EcmpRouteEntry",
+        "errorMessage": "The EcmpRouteEntry is not supported for IPv6.",
+        "description": "IPv6不支持Ecmp路由。"
+      },
+      {
+        "errorCode": "OperationUnsupported.Ipv6CidrBlock",
+        "errorMessage": "The specified IPv6 CIDR block is unsupported.",
+        "description": "不支持此IPv6CidrBlock。"
+      },
+      {
+        "errorCode": "OperationUnsupported.Ipv6ForVBR",
+        "errorMessage": "IPv6 route entry is not supported for VirtualBorderRouter.",
+        "description": "VBR不支持IPv6路由。"
+      },
+      {
+        "errorCode": "IncorrectStatus.RouteTableStatus",
+        "errorMessage": "The status of the specified RouteTable is incorrect.",
+        "description": "指定的路由表未处于稳态。"
+      },
+      {
+        "errorCode": "OperationFailed.InvalidNextHopType",
+        "errorMessage": "Operation failed  because Ecmp routeEntry has more than one ri entry and can only support one  non-ri entry.",
+        "description": "创建路由条目失败，因为ECMP（Equal-Cost Multipath Routing）路由只支持一个非RI（non-ri）类型作为下一跳"
+      },
+      {
+        "errorCode": "UnsupportedRegion",
+        "errorMessage": "The feature is not supported in current region.",
+        "description": "当前地域不支持该功能。"
+      },
+      {
+        "errorCode": "UnsupportedFeature.VpcAdvancedFeature",
+        "errorMessage": "The VPC does not support some advanced features.",
+        "description": "该VPC不支持某些高级功能，请提交工单处理。"
+      },
+      {
+        "errorCode": "OperationDenied.CreateEcmpForPublishedRouteEntry",
+        "errorMessage": "Operation denied because of can not create EcmpRouteEntry for published RouteEntry.",
+        "description": "已发布路由不支持创建主备路由或负载均衡路由。"
+      },
+      {
+        "errorCode": "OperationDenied.TrAttachmentIpv6Disabled",
+        "errorMessage": "The operation is not allowed because tr attachment Ipv6 is disabled.",
+        "description": "Tr Attachment未开启Ipv6能力"
+      },
+      {
+        "errorCode": "Mismatch.EniIdAndRouteTableId",
+        "errorMessage": "The operation is not allowed because eni and route table not in same vpc.",
+        "description": "操作失败，因为指定的弹性网卡和路由表不属于同一个Vpc"
+      },
+      {
+        "errorCode": "InvalidDescription.Malformed",
+        "errorMessage": "The Description is illegal.",
+        "description": "指定的资源描述格式不合法。长度为2-256个字符，不能以http://和https://开头。"
+      },
+      {
+        "errorCode": "OperationFailed.InstanceDismatchCurrentVpc",
+        "errorMessage": "The specified instance does not exist in current vpc.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationDenied.RouterInterfaceStatusNotAllowed",
+        "errorMessage": "The operation is not allowed because of RouterInterfaceStatusNotAllowed.",
+        "description": "路由器接口状态异常。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "IncorrectInstanceStatus",
+        "errorMessage": "The current status of the resource does not support this operation.",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidParameter",
+        "errorMessage": "Instance not exists or not vpc vm",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNatGatewayId.NotFound",
+        "errorMessage": "Specified value of NatGatewayId is not found in our record.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidInstanId.NotFound",
+        "errorMessage": "Specified instance does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidNextHopId.NotFound",
+        "errorMessage": "Specified next hop does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRouteTableId.NotFound",
+        "errorMessage": "Specified route table does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidHaVipId.NotFound",
+        "errorMessage": "The specified HaVip does not exist in the specified VPC.",
+        "description": "该HaVip在VPC中不存在。"
+      },
+      {
+        "errorCode": "InvalidNetworkInterface.NotFound",
+        "errorMessage": "The specified networkInterface does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVpc.NotFound",
+        "errorMessage": "Specified vpc is not found in our record.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIpv6Gateway.NotFound",
+        "errorMessage": "Specified Ipv6Gateway does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "ResourceNotFound.GatewayLoadBalancerEndpoint",
+        "errorMessage": "GatewayLoadBalancerEndpoint instance not found.",
+        "description": "未找到GatewayLoadBalancerEndpoint实例。"
+      }
+    ],
+    "500": [
+      {
+        "errorCode": "VPC.ERROR",
+        "errorMessage": "error code 500,Internal server error.",
+        "description": ""
+      },
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error, exception or failure.",
+        "description": "内部错误"
+      },
+      {
+        "errorCode": "IncorrectStatus.Ipv4Gateway",
+        "errorMessage": "The status of Ipv4Gateway is incorrect.",
+        "description": "Ipv4Gateway状态处于非稳态"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RouteEntryId\": \"rte-sn6vjkioxte1gz83z****\",\n  \"RequestId\": \"0ED8D006-F706-4D23-88ED-E11ED28DCAC0\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<CreateRouteEntryResponse>\n    <RouteEntryId>rte-sn6vjkioxte1gz83z****</RouteEntryId>\n    <RequestId>0ED8D006-F706-4D23-88ED-E11ED28DCAC0</RequestId>\n</CreateRouteEntryResponse>",
+      "errorExample": ""
+    }
+  ]
+}

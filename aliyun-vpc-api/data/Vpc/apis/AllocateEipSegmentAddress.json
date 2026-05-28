@@ -1,0 +1,425 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "AllocateEipSegmentAddress",
+  "group": "eip",
+  "title": "申请连续EIP",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "deprecated": true,
+  "description": "**AllocateEipSegmentAddress**接口属于异步接口，即系统会先返回一个连续EIP组的实例ID，但该连续EIP组并未创建完成，系统后台的创建任务仍在进行。您可以调用DescribeEipSegment查询连续EIP组的状态。\n\n- 当连续EIP组处于**Allocating**状态时，表示连续EIP组分配中，在该状态下，您只能执行查询操作，不能执行其他操作。\n\n- 当连续EIP组处于**Allocated**状态时，表示连续EIP组已分配完成。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。**ClientToken**只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-001****"
+      }
+    },
+    {
+      "name": "Bandwidth",
+      "in": "query",
+      "schema": {
+        "description": "EIP的带宽峰值。单位：Mbps。\n\n- 当**InternetChargeType**取值为**PayByBandwidth**时，**Bandwidth**取值范围为**1**~**500**。\n\n- 当**InternetChargeType**取值为**PayByTraffic**时，**Bandwidth**取值范围为**1**~**200**。\n\n默认值为**5** Mbps。",
+        "type": "string",
+        "required": false,
+        "example": "5"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "连续EIP所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "EipMask",
+      "in": "query",
+      "schema": {
+        "description": "连续EIP的掩码，取值：\n\n- **28**：单次调用，系统将分配16个连续EIP。\n\n- **27**：单次调用，系统将分配32个连续EIP。\n\n- **26**：单次调用，系统将分配64个连续EIP。\n\n- **25**：单次调用，系统将分配128个连续EIP。\n\n- **24**：单次调用，系统将分配256个连续EIP。\n\n>由于IP地址保留，实际申请到的连续EIP可能缺少1、3或者4个EIP。",
+        "type": "string",
+        "required": true,
+        "example": "28"
+      }
+    },
+    {
+      "name": "Netmode",
+      "in": "query",
+      "schema": {
+        "description": "网络类型，仅取值：**public**，表示公网。",
+        "type": "string",
+        "required": false,
+        "example": "public"
+      }
+    },
+    {
+      "name": "InternetChargeType",
+      "in": "query",
+      "schema": {
+        "description": "连续EIP的计费方式，取值：\n\n- **PayByBandwidth**（默认值）：按固定带宽计费。\n\n- **PayByTraffic**：按使用流量计费。",
+        "type": "string",
+        "required": false,
+        "example": "PayByBandwidth",
+        "default": "PayByBandwidth"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "资源组ID。",
+        "type": "string",
+        "required": false,
+        "example": "rg-bp67acfmxazb4ph****"
+      }
+    },
+    {
+      "name": "Isp",
+      "in": "query",
+      "schema": {
+        "description": "线路类型。取值：\n\n- **BGP**（默认值）：BGP（多线）线路。目前全部地域都支持BGP（多线）线路EIP。\n- **BGP_PRO**：BGP（多线）\\_精品线路。目前仅中国香港、新加坡、日本（东京）、马来西亚（吉隆坡）、菲律宾（马尼拉）、印度尼西亚（雅加达）和泰国（曼谷）地域支持BGP（多线）\\_精品线路EIP。\n\n关于BGP（多线）线路和BGP（多线）_精品线路的更多信息，请参见EIP线路类型。\n\n如果您是单线带宽的白名单用户，您还可以选择以下类型：\n-  **ChinaTelecom**：中国电信\n- **ChinaUnicom**：中国联通\n- **ChinaMobile**：中国移动\n- **ChinaTelecom_L2**：中国电信L2\n- **ChinaUnicom_L2**：中国联通L2\n- **ChinaMobile_L2**：中国移动L2\n\n如果您是杭州金融云用户，该字段必填，取值：**BGP_FinanceCloud**。",
+        "type": "string",
+        "required": false,
+        "example": "BGP"
+      }
+    },
+    {
+      "name": "Zone",
+      "in": "query",
+      "schema": {
+        "description": "连续EIP组的可用区。",
+        "type": "string",
+        "required": false,
+        "example": "cn-hangzhou-a"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回信息列表。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "F7A6301A-64BA-41EC-8284-8F4838C15D1F"
+          },
+          "EipSegmentInstanceId": {
+            "description": "连续EIP组的实例ID。",
+            "type": "string",
+            "example": "eipsg-2zett8ba055tbsxme****"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "COMMODITY_NO_EXIST",
+        "errorMessage": "commodity is not exist",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.Eip",
+        "errorMessage": "Elastic IP address quota exceeded",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParameter",
+        "errorMessage": "Specified value of \"InternetChargeType\" is not valid",
+        "description": ""
+      },
+      {
+        "errorCode": "InsufficientBalance",
+        "errorMessage": "Your account does not have enough balance.",
+        "description": ""
+      },
+      {
+        "errorCode": "ReserveIpFail",
+        "errorMessage": "Reserve eip failed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRegion.NotSupport",
+        "errorMessage": "The specified region does not support.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidth.Malformed",
+        "errorMessage": "The specified Bandwidth is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "INSTANCE_TYPE_NOT_SUPPORT",
+        "errorMessage": "The instance type is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "QueryParameter.Illegal",
+        "errorMessage": "query parameter illegal",
+        "description": ""
+      },
+      {
+        "errorCode": "TokenVerfiy.Failed",
+        "errorMessage": "token verify failed.",
+        "description": ""
+      },
+      {
+        "errorCode": "OrderFailed",
+        "errorMessage": "The Account failed to create order.",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.LargeSpecEip",
+        "errorMessage": "Elastic IP address with large spec quota exceeded.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidResourceGroupId",
+        "errorMessage": "The specified ResourceGroupId does not exist.",
+        "description": "资源组ID不存在。"
+      },
+      {
+        "errorCode": "PAYFOR.CREDIT_PAY_INSUFFICIENT_BALANCE",
+        "errorMessage": "Your account does not have enough balance.",
+        "description": ""
+      },
+      {
+        "errorCode": "SYSTEM.SALE_VALIDATE_UNEXPECTED_ERROR",
+        "errorMessage": "You have arrears and do not meet the purchase conditions.",
+        "description": ""
+      },
+      {
+        "errorCode": "Trade_Sync_Create_Sub_ERROR",
+        "errorMessage": "SyncOrderToSub error.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidComponent.EipBandwidthMax",
+        "errorMessage": "The eip_bandwidth_max component is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.RiskControl",
+        "errorMessage": "Risk control check failed.",
+        "description": "我们检测到您的付款方式存在安全风险。请通过电子邮件或控制台消息中的链接继续验证，并在验证后重新提交订单。"
+      },
+      {
+        "errorCode": "OperationFailed.SaleValidate",
+        "errorMessage": "Validate sale condition with subArticle failed.",
+        "description": "使用子项目验证销售条件失败。"
+      },
+      {
+        "errorCode": "IllegalParam.OrderParamComponent",
+        "errorMessage": "Product order param has invalid component.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.SaleExpression",
+        "errorMessage": "Get the sales expression exception attached to the item.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.CompleteUserInfo",
+        "errorMessage": "Complete user info failed.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.QueryPrice",
+        "errorMessage": "Query price failed when create order.",
+        "description": "创建订单时查询价格失败。"
+      },
+      {
+        "errorCode": "OperationFailed.InsufficientEIP",
+        "errorMessage": "Eip resource is not enough.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.InvokeInnerApi",
+        "errorMessage": "Failed to invoke inner api.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.AccountMoneyInvalid",
+        "errorMessage": "Account money is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.QueryCredtiInfo",
+        "errorMessage": "Failed to query credit info.",
+        "description": ""
+      },
+      {
+        "errorCode": "FrequentPurchase.EIP",
+        "errorMessage": "eip frequent purchase",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.QueryUserLabel",
+        "errorMessage": "Failed to query user label info.",
+        "description": ""
+      },
+      {
+        "errorCode": "PAY.INSUFFICIENT_BALANCE",
+        "errorMessage": "Your account does not have enough balance.",
+        "description": "账号余额不足"
+      },
+      {
+        "errorCode": "ORDER.QUANTITY_INVALID",
+        "errorMessage": "User quota has exceeded the limit.",
+        "description": "您当前保有的EIP数量已达上限，可前往配额管理提升EIP数量配额"
+      },
+      {
+        "errorCode": "PAY.MAYI_WITHHOLDING_AGREEMENT_ILLEGAL",
+        "errorMessage": "User withhoding argeement is illegal.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.ChargeTypeInvalid",
+        "errorMessage": "Operation failed because hybrid netmode do not support PayByTraffic.",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.EipMask",
+        "errorMessage": "EipMask is illegal.",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.Name",
+        "errorMessage": "Name is illegal.",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.Description",
+        "errorMessage": "Description is illegal.",
+        "description": ""
+      },
+      {
+        "errorCode": "InstanceExist.EipSegment",
+        "errorMessage": "The eipSegment instance already exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.QuotaExceed",
+        "errorMessage": "Operation failed because over threshold bandwidth quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.FrequentPurchase",
+        "errorMessage": "Operation failed because eip frequent purchase.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.AllocateEipSegment",
+        "errorMessage": "Operation failed because eip segment is out of stock.",
+        "description": "连续EIP库存不足。"
+      },
+      {
+        "errorCode": "OperationFailed.CreateOrderFailed",
+        "errorMessage": "Operation failed because create order failed.",
+        "description": ""
+      },
+      {
+        "errorCode": "MissingParam.Bandwidth",
+        "errorMessage": "The parameter Bandwidth is mandatory when allocate hybrid EipSegment.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.EipQuotaExceed",
+        "errorMessage": "Operation failed because eip quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "OrderError.EIP",
+        "errorMessage": "The Account failed to create order.",
+        "description": "下单失败"
+      },
+      {
+        "errorCode": "OperationConflict",
+        "errorMessage": "Request was denied due to conflict with a previous request.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": ""
+      },
+      {
+        "errorCode": "UnsupportedFeature.AllocateEipAddressWithZone",
+        "errorMessage": "The feature of AllocateEipAddressWithZone is not supported.",
+        "description": "当前地域不支持指定Zone创建实例"
+      },
+      {
+        "errorCode": "IllegalParam.Zone",
+        "errorMessage": "The specified zone is invalid.",
+        "description": "参数Zone非法"
+      },
+      {
+        "errorCode": "Forbidden.AllocateEipSegmentAddress",
+        "errorMessage": "Authentication is failed for allocating eip segment address.",
+        "description": "申请连续EIP失败，该服务已下线，请使用IP地址池服务。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "Specified value of \"RegionId\" is not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "FUWU_BIZ_COMMODITY_VERIFY_FAIL",
+        "errorMessage": "????????, ????????PD.",
+        "description": ""
+      }
+    ],
+    "500": [
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error, exception or failure.",
+        "description": "内部错误"
+      },
+      {
+        "errorCode": "OrderError.EIP",
+        "errorMessage": "The Account failed to create order.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"F7A6301A-64BA-41EC-8284-8F4838C15D1F\",\n  \"EipSegmentInstanceId\": \"eipsg-2zett8ba055tbsxme****\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<AllocateEipSegmentAddressResponse>\n    <RequestId>F7A6301A-64BA-41EC-8284-8F4838C15D1F\t</RequestId>\n    <EipSegmentInstanceId>eipsg-2zett8ba055tbsxme****</EipSegmentInstanceId>\n</AllocateEipSegmentAddressResponse>",
+      "errorExample": ""
+    }
+  ]
+}

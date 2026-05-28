@@ -1,0 +1,125 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyCommonBandwidthPackageAttribute",
+  "group": "shared-bandwidth",
+  "title": "修改共享带宽实例的名称和描述信息",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽所在的地域。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "BandwidthPackageId",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽实例的ID。",
+        "type": "string",
+        "required": true,
+        "example": "cbwp-2ze2ic1xd2qeqk145****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽的名称。 \n长度为0-128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "test123"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽的描述信息。  \n长度为0-256个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "描述"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "B450CAD8-50BC-4506-ADA7-35C6CE63E96B"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidParameter.Name.Malformed",
+        "errorMessage": "The specified Name is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParameter.Description.Malformed",
+        "errorMessage": "The specified Description is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidthPackageId.NotFound",
+        "errorMessage": "The specified BandwidthPackageId not exist.",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidthPackageId.NotFound",
+        "errorMessage": "The specified bandwidthPackageId does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"B450CAD8-50BC-4506-ADA7-35C6CE63E96B\"\n}",
+      "errorExample": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<ModifyCommonBandwidthPackageAttributeResponse>\n    <RequestId>B450CAD8-50BC-4506-ADA7-35C6CE63E96B</RequestId>\n</ModifyCommonBandwidthPackageAttributeResponse>"
+    },
+    {
+      "type": "xml",
+      "example": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n<ModifyCommonBandwidthPackageAttributeResponse>\r\n    <RequestId>B450CAD8-50BC-4506-ADA7-35C6CE63E96B</RequestId>\r\n</ModifyCommonBandwidthPackageAttributeResponse>",
+      "errorExample": "{\n    \"RequestId\":B450CAD8-50BC-4506-ADA7-35C6CE63E96B6\"\n}"
+    }
+  ]
+}

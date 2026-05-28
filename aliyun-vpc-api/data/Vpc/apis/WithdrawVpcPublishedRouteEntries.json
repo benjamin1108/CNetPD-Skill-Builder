@@ -1,0 +1,190 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "WithdrawVpcPublishedRouteEntries",
+  "group": "route-table",
+  "title": "撤回VPC已发布路由",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "实例所在的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "实例所在的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": false,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "RouteEntries",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "需要撤回的路由条目信息列表，最多支持传入50条路由。",
+        "type": "array",
+        "items": {
+          "description": "需要撤回的路由条目信息列表。",
+          "type": "object",
+          "properties": {
+            "RouteTableId": {
+              "description": "路由条目的路由表ID。",
+              "type": "string",
+              "required": true,
+              "example": "vtb-bp145q7glnuzd****"
+            },
+            "DestinationCidrBlock": {
+              "description": "路由条目的目标网段。",
+              "type": "string",
+              "required": true,
+              "example": "10.0.0.0/24"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 50,
+        "minItems": 1
+      }
+    },
+    {
+      "name": "TargetType",
+      "in": "query",
+      "schema": {
+        "description": "路由发布目标的类型",
+        "type": "string",
+        "required": true,
+        "example": "ECR"
+      }
+    },
+    {
+      "name": "TargetInstanceId",
+      "in": "query",
+      "schema": {
+        "description": "路由发布目标实例ID",
+        "type": "string",
+        "required": true,
+        "example": "ecr-dhw2xsds5****"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求。取值：\n- **true**：发送检查请求，不会撤回已发布路由。检查项包括是否填写了必需参数、请求格式、业务限制。如果检查不通过，则返回对应错误。如果检查通过，则返回错误码`DryRunOperation`。\n- **false**（默认值）：发送正常请求，通过检查后返回HTTP 2xx状态码并直接进行操作。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "Schema of Response",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "0ED8D006-F706-4D23-88ED-E11ED28DCAC0"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IncorrectStatus.Vpc",
+        "errorMessage": "The status of %s [%s] is incorrect.",
+        "description": "当前实例状态非稳态"
+      },
+      {
+        "errorCode": "ResourceNotFound.RouteEntry",
+        "errorMessage": "The specified resource routeEntry is not found.",
+        "description": "指定的路由条目不存在"
+      },
+      {
+        "errorCode": "IncorrectStatus.RouteEntry",
+        "errorMessage": "The status of %s [%s] is incorrect.",
+        "description": "路由条目处于非稳态"
+      },
+      {
+        "errorCode": "IncorrectStatus.RouteEntryPublishStatus",
+        "errorMessage": "Route entry publish status is incorrect.",
+        "description": "路由条目的路由发布状态不正确。"
+      },
+      {
+        "errorCode": "Forbidden.OperateCustomRouteTable",
+        "errorMessage": "The operation is forbidden because publish route entry in custom route table.",
+        "description": "操作被禁止，因为不允许发布自定义路由表中的路由条目。"
+      },
+      {
+        "errorCode": "ResourceNotAssociated.TargetInstance",
+        "errorMessage": "The target instance is not associated with vpc.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationDenied.UnsupportedTargetType",
+        "errorMessage": "The operation is not allowed because the target type is not supported.",
+        "description": "操作被拒绝，因为路由发布目标的类型当前不支持。"
+      },
+      {
+        "errorCode": "IncorrectStatus.RouteTable",
+        "errorMessage": "The route table is in an invalid state.",
+        "description": "指定的路由表状态不对"
+      },
+      {
+        "errorCode": "OperationUnsupported.PublishSystemRouteEntry",
+        "errorMessage": "Publishing system route entry is unsupported.",
+        "description": "发布系统路由操作不支持。"
+      },
+      {
+        "errorCode": "OperationUnsupported.UnsupportedNextHop",
+        "errorMessage": "Unsupported nexthop type for route entry publish operation.",
+        "description": "路由条目的下一跳类型不支持发布。"
+      },
+      {
+        "errorCode": "OperationUnsupported.PublishPrefixListRouteEntry",
+        "errorMessage": "Publishing prefix list route entry is unsupported.",
+        "description": "发布路由前缀列表路由操作不支持。"
+      },
+      {
+        "errorCode": "MissingParam.RouteEntries",
+        "errorMessage": "The parameter RouteEntries is missing.",
+        "description": "参数RouteEntries缺失"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"0ED8D006-F706-4D23-88ED-E11ED28DCAC0\"\n}",
+      "type": "json"
+    }
+  ]
+}

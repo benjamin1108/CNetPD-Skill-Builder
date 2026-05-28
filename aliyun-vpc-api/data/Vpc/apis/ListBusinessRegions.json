@@ -1,0 +1,82 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ListBusinessRegions",
+  "group": "physical-connection",
+  "title": "查询专线可购地域列表",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "list",
+  "parameters": [
+    {
+      "name": "AcceptLanguage",
+      "in": "query",
+      "schema": {
+        "description": "返回值语言，取值： \n          \n- **zh-CN**（默认值）：中文。\n\n- **en-US**：英文。",
+        "type": "string",
+        "required": false,
+        "example": "zh-CN"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "Schema of Response",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID",
+            "type": "string",
+            "example": "304FE68E-16D8-5B90-B2B3-FE5C5C08C24B"
+          },
+          "GeographicSubRegions": {
+            "description": "可以购买的专线地域列表。",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "RegionId": {
+                  "description": "可以购买的专线的地域ID。",
+                  "type": "string",
+                  "example": "cn-hangzhou"
+                },
+                "Name": {
+                  "description": "可以购买的专线的地域名称。",
+                  "type": "string",
+                  "example": "华东1(杭州)"
+                }
+              },
+              "description": ""
+            }
+          },
+          "Count": {
+            "description": "总条目数。",
+            "type": "integer",
+            "format": "int64",
+            "example": "10"
+          }
+        }
+      }
+    }
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"304FE68E-16D8-5B90-B2B3-FE5C5C08C24B\",\n  \"GeographicSubRegions\": [\n    {\n      \"RegionId\": \"cn-hangzhou\",\n      \"Name\": \"华东1(杭州)\"\n    }\n  ],\n  \"Count\": 10\n}",
+      "type": "json"
+    }
+  ]
+}

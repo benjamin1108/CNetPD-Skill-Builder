@@ -1,0 +1,286 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "CreateIPv6TranslatorEntry",
+  "group": "ipv6-translation",
+  "title": "为转换服务实例添加IPv6转换映射条目",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "deprecated": true,
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的地域。 您可以通过调用**DescribeRegions**接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "Ipv6TranslatorId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务的实例ID。",
+        "type": "string",
+        "required": true,
+        "example": "ipv6trans-bp1858ys57xxxxxx"
+      }
+    },
+    {
+      "name": "EntryName",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换映射条目的名称。长度为 2~100个字符，必须以字母或中文开头，可包含数字，半角句点（.），下划线（_）和短划线（-）。但不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "name1"
+      }
+    },
+    {
+      "name": "EntryDescription",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换映射条目的描述。",
+        "type": "string",
+        "required": false,
+        "example": "description"
+      }
+    },
+    {
+      "name": "AllocateIpv6Port",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例分配的IPv6地址的使用端口。",
+        "type": "integer",
+        "format": "int32",
+        "required": true,
+        "example": "80"
+      }
+    },
+    {
+      "name": "BackendIpv4Addr",
+      "in": "query",
+      "schema": {
+        "description": "需要提供IPv6服务的公网IPv4地址（IPv4-only的服务器的IPv4地址）。",
+        "type": "string",
+        "required": true,
+        "example": "46.22.xx.xx"
+      }
+    },
+    {
+      "name": "BackendIpv4Port",
+      "in": "query",
+      "schema": {
+        "description": "需要提供IPv6服务的公网IPv4地址的端口。",
+        "type": "integer",
+        "format": "int32",
+        "required": true,
+        "example": "80"
+      }
+    },
+    {
+      "name": "TransProtocol",
+      "in": "query",
+      "schema": {
+        "description": "协议类型。取值：\n\n- **tcp**：转发TCP协议的报文。  \n- **udp**：转发UDP协议的报文。",
+        "type": "string",
+        "required": true,
+        "example": "tcp"
+      }
+    },
+    {
+      "name": "EntryBandwidth",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换映射条目的带宽峰值。取值： \n        \n- -1（默认值）：不限制IPv6转换映射条目的带宽峰值。  \n- 1-200Mbps：该映射条目的带宽值。            \n\n> 所有IPv6转换映射条目的带宽峰值之和不能超过实例的带宽峰值。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "2",
+        "default": "-1"
+      }
+    },
+    {
+      "name": "AclStatus",
+      "in": "query",
+      "schema": {
+        "description": "是否开启访问控制。取值：\n- **on**：是。\n- **off**：否。",
+        "type": "string",
+        "required": false,
+        "example": "on",
+        "default": "off"
+      }
+    },
+    {
+      "name": "AclType",
+      "in": "query",
+      "schema": {
+        "description": "是否开启访问控制：\n\n- **white**：允许访问策略组中的IPv6地址访问后端服务。\n\n- **black**：禁止访问策略组中的IPv6地址访问后端服务。",
+        "type": "string",
+        "required": false,
+        "example": "white"
+      }
+    },
+    {
+      "name": "AclId",
+      "in": "query",
+      "schema": {
+        "description": "关联的访问控制策略组ID。",
+        "type": "string",
+        "required": false,
+        "example": "ipv6transacl-bp1g8bhrdexnrxxxx"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回数据结构体。",
+        "type": "object",
+        "properties": {
+          "Ipv6TranslatorEntryId": {
+            "description": "IPv6转换服务的实例ID。",
+            "type": "string",
+            "example": "ipv6transentry-xxxxxxxx"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "DCE5D25-FFC9-492A-8371-12A4E0EE2E05"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidIpAddress.AlreadyExist",
+        "errorMessage": "The specified  ip address is already exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIpAddress.WrongFormat",
+        "errorMessage": "The specified ip address is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIpAddress.PrivateAddress",
+        "errorMessage": "The specified private ip address is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6TranslatorEntry.InvalidPort",
+        "errorMessage": "The specified port is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIPv6TranslatorId.NotFound",
+        "errorMessage": "The specified ipv6 translator instance id does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidName",
+        "errorMessage": "The specified value of name not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidDescription",
+        "errorMessage": "The specified value of description not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6TranslatorEntry.InvalidProtocol",
+        "errorMessage": "The specified transProtocol is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "Resource.QuotaFull",
+        "errorMessage": "The quota of resource is full",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6Translator.Configuring",
+        "errorMessage": "The specified ipv6 translator is configuring.",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6TranslatorEntry.InvalidBandwidth",
+        "errorMessage": "The specified entry bandwidth is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6TranslatorEntry.IPv6Conflict",
+        "errorMessage": "The specified ipv6 port conflict.",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6TranslatorEntry.IPv4Conflict",
+        "errorMessage": "The specified ipv4 port and address conflict.",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6TranslatorEntry.AclIdNull",
+        "errorMessage": "The acl id must not be null.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIPv6TranslatorAclId.NotFound",
+        "errorMessage": "The specified ipv6 translator acl id does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6TranslatorEntry.InvalidAclStatus",
+        "errorMessage": "The specified acl status is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "IPv6TranslatorEntry.InvalidAclType",
+        "errorMessage": "The specified acl type is invalid.",
+        "description": ""
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"Ipv6TranslatorEntryId\": \"ipv6transentry-xxxxxxxx\",\n  \"RequestId\": \"DCE5D25-FFC9-492A-8371-12A4E0EE2E05\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<CreateIPv6TranslatorEntryResponse>\n    <Ipv6TranslatorEntryId>ipv6transentry-xxxxxxxx</Ipv6TranslatorEntryId>\n    <RequestId>DCE5D25-FFC9-492A-8371-12A4E0EE2E05</RequestId>\n</CreateIPv6TranslatorEntryResponse>",
+      "errorExample": ""
+    }
+  ]
+}

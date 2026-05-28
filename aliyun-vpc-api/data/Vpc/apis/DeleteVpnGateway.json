@@ -1,0 +1,153 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteVpnGateway",
+  "group": "vpn-gateway",
+  "title": "删除指定的VPN网关",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "> 无法删除已有IPsec连接的VPN网关。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关实例所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n由客户端生成该参数值，要保证在不同请求间唯一，最大值不超过64个ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**可能不一样。",
+        "type": "string",
+        "required": false,
+        "example": "02fb3da4-130e-11e9-8e44-0016e04115b"
+      }
+    },
+    {
+      "name": "VpnGatewayId",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关实例的ID。",
+        "type": "string",
+        "required": true,
+        "example": "vpn-bp1q8bgx4xnkm2ogj****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": ">0ED8D006-F706-4D23-88ED-E11ED28DCAC0"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "DependencyViolation.VpnConnection",
+        "errorMessage": "There are vpn connections on specified customer gateway not deleted.",
+        "description": "指定的用户网关上有 vpn 连接未删除。"
+      },
+      {
+        "errorCode": "DependencyViolation.SslVpnServer",
+        "errorMessage": "There is SSL VPN server on specified vpn gateway not deleted.",
+        "description": "指定的 vpn 网关上有 SSL VPN 服务端未删除。"
+      },
+      {
+        "errorCode": "VpnGateway.Configuring",
+        "errorMessage": "The specified service is configuring.",
+        "description": ""
+      },
+      {
+        "errorCode": "DependencyViolation.GreTunnel",
+        "errorMessage": "There is Gre tunnel on specified vpn gateway not deleted.",
+        "description": "指定的 vpn 网关上有 Gre 隧道未删除。"
+      },
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error, exception or failure.",
+        "description": ""
+      },
+      {
+        "errorCode": "TaskConflict",
+        "errorMessage": "The eip operate too frequent, TaskConflict.",
+        "description": "操作过于频繁，任务冲突。"
+      },
+      {
+        "errorCode": "InvalidVpnGatewayInstanceId.NotFound",
+        "errorMessage": "The specified vpn gateway instance id does not exist.",
+        "description": "指定的 VPN 网关不存在，请您检查 VPN 网关是否正确。"
+      },
+      {
+        "errorCode": "DependencyViolation.IpsecServer",
+        "errorMessage": "the resource cannot be deleted because the resource has an ipsec server dependency.",
+        "description": "该资源无法被删除，因为该资源下有ipsec 服务端依赖。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbidden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": "您没有权限操作该资源，请您申请操作权限后再试。"
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      },
+      {
+        "errorCode": "ForbiddenRelease",
+        "errorMessage": "Forbidden to release a prepaid instance within validity period",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidVpnGatewayInstanceId.NotFound",
+        "errorMessage": "The specified vpn gateway instance id does not exist.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \">0ED8D006-F706-4D23-88ED-E11ED28DCAC0\"\n}",
+      "errorExample": "{ \n    \"RequestId\": \"0ED8D006-F706-4D23-88ED-E11ED28DCAC0\"\n}"
+    },
+    {
+      "type": "xml",
+      "example": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteNatGatewayResponse>\n    <RequestId>0ED8D006-F706-4D23-88ED-E11ED28DCAC0</RequestId>\n</DeleteNatGatewayResponse>",
+      "errorExample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<DeleteNatGatewayResponse>\n    <RequestId>0ED8D006-F706-4D23-88ED-E11ED28DCAC0</RequestId>\n</DeleteNatGatewayResponse>"
+    }
+  ]
+}

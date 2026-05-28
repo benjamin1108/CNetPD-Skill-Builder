@@ -1,0 +1,178 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyCommonBandwidthPackageSpec",
+  "group": "shared-bandwidth",
+  "title": "修改共享带宽的带宽峰值",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "在调用本接口时，请了解以下内容：\n- **ModifyCommonBandwidthPackageSpec**接口属于异步接口，即系统会先返回一个请求ID，但共享带宽的带宽峰值并未修改完成，系统后台的修改任务仍在进行。您可以调用DescribeCommonBandwidthPackages查询共享带宽实例的状态。\n    - 当共享带宽实例处于**Modifying**状态时，表示共享带宽的带宽峰值正在修改中，在该状态下，您只能执行查询操作，不能执行其他操作。\n    - 当共享带宽实例处于**Available**状态时，表示共享带宽的带宽峰值修改完成。\n- **ModifyCommonBandwidthPackageSpec**接口不支持并发修改同一个共享带宽的带宽峰值。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽实例所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "BandwidthPackageId",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽实例的ID。",
+        "type": "string",
+        "required": true,
+        "example": "cbwp-2ze2ic1xd2qeqk145****"
+      }
+    },
+    {
+      "name": "Bandwidth",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽实例的带宽峰值。单位：Mbps。 \n\n\n\n - 当共享带宽的计费方式为按带宽计费时，**Bandwidth**的默认取值范围为**2**~**20000**。\n-  当共享带宽的计费方式为按增强型95计费时，**Bandwidth**的默认取值范围为**200**~**20000**。\n- 当共享带宽的计费方式为按主流量计费时，**Bandwidth**的默认取值范围为**1**~**2000**。\n\n\n取值范围：**1**~**1000**。",
+        "type": "string",
+        "required": true,
+        "example": "1000"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回信息列表。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "7F129000-F929-4AF5-BE8D-BAE434C795306"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "ResourceNotEnough.Bandwidth",
+        "errorMessage": "The specified resource of Bandwidth is not enough.",
+        "description": "带宽资源不足"
+      },
+      {
+        "errorCode": "InvalidParameter.Bandwidth",
+        "errorMessage": "The specified bandwidth is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidthPackageId.NotFound",
+        "errorMessage": "The specified BandwidthPackageId not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidCommonBandwidthPackageId.NotFound",
+        "errorMessage": "The specified BandwidthPackageId is not found.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectStatus.ResourceStatus",
+        "errorMessage": "Resource status is abnormal for renew.",
+        "description": ""
+      },
+      {
+        "errorCode": "SYSTEM.SALE_VALIDATE_UNEXPECTED_ERROR",
+        "errorMessage": "You have arrears and do not meet the purchase conditions.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.SyncOrderToSub",
+        "errorMessage": "SyncOrderToSub error.",
+        "description": "操作失败"
+      },
+      {
+        "errorCode": "OperationFailed.SaleValidate",
+        "errorMessage": "Validate sale condition with subArticle failed.",
+        "description": "使用子项目验证销售条件失败。"
+      },
+      {
+        "errorCode": "OperationFailed.QueryCommodityInfo",
+        "errorMessage": "Operation failed because quey commodity info error.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.QueryPrice",
+        "errorMessage": "Query price failed when create order.",
+        "description": "创建订单时查询价格失败。"
+      },
+      {
+        "errorCode": "Forbidden.ChargeTypeIsPrepaid",
+        "errorMessage": "It's forbidden to change prepaid CBWP's bandwidth by API.  It can be changed on Aliyun web console.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectStatus.CbwpModifying",
+        "errorMessage": "Cbwp Modifying status is invalid.",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidthPackageId.NotFound",
+        "errorMessage": "The specified BandwidthPackageId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidth.ValueNotSupported",
+        "errorMessage": "The specified value of Bandwidth not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "BandwidthPackage.FinancialLocked",
+        "errorMessage": "The specified BandwidthPackage has been Financial Lock.",
+        "description": ""
+      }
+    ],
+    "500": [
+      {
+        "errorCode": "OrderError.BandwidthPackage",
+        "errorMessage": "The Account failed to create order.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"7F129000-F929-4AF5-BE8D-BAE434C795306\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ModifyCommonBandwidthPackageSpecResponse>\n    <RequestId>7F129000-F929-4AF5-BE8D-BAE434C795306</RequestId>\n</ModifyCommonBandwidthPackageSpecResponse>",
+      "errorExample": ""
+    }
+  ]
+}

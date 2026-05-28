@@ -1,0 +1,136 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DeleteCommonBandwidthPackage",
+  "group": "shared-bandwidth",
+  "title": "删除共享带宽实例",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "delete",
+  "description": "**DeleteCommonBandwidthPackage**接口不支持并发删除同一个共享带宽实例。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽实例所在的地域。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "Force",
+      "in": "query",
+      "schema": {
+        "description": "是否强制删除共享带宽实例。取值： \n          \n- **false**（默认值）：只删除不包含EIP的共享带宽。\n\n- **true**：将共享带宽实例中的EIP全部移出后，删除共享带宽。",
+        "type": "string",
+        "required": false,
+        "example": "false"
+      }
+    },
+    {
+      "name": "BandwidthPackageId",
+      "in": "query",
+      "schema": {
+        "description": "共享带宽实例的ID。",
+        "type": "string",
+        "required": true,
+        "example": "cbwp-2ze2ic1xd2qeqk145pn4u"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回请求列表。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "B400EF57-60E3-4D61-B8FB-7FA8F72DF5A6"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "MissingParam.%s",
+        "errorMessage": "The param of %s is missing.",
+        "description": "参数缺失。"
+      },
+      {
+        "errorCode": "DependencyViolation.Ips",
+        "errorMessage": "The specified BandwidthPackageId has dependent resource ips.",
+        "description": ""
+      },
+      {
+        "errorCode": "ForbiddenAction.PrePaid",
+        "errorMessage": "The specified BandwidthPackageId is PrePaid.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.BandwidthPackageNotEmpty",
+        "errorMessage": "Eip bandwidth package not empty.",
+        "description": "共享带宽包中仍存在EIP，无法删除"
+      },
+      {
+        "errorCode": "InvalidOperation.DeletionProtection",
+        "errorMessage": "The instance cannnot delete because of deletion protecion.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationUnsupported.Release95Instance",
+        "errorMessage": "Releasing instances that payBy95 or payByOld95 is unsupported.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.AddIpTaskInProcessing",
+        "errorMessage": "Operation failed because add ip to common bandwidth task in processing.",
+        "description": "存在EIP正在加入共享带宽，不允许删除"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBandwidthPackageId.NotFound",
+        "errorMessage": "The specified BandwidthPackageId does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"B400EF57-60E3-4D61-B8FB-7FA8F72DF5A6\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DeleteCommonBandwidthPackageResponse>\n    <RequestId>B400EF57-60E3-4D61-B8FB-7FA8F72DF5A6</RequestId>\n</DeleteCommonBandwidthPackageResponse>",
+      "errorExample": ""
+    }
+  ]
+}

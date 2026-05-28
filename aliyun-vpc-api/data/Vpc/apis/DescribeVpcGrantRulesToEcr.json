@@ -1,0 +1,215 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeVpcGrantRulesToEcr",
+  "group": "misc",
+  "title": "查询专线网关跨账号授权信息",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "list",
+  "parameters": [
+    {
+      "name": "MaxResults",
+      "in": "query",
+      "schema": {
+        "description": "分批次查询时每次显示的条目数。取值范围：**1**~**100**，默认值为**100**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "50"
+      }
+    },
+    {
+      "name": "NextToken",
+      "in": "query",
+      "schema": {
+        "description": "是否拥有下一次查询的令牌（Token）。取值：\n\n* 第一次查询和没有下一次查询时，均无需填写。\n\n* 如果有下一次查询，取值为上一次API调用返回的**NextToken**值。",
+        "type": "string",
+        "required": false,
+        "example": "FFmyTO70tTpLG6I3FmYAXGKPd****"
+      }
+    },
+    {
+      "name": "InstanceId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的网络实例的ID。",
+        "type": "string",
+        "required": false,
+        "example": "vpc-wz9ek66wd7tl5xqpy****"
+      }
+    },
+    {
+      "name": "EcrInstanceId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的专线网关实例的ID。",
+        "type": "string",
+        "required": false,
+        "example": "ecr-ncxadcujadncsa****"
+      }
+    },
+    {
+      "name": "EcrOwnerId",
+      "in": "query",
+      "schema": {
+        "description": "ECR实例所属阿里云账号（主账号）ID。\n\n> 如果您要加载跨账号的网络实例，本参数必填。",
+        "type": "integer",
+        "format": "int64",
+        "required": false,
+        "example": "192732132151****"
+      }
+    },
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的网络实例所在的地域。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ResourceGroupId",
+      "in": "query",
+      "schema": {
+        "description": "要查询的网络实例所属的资源组ID。",
+        "type": "string",
+        "required": false,
+        "example": "rg-acfmxazb4ph6aiy****"
+      }
+    },
+    {
+      "name": "Tags",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "标签信息。",
+        "type": "array",
+        "items": {
+          "description": "标签信息。",
+          "type": "object",
+          "properties": {
+            "Key": {
+              "description": "资源的标签键。至少输入1个标签键，最多支持输入20个标签键。如需传入该值，则不能输入空字符串。\n\n一个标签键最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceDept"
+            },
+            "Value": {
+              "description": "资源的标签值。最多支持输入20个标签值。如需传入该值，可以输入空字符串。\n\n最多支持128个字符，不能以`aliyun`和`acs:`开头，不能包含`http://`或者`https://`。",
+              "type": "string",
+              "required": false,
+              "example": "FinanceJoshua"
+            }
+          },
+          "required": false
+        },
+        "required": false,
+        "maxItems": 10
+      }
+    },
+    {
+      "name": "InstanceType",
+      "in": "query",
+      "schema": {
+        "description": "要查询授权关系的实例类型。取值：\n\n- **VBR**：边界路由器VBR（Virtual border router）实例，表示查询VBR实例拥有哪些VPC实例的授权。\n- **VPC**：专有网络VPC（Virtual Private Cloud）实例，表示查询VPC实例对哪些VBR实例进行了授权。",
+        "type": "string",
+        "required": false,
+        "example": "VPC"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "NextToken": {
+            "description": "是否拥有下一次查询的令牌（Token）。取值：\n- 如果**NextToken**为空表示没有下一次查询。\n- 如果**NextToken**有返回值，该取值表示下一次查询开始的令牌。",
+            "type": "string",
+            "example": "FFmyTO70tTpLG6I3FmYAXGKPd****"
+          },
+          "RequestId": {
+            "description": "阿里云为该请求生成的唯一标识符。",
+            "type": "string",
+            "example": "66342E8E-5E87-5FF9-80C7-C3E3571A****"
+          },
+          "TotalCount": {
+            "description": "查询到的实例总数。说明 使用MaxResults和NextToken参数进行分页查询时，返回的TotalCount参数值无意义。",
+            "type": "string",
+            "example": "10"
+          },
+          "GrantRuleModels": {
+            "description": "授权信息。",
+            "type": "array",
+            "items": {
+              "description": "授权信息。",
+              "type": "object",
+              "properties": {
+                "InstanceId": {
+                  "description": "要查询的网络实例的ID。",
+                  "type": "string",
+                  "example": "vpc-wz9ek66wd7tl5xqpy****"
+                },
+                "Type": {
+                  "description": "授权关系的实例类型。取值：\n\n- **VBR**：边界路由器VBR（Virtual border router）实例，表示查询VBR实例拥有哪些VPC实例的授权。\n- **VPC**：专有网络VPC（Virtual Private Cloud）实例，表示查询VPC实例对哪些VBR实例进行了授权。",
+                  "type": "string",
+                  "example": "VPC"
+                },
+                "InstanceUid": {
+                  "description": "查询的授权关系实例所属阿里云账号（主账号）ID。",
+                  "type": "integer",
+                  "format": "int64",
+                  "example": "192745367151****"
+                },
+                "RegionNo": {
+                  "description": "查询的授权关系实例所在地域ID。",
+                  "type": "string",
+                  "example": "cn-hangzhou"
+                },
+                "EcrId": {
+                  "description": "专线网关实例ID。",
+                  "type": "string",
+                  "example": "ecr-tz7w3chlaptxr2****"
+                },
+                "EcrOwnerId": {
+                  "description": "ECR实例所属阿里云账号（主账号）ID。",
+                  "type": "integer",
+                  "format": "int64",
+                  "example": "192732132151****"
+                },
+                "CreationTime": {
+                  "description": "创建时间，单位毫秒",
+                  "type": "string",
+                  "example": "2024-09-09T02:14:51Z"
+                }
+              }
+            }
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"NextToken\": \"FFmyTO70tTpLG6I3FmYAXGKPd****\",\n  \"RequestId\": \"66342E8E-5E87-5FF9-80C7-C3E3571A****\",\n  \"TotalCount\": \"10\",\n  \"GrantRuleModels\": [\n    {\n      \"InstanceId\": \"vpc-wz9ek66wd7tl5xqpy****\",\n      \"Type\": \"VPC\",\n      \"InstanceUid\": 0,\n      \"RegionNo\": \"cn-hangzhou\",\n      \"EcrId\": \"ecr-tz7w3chlaptxr2****\",\n      \"EcrOwnerId\": 0,\n      \"CreationTime\": \"2024-09-09T02:14:51Z\"\n    }\n  ]\n}",
+      "type": "json"
+    }
+  ]
+}

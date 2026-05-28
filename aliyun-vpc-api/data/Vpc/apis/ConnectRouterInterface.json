@@ -1,0 +1,193 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ConnectRouterInterface",
+  "group": "router-interface",
+  "title": "由发起端路由器接口向接收端发起连接",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "调用本接口后路由器接口进入**Connecting**状态，连接完成后进入**Active**状态。\n\n调用该接口创建VPC时，请注意： \n- 只能由状态为**Idle**的发起端路由器接口向接收端发起连接。 \n- 任意两个路由器之间，最多只能存在一对相互连接的路由器接口。 \n- 如果账号下存在处于欠费状态的路由器接口，无法进行发起连接。",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口所在的地域。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "RouterInterfaceId",
+      "in": "query",
+      "schema": {
+        "description": "发起端路由器接口的ID。",
+        "type": "string",
+        "required": true,
+        "example": "ri-2zeo3xzyf38r4urzd****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "DE77A7F3-3B74-41C0-A5BC-CAFD188C28B6"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IncorrectRole.NotInitiatingSide",
+        "errorMessage": "The specified RouterInterface is not InitiatingSide.",
+        "description": ""
+      },
+      {
+        "errorCode": "IncorrectRIStatus",
+        "errorMessage": "RouterInterface can be operated by this action only when it's status is Idle.",
+        "description": "只有路由器接口处于“闲置”状态时，才可以使用此操作。"
+      },
+      {
+        "errorCode": "IncorrectOppositeInterfaceInfo.NotSet",
+        "errorMessage": "OppositeInterfaceId/OppositeRouterId/OppositeRouterType/OppositeInterfaceOwnerId must be all set.",
+        "description": "参数OppositeInterfaceId/OppositeRouterId/OppositeRouterType/OppositeInterfaceOwnerId必须全部设置。"
+      },
+      {
+        "errorCode": "IncorrectOppositeInterfaceInfo",
+        "errorMessage": "Cannot connect on the same router",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.OnlyOneConnection",
+        "errorMessage": "The Specified routers have a connection already",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden.BillsOutstanding",
+        "errorMessage": "You cannot use this action because you have bills outstanding.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidAccount.NotFound",
+        "errorMessage": "The specified account is not exists.",
+        "description": ""
+      },
+      {
+        "errorCode": "ErrCode.Invalid",
+        "errorMessage": "got error",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideRole",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideInstanceId",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideRegionNo",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideRouterId",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideRouterType",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideAliUid",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideOppositeInterfaceOwnerId",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideOppositeRegionNo",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideOppositeInterfaceId",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideOppositeRouterId",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "AttrMismatching.AcceptingSideOppositeRouterType",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.InstanceOwner",
+        "errorMessage": "The router instance owener error.",
+        "description": ""
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The RegionId provided does not exist in our records.",
+        "description": "指定的RegionId不存在"
+      },
+      {
+        "errorCode": "InvalidRouterInterfaceId.NotFound",
+        "errorMessage": "The specified RouterInterfaceId does not exist in our record.",
+        "description": ""
+      },
+      {
+        "errorCode": "CROSS_BID.FORBIDDEN",
+        "errorMessage": "Connect RouterInterface across bid is illegal",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"DE77A7F3-3B74-41C0-A5BC-CAFD188C28B6\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ConnectRouterInterfaceResponse>\n    <RequestId>DE77A7F3-3B74-41C0-A5BC-CAFD188C28B6</RequestId>\n</ConnectRouterInterfaceResponse>",
+      "errorExample": ""
+    }
+  ]
+}

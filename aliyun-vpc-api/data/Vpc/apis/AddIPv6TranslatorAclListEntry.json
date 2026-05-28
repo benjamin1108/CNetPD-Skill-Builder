@@ -1,0 +1,136 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "AddIPv6TranslatorAclListEntry",
+  "group": "ipv6-translation",
+  "title": "在访问控制策略组中添加IP条目",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "deprecated": true,
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "访问控制策略组的地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "AclId",
+      "in": "query",
+      "schema": {
+        "description": "IP条目的访问控制策略组ID。",
+        "type": "string",
+        "required": true,
+        "example": "ipv6transacl-bp1dcdvfe2****"
+      }
+    },
+    {
+      "name": "AclEntryIp",
+      "in": "query",
+      "schema": {
+        "description": "访问控制策略组条目中要添加的单个IPv6地址或IPv6地址段，例如12XX:0:0:XXXX::0102或12XX:0:0:XXXX::/60。",
+        "type": "string",
+        "required": true,
+        "example": "12XX:0:0:XXXX::0102"
+      }
+    },
+    {
+      "name": "AclEntryComment",
+      "in": "query",
+      "schema": {
+        "description": "访问控制策略组条目的备注信息。\n\n长度为2~100个字符，以英文大小字母或中文开头，可包含数字、下划线（_）和短划线（-）。",
+        "type": "string",
+        "required": false,
+        "example": "clientIP1"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回数据结构体。",
+        "type": "object",
+        "properties": {
+          "AclEntryId": {
+            "description": "访问控制策略组条目ID。",
+            "type": "string",
+            "example": "ipv6transaclentry-bp105jrs****"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "8B2F5262-6B57-43F2-defr345"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "InvalidIpAddress.WrongFormat",
+        "errorMessage": "The specified entry ip address is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIPv6TranslatorAclId.NotFound",
+        "errorMessage": "The specified ipv6 translator acl instance id does not exist.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidEntryComment",
+        "errorMessage": "The specified value of comment not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "Resource.QuotaFull",
+        "errorMessage": "The quota of resource is full",
+        "description": ""
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"AclEntryId\": \"ipv6transaclentry-bp105jrs****\",\n  \"RequestId\": \"8B2F5262-6B57-43F2-defr345\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<AddIPv6TranslatorAclListEntryResponse>\n    <AclEntryId>ipv6transaclentry-bp105jrs****</AclEntryId>\n    <RequestId>8B2F5262-6B57-43F2-defr345</RequestId>\n</AddIPv6TranslatorAclListEntryResponse>",
+      "errorExample": ""
+    }
+  ]
+}

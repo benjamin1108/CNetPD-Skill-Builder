@@ -1,0 +1,229 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyExpressConnectTrafficQos",
+  "group": "qos-policy",
+  "title": "修改高速通道QoS策略",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "- 当前只支持关联处于正常状态，并且不欠费的独享物理专线，暂不支持共享物理专线端口和VBR实例。\n\n- 关联独享物理专线的时候，只能进行全量操作，如果需要全部取消关联，需要传入空字符串。\n\n- 如果独享物理专线拥有共享物理专线或者跨账号VBR，需要开通白名单才支持进行关联。\n\n- 独享物理专线所在的设备需要支持QoS特性才可以进行关联。\n\n- 单VBR关联多物理专线场景，需要一次性关联该VBR所有的物理专线。",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "0c593ea1-3bea-11e9-b96b-88e9fe637760"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "0c593ea1-3bea-11e9-b96b-88e9fe637760"
+      }
+    },
+    {
+      "name": "QosName",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略的名称。\n\n长度为0～128个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "qos-test"
+      }
+    },
+    {
+      "name": "QosDescription",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略的描述信息。\n\n长度为0～256个字符，不能以`http://`或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "qos-test"
+      }
+    },
+    {
+      "name": "QosId",
+      "in": "query",
+      "schema": {
+        "description": "QoS策略ID。",
+        "type": "string",
+        "required": true,
+        "example": "qos-2giu0a6vd5x0mv****"
+      }
+    },
+    {
+      "name": "AddInstanceList",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "本次更新需要添加的实例列表，如果没有需要添加的实例可以不用传递此参数。",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "InstanceId": {
+              "description": "需要关联的实例ID。",
+              "type": "string",
+              "required": false,
+              "example": "pc-bp159zj8zujwy3p07****"
+            },
+            "InstanceType": {
+              "description": "需要关联实例的类型。取值：**PHYSICALCONNECTION**物理专线。",
+              "type": "string",
+              "required": false,
+              "enumValueTitles": {},
+              "example": "PHYSICALCONNECTION",
+              "enum": [
+                "PHYSICALCONNECTION"
+              ]
+            }
+          },
+          "required": false,
+          "description": ""
+        },
+        "required": false,
+        "maxItems": 100
+      }
+    },
+    {
+      "name": "RemoveInstanceList",
+      "in": "query",
+      "style": "repeatList",
+      "schema": {
+        "description": "本次更新需要移除的实例列表，如果没有需要移除的实例可以不用传递此参数。",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "InstanceId": {
+              "description": "关联的实例ID。",
+              "type": "string",
+              "required": false,
+              "example": "pc-bp1j37am632492qzw****"
+            },
+            "InstanceType": {
+              "description": "关联实例的类型。取值：**PHYSICALCONNECTION**物理专线。",
+              "type": "string",
+              "required": false,
+              "enumValueTitles": {},
+              "example": "PHYSICALCONNECTION",
+              "enum": [
+                "PHYSICALCONNECTION"
+              ]
+            }
+          },
+          "required": false,
+          "description": ""
+        },
+        "required": false,
+        "maxItems": 100
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "54B48E3D-DF70-471B-AA93-08E683A1B457"
+          }
+        },
+        "description": ""
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IllegalParam.%s",
+        "errorMessage": "The param of %s is illegal.",
+        "description": "指定的参数非法"
+      },
+      {
+        "errorCode": "IncorrectStatus.Qos",
+        "errorMessage": "The status of QoS is incorrect.",
+        "description": "当前QoS策略状态异常，无法进行操作，请稍等后尝试。"
+      },
+      {
+        "errorCode": "IncorrectStatus.PconnIdList",
+        "errorMessage": "The status of PconnIdList is incorrect.",
+        "description": "当前物理专线的状态不正常，不能进行此操作。"
+      },
+      {
+        "errorCode": "ResourceAlreadyAssociated.PconnQos",
+        "errorMessage": "The specified resource of PconnQos is already associated.",
+        "description": "物理专线已经绑定到了其他的QoS策略上。"
+      },
+      {
+        "errorCode": "EcQoSConflict",
+        "errorMessage": "The specified QoS is conflict with other QoS.",
+        "description": "当前Qos配置与其他配置冲突，请稍后再试。"
+      },
+      {
+        "errorCode": "IncorrectBusinessStatus.PconnIdList",
+        "errorMessage": "The business status of PconnIdList is incorrect.",
+        "description": "当前物理专线处于欠费状态，不能进行此操作。"
+      },
+      {
+        "errorCode": "EcPconnWithVpconnNotAllowAssociateQoS",
+        "errorMessage": "The specified Pconn with Vpconn is not allowed to associate with Qos.",
+        "description": "包含共享物理专线的独享物理专线不允许绑定Qos策略。"
+      },
+      {
+        "errorCode": "EcPconnWithCrossAccountVbrNotAllowAssociateQoS",
+        "errorMessage": "The specified Pconn with cross account VBR is not allowed to associate with Qos.",
+        "description": "包含跨账号虚拟边界路由器的独享物理专线不允许绑定Qos策略。"
+      },
+      {
+        "errorCode": "EcDeviceNotSupportQoS",
+        "errorMessage": "The specified Pconn is on the device which is not supported QoS.",
+        "description": "物理专线所在的设备不支持Qos特性。"
+      },
+      {
+        "errorCode": "EcPconnVbrMustContainsAll",
+        "errorMessage": "In the single VBR with multiple Pconn scene, all Pconn must be associated with the same Qos.",
+        "description": "单VBR多Pconn场景，必须将所有的Pconn都绑定QoS策略。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "errorExample": "",
+      "example": "{\n  \"RequestId\": \"54B48E3D-DF70-471B-AA93-08E683A1B457\"\n}",
+      "type": "json"
+    }
+  ]
+}

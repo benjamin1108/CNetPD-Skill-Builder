@@ -1,0 +1,373 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "CreateVpnPbrRouteEntry",
+  "group": "vpn-attachment",
+  "title": "创建VPN策略路由",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "create",
+  "description": "### 前提条件\n- 创建策略路由前，请确保您已经创建了IPsec连接。具体操作，请参见CreateVpnConnection。\n- 创建策略路由前，建议您先了解策略路由的使用限制、匹配规则等信息。更多信息，请参见使用策略路由。\n\n### 使用限制\n- 不支持添加目标网段为0.0.0.0/0的策略路由。\n- 请勿添加目标网段为100.64.0.0/10、100.64.0.0/10下的子网段或者包含100.64.0.0/10网段的策略路由，该类策略路由会导致控制台无法显示IPsec连接的状态或者导致IPsec连接协商失败。\n- **CreateVpnPbrRouteEntry**接口属于异步接口，即系统先返回策略路由的信息，但该策略路由尚未创建成功，系统后台的创建任务仍在进行。您可以调用DescribeVpnGateway接口查询VPN网关实例状态，来确定策略路由的创建状态：\n    - 当VPN网关实例处于**updating**状态时，表示策略路由正在创建中。\n    - 当VPN网关实例处于**active**状态时，表示策略路由创建成功。\n- **CreateVpnPbrRouteEntry**接口不支持在同一个VPN网关实例下并发创建策略路由。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关实例所在的地域ID。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "d7d24a21-f4ba-4454-9173-b3****"
+      }
+    },
+    {
+      "name": "VpnGatewayId",
+      "in": "query",
+      "schema": {
+        "description": "VPN网关实例的ID。",
+        "type": "string",
+        "required": true,
+        "example": "vpn-bp1a3kqjiiq9legfx****"
+      }
+    },
+    {
+      "name": "RouteSource",
+      "in": "query",
+      "schema": {
+        "description": "策略路由的源网段。",
+        "type": "string",
+        "required": true,
+        "example": "192.168.1.0/24"
+      }
+    },
+    {
+      "name": "RouteDest",
+      "in": "query",
+      "schema": {
+        "description": "策略路由的目标网段。",
+        "type": "string",
+        "required": true,
+        "example": "10.0.0.0/24"
+      }
+    },
+    {
+      "name": "NextHop",
+      "in": "query",
+      "schema": {
+        "description": "策略路由的下一跳。",
+        "type": "string",
+        "required": true,
+        "example": "vco-bp15oes1py4i66rmd****"
+      }
+    },
+    {
+      "name": "Weight",
+      "in": "query",
+      "schema": {
+        "description": "策略路由的权重值。\n\n在您使用同一个VPN网关实例搭建主备IPsec-VPN连接的场景中，您可以通过配置策略路由的权重值来指定主链路和备链路，权重值为100的策略路由默认为主链路，权重值为0的策略路由默认为备链路。\n\n您可以通过为IPsec连接配置健康检查来自动探测链路的连通性，在主链路不通的情况下，系统自动将流量切换至备链路进行传输，实现上云链路的高可用。具体操作，请参见CreateVpnConnection。\n\n- **100**：表示当前策略路由关联的IPsec连接为主链路。\n- **0**：表示当前策略路由关联的IPsec连接为备链路。\n\n> - 在您指定主备链路时，主策略路由和备策略路由的源网段和目标网段需相同。\n> - 对于支持双隧道模式IPsec-VPN连接的VPN网关实例，无需配置该参数。一个双隧道模式IPsec-VPN连接包含两条隧道，两条隧道自动形成主备链路，无需再通过配置该参数指定主备链路。如果您配置了该参数，则该参数配置后不生效。",
+        "type": "integer",
+        "format": "int32",
+        "required": true,
+        "example": "0"
+      }
+    },
+    {
+      "name": "PublishVpc",
+      "in": "query",
+      "schema": {
+        "description": "是否发布策略路由到VPC中。取值：\n\n- **true**：发布策略路由到VPC中，系统仅会将路由发布至VPC系统路由表中，而不会发布至VPC自定义路由表中。\n\n  如果VPC自定义路由表中需要包含该路由，请您手动添加。具体操作，请参见CreateRouteEntry。\n\n- **false**：不发布策略路由到VPC的路由表。\n\n  您需要在VPC系统路由表和自定义路由表中手动添加下一跳指向VPN网关实例的策略路由，否则VPC将无法通过IPsec-VPN连接访问该网段下的资源。",
+        "type": "boolean",
+        "required": true,
+        "example": "true"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "策略路由的描述信息。\n\n描述信息长度为1～100个字符。",
+        "type": "string",
+        "required": false,
+        "example": "desctest"
+      }
+    },
+    {
+      "name": "OverlayMode",
+      "in": "query",
+      "schema": {
+        "description": "隧道协议。仅取值：**Ipsec**（IPsec隧道协议）。",
+        "type": "string",
+        "required": false,
+        "example": "Ipsec"
+      }
+    },
+    {
+      "name": "Priority",
+      "in": "query",
+      "schema": {
+        "description": "策略路由的策略优先级。取值范围：**1**~**100**。默认值：**10**。\n\n策略优先级数字越小，策略路由的优先级越高。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "10"
+      }
+    },
+    {
+      "name": "DryRun",
+      "in": "query",
+      "schema": {
+        "description": "是否只预检此次请求。取值：\n- **true**：发送检查请求，不会创建路由。检查项包括是否填写了必需参数、请求格式、业务限制。如果检查不通过，则返回对应错误。如果检查通过，则返回错误码`DryRunOperation`。\n- **false**（默认值）：发送正常请求，通过检查后返回HTTP 2xx状态码并直接进行操作。",
+        "type": "boolean",
+        "required": false,
+        "example": "false"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回结果。",
+        "type": "object",
+        "properties": {
+          "NextHop": {
+            "description": "策略路由的下一跳。",
+            "type": "string",
+            "example": "vco-bp15oes1py4i66rmd****"
+          },
+          "Weight": {
+            "description": "策略路由的权重值。\n\n- **100**：表示当前策略路由关联的IPsec连接为主链路。\n- **0**：表示当前策略路由关联的IPsec连接为备链路。",
+            "type": "integer",
+            "format": "int32",
+            "example": "0"
+          },
+          "RouteDest": {
+            "description": "策略路由的目标网段。",
+            "type": "string",
+            "example": "10.0.0.0/24"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "5BE01CD7-5A50-472D-AC14-CA181C5C03BE"
+          },
+          "Description": {
+            "description": "策略路由的描述信息。",
+            "type": "string",
+            "example": "desctest"
+          },
+          "State": {
+            "description": "策略路由的发布状态。\n\n- **published**：已发布策略路由到VPC的路由表。\n\n- **normal**：未发布策略路由到VPC的路由表。",
+            "type": "string",
+            "example": "normal"
+          },
+          "CreateTime": {
+            "description": "创建策略路由的时间戳。单位：毫秒。\n\n时间戳的格式采用Unix时间戳，表示从格林威治时间1970年01月01日00时00分00秒至创建策略路由时的总时长。",
+            "type": "integer",
+            "format": "int64",
+            "example": "1492747187000"
+          },
+          "OverlayMode": {
+            "description": "隧道协议。仅取值：**Ipsec**（IPsec隧道协议）。",
+            "type": "string",
+            "example": "Ipsec"
+          },
+          "RouteSource": {
+            "description": "策略路由的源网段。",
+            "type": "string",
+            "example": "192.168.1.0/24"
+          },
+          "VpnInstanceId": {
+            "description": "VPN网关实例ID。",
+            "type": "string",
+            "example": "vpn-bp1cmw7jh1nfe43m9****"
+          },
+          "Priority": {
+            "description": "策略路由的策略优先级。",
+            "type": "integer",
+            "format": "int32",
+            "example": "10"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "Resource.QuotaFull",
+        "errorMessage": "The quota of resource is full",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnGateway.FinancialLocked",
+        "errorMessage": "The specified service is financial locked.",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnRouteEntry.AlreadyExists",
+        "errorMessage": "The specified route entry is already exist.",
+        "description": "该路由已存在。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.Conflict",
+        "errorMessage": "The specified route entry has conflict.",
+        "description": "路由条目存在冲突。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.ConflictSSL",
+        "errorMessage": "The specified route entry has conflict with SSL client.",
+        "description": "路由条目与SSL客户端冲突。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.BackupRoute",
+        "errorMessage": "Validate backup route entry failed.",
+        "description": "主备路由条目校验失败。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.InvalidWeight",
+        "errorMessage": "Invalid route entry weight value.",
+        "description": "路由权重值不合法"
+      },
+      {
+        "errorCode": "InvalidNextHop.NotFound",
+        "errorMessage": "The specified NextHop does not exist.",
+        "description": "路由指定的下一跳不存在"
+      },
+      {
+        "errorCode": "IllegalParam.RouteDest",
+        "errorMessage": "The specified RouteDest is invalid",
+        "description": "目的地址不合法。"
+      },
+      {
+        "errorCode": "OperationFailed.RouteConflict",
+        "errorMessage": "Operation failed because there is already a route in VPC route table to another VPN on the same network block.",
+        "description": "在VPC路由表中同一网段上已经存在一条指向另一个VPN网关的路由。"
+      },
+      {
+        "errorCode": "OperationFailed.InvalidCidrBlock",
+        "errorMessage": "Operation failed because the specified network block is invalid.",
+        "description": "网段不合法。"
+      },
+      {
+        "errorCode": "QuotaExceeded.VpnRouteEntry",
+        "errorMessage": "The number of route entries to the VPN gateway in the VPC routing table has reached the quota limit.",
+        "description": "VPC路由表中指向VPN网关的路由条目已经达到配额限制。"
+      },
+      {
+        "errorCode": "VpnPbrRouteEntryPriority.NotSupport",
+        "errorMessage": "Current version of the VPN does not support setting custom pbr route entry priority.",
+        "description": "当前版本的VPN不支持设置策略路由条目优先级"
+      },
+      {
+        "errorCode": "TaskConflict",
+        "errorMessage": "The operation is too frequent, please wait a moment and try again.",
+        "description": "操作过于频繁，请稍等一会再重试"
+      },
+      {
+        "errorCode": "VpnTask.CONFLICT",
+        "errorMessage": "Vpn task has conflict.",
+        "description": "Vpn操作存在冲突，请稍后重试。"
+      },
+      {
+        "errorCode": "VpnGateway.Configuring",
+        "errorMessage": "The specified service is configuring.",
+        "description": ""
+      },
+      {
+        "errorCode": "InternalError",
+        "errorMessage": "The request processing has failed due to some unknown error, exception or failure.",
+        "description": ""
+      },
+      {
+        "errorCode": "VpnRouteEntry.SrcDestWeightConflict",
+        "errorMessage": "The VPN gateway does not support Policy-based routing with the same source CIDR, destination CIDR and weight.",
+        "description": "VPN网关不支持配置源网段、目标网段与权重同时相同的策略路由。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.SamePriorityPbrRoutePrefixOverlap",
+        "errorMessage": "The source CIDR and destination CIDR of Policy-based routes with the same priority cannot overlap.",
+        "description": "VPN网关不支持相同优先级下的多个策略路由源和目标网段同时重合。"
+      },
+      {
+        "errorCode": "VpnRouteEntry.SrcDestConflict",
+        "errorMessage": "The VPN gateway does not support Policy-based routing with the same source CIDR and destination CIDR.",
+        "description": "双隧道类型的VPN网关不支持配置源网段与目标网段同时相同的策略路由。"
+      },
+      {
+        "errorCode": "CreatePbrRoutesQuotaFull.QuotaFull",
+        "errorMessage": "The number of policy routes exceeds the quota limit.",
+        "description": "策略路由数量超过配额限制。"
+      },
+      {
+        "errorCode": "InvalidCidrBlock.Malformed",
+        "errorMessage": "Specified CIDR block is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "DryRunOperation",
+        "errorMessage": "Request validation has been passed with DryRun flag set.",
+        "description": "DryRun校验通过。"
+      },
+      {
+        "errorCode": "VpnPbrRouteEntry.NotSupport",
+        "errorMessage": "Current version of the VPN does not support pbr route entry.",
+        "description": "当前VPN实例不支持策略路由。"
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidVpnGatewayInstanceId.NotFound",
+        "errorMessage": "The specified vpn gateway instance id does not exist.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"NextHop\": \"vco-bp15oes1py4i66rmd****\",\n  \"Weight\": 0,\n  \"RouteDest\": \"10.0.0.0/24\",\n  \"RequestId\": \"5BE01CD7-5A50-472D-AC14-CA181C5C03BE\",\n  \"Description\": \"desctest\",\n  \"State\": \"normal\",\n  \"CreateTime\": 1492747187000,\n  \"OverlayMode\": \"Ipsec\",\n  \"RouteSource\": \"192.168.1.0/24\",\n  \"VpnInstanceId\": \"vpn-bp1cmw7jh1nfe43m9****\",\n  \"Priority\": 10\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<CreateVpnPbrRouteEntryResponse>\n    <NextHop>vco-bp15oes1py4i66rmd****</NextHop>\n    <Weight>0</Weight>\n    <RouteDest>10.0.0.0/24</RouteDest>\n    <RequestId>5BE01CD7-5A50-472D-AC14-CA181C5C03BE</RequestId>\n    <Description>desctest</Description>\n    <State>normal</State>\n    <CreateTime>1492747187000</CreateTime>\n    <OverlayMode>Ipsec</OverlayMode>\n    <RouteSource>192.168.1.0/24</RouteSource>\n    <VpnInstanceId>vpn-bp1cmw7jh1nfe43m9****</VpnInstanceId>\n    <Priority>10</Priority>\n</CreateVpnPbrRouteEntryResponse>",
+      "errorExample": ""
+    }
+  ]
+}

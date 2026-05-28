@@ -1,0 +1,332 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "DescribeIPv6Translators",
+  "group": "ipv6-translation",
+  "title": "查询已创建的IPv6转换服务实例列表",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "get",
+  "deprecated": true,
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的地域。您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "Ipv6TranslatorId",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的ID。",
+        "type": "string",
+        "required": false,
+        "example": "ipv6trans-bp1858ys****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的名称。",
+        "type": "string",
+        "required": false,
+        "example": "ipv6_1"
+      }
+    },
+    {
+      "name": "Spec",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的规格，取值：**small**（小型）。",
+        "type": "string",
+        "required": false,
+        "example": "small"
+      }
+    },
+    {
+      "name": "Status",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的状态，取值：\n\n- **init**：初始化。\n\n- **provisioning**：准备中。\n\n- **active**：可用。\n\n- **updating**：更新中。\n\n- **upgrading**：升级中。\n\n- **deleting**：删除中。\n\n- **deleted**：已删除。",
+        "type": "string",
+        "required": false,
+        "example": "active"
+      }
+    },
+    {
+      "name": "AllocateIpv6Addr",
+      "in": "query",
+      "schema": {
+        "description": "为IPv6转换服务实例分配的IPv6地址。",
+        "type": "string",
+        "required": false,
+        "example": "2400:3200:1600::XXXX"
+      }
+    },
+    {
+      "name": "AllocateIpv4Addr",
+      "in": "query",
+      "schema": {
+        "description": "为IPv6转换服务实例分配的IPv4地址。",
+        "type": "string",
+        "required": false,
+        "example": "47.99.XX.XX"
+      }
+    },
+    {
+      "name": "PayType",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的付费类型。取值：\n\n- **Prepay**：包年包月。\n\n- **Postpay**：按量计费。",
+        "type": "string",
+        "required": false,
+        "example": "Prepay"
+      }
+    },
+    {
+      "name": "PageNumber",
+      "in": "query",
+      "schema": {
+        "description": "列表的页码，默认值为**1**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "1",
+        "default": "1"
+      }
+    },
+    {
+      "name": "PageSize",
+      "in": "query",
+      "schema": {
+        "description": "分页查询时每页的行数，最大值为**50**，默认值为**10**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "10",
+        "default": "10"
+      }
+    },
+    {
+      "name": "BusinessStatus",
+      "in": "query",
+      "schema": {
+        "description": "IPv6转换服务实例的业务状态，取值：\n\n- **Normal**：正常。\n\n- **FinancialLocked**：被锁定。",
+        "type": "string",
+        "required": false,
+        "example": "Normal"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回数据结构体。",
+        "type": "object",
+        "properties": {
+          "PageSize": {
+            "description": "每页包含的条目数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "10"
+          },
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "54B48E3D-DF70-471B-AA93-08E683A1B45"
+          },
+          "PageNumber": {
+            "description": "当前页码。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "TotalCount": {
+            "description": "列表条目数。",
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "Ipv6Translators": {
+            "type": "object",
+            "itemNode": true,
+            "properties": {
+              "Ipv6Translator": {
+                "description": "查询到的IPv6转换服务实例列表。",
+                "type": "array",
+                "items": {
+                  "description": "IPv6转换服务实例结构体。",
+                  "type": "object",
+                  "properties": {
+                    "Status": {
+                      "description": "IPv6转换服务实例的状态。",
+                      "type": "string",
+                      "example": "active"
+                    },
+                    "Spec": {
+                      "description": "IPv6转换服务实例的规格。",
+                      "type": "string",
+                      "example": "small"
+                    },
+                    "CreateTime": {
+                      "description": "IPv6转换服务实例的创建时间的时间戳。",
+                      "type": "integer",
+                      "format": "int64",
+                      "example": "1537151540000"
+                    },
+                    "PayType": {
+                      "description": "IPv6转换服务实例的付费类型。\n\n- **Prepay**：包年包月。\n\n- **Postpay**：按量计费。",
+                      "type": "string",
+                      "example": "Prepay"
+                    },
+                    "Ipv6TranslatorId": {
+                      "description": "IPv6转换服务实例的ID。",
+                      "type": "string",
+                      "example": "ipv6trans-bp1858ys*****"
+                    },
+                    "AllocateIpv4Addr": {
+                      "description": "分配的IPv6转换服务实例的IPv4地址。",
+                      "type": "string",
+                      "example": "47.99.XX.XX"
+                    },
+                    "AvailableBandwidth": {
+                      "description": "IPv6转换服务实例可用的带宽。",
+                      "type": "string",
+                      "example": "1"
+                    },
+                    "RegionId": {
+                      "description": "IPv6转换服务实例的地域。",
+                      "type": "string",
+                      "example": "cn-hangzhou"
+                    },
+                    "EndTime": {
+                      "description": "IPv6转换服务实例的到期时间的时间戳。",
+                      "type": "integer",
+                      "format": "int64",
+                      "example": "1539792000000"
+                    },
+                    "Description": {
+                      "description": "IPv6转换服务实例的描述。",
+                      "type": "string",
+                      "example": "descriptionforinstance"
+                    },
+                    "Bandwidth": {
+                      "description": "IPv6转换服务实例的带宽。单位：Mbps。",
+                      "type": "integer",
+                      "format": "int32",
+                      "example": "1"
+                    },
+                    "BusinessStatus": {
+                      "description": "IPv6转换服务实例的业务状态。\n\n- **Normal**：正常。\n\n- **FinancialLocked**：被锁定。",
+                      "type": "string",
+                      "example": "Normal"
+                    },
+                    "AllocateIpv6Addr": {
+                      "description": "分配的IPv6转换服务实例的IPv6地址。",
+                      "type": "string",
+                      "example": "2400:3200:1600::XXXX"
+                    },
+                    "Name": {
+                      "description": "IPv6转换服务实例的名称。",
+                      "type": "string",
+                      "example": "test"
+                    },
+                    "Ipv6TranslatorEntryIds": {
+                      "type": "object",
+                      "itemNode": true,
+                      "properties": {
+                        "Ipv6TranslatorEntryId": {
+                          "description": "IPv6转换服务实例的转换映射条目ID列表。",
+                          "type": "array",
+                          "items": {
+                            "description": "IPv6转换服务实例的转换映射条目ID。",
+                            "type": "string",
+                            "example": "[\"ipv6transentry-bp1kp5ixtm3001vmn****\", \"ipv6transentry-bp16dg87v006zwrd6****\"]"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "PayType.NotSupport",
+        "errorMessage": "The specified pay type is not support.",
+        "description": ""
+      },
+      {
+        "errorCode": "BusinessStatus.NotSupport",
+        "errorMessage": "The specified business status is not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIpAddress.WrongFormat",
+        "errorMessage": "The specified ip address is invalid.",
+        "description": ""
+      },
+      {
+        "errorCode": "Status.NotSupport",
+        "errorMessage": "The specified value of status is not supported.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidName",
+        "errorMessage": "The specified value of name is not supported.",
+        "description": ""
+      }
+    ],
+    "403": [
+      {
+        "errorCode": "Forbbiden.SubUser",
+        "errorMessage": "User not authorized to operate on the specified resource as your account is created by another user.",
+        "description": ""
+      },
+      {
+        "errorCode": "Forbidden",
+        "errorMessage": "User not authorized to operate on the specified resource.",
+        "description": "您没有权限操作指定资源，请申请权限后再操作。"
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"PageSize\": 10,\n  \"RequestId\": \"54B48E3D-DF70-471B-AA93-08E683A1B45\",\n  \"PageNumber\": 1,\n  \"TotalCount\": 1,\n  \"Ipv6Translators\": {\n    \"Ipv6Translator\": [\n      {\n        \"Status\": \"active\",\n        \"Spec\": \"small\",\n        \"CreateTime\": 1537151540000,\n        \"PayType\": \"Prepay\",\n        \"Ipv6TranslatorId\": \"ipv6trans-bp1858ys*****\",\n        \"AllocateIpv4Addr\": \"47.99.XX.XX\",\n        \"AvailableBandwidth\": \"1\",\n        \"RegionId\": \"cn-hangzhou\",\n        \"EndTime\": 1539792000000,\n        \"Description\": \"descriptionforinstance\",\n        \"Bandwidth\": 1,\n        \"BusinessStatus\": \"Normal\",\n        \"AllocateIpv6Addr\": \"2400:3200:1600::XXXX\",\n        \"Name\": \"test\",\n        \"Ipv6TranslatorEntryIds\": {\n          \"Ipv6TranslatorEntryId\": [\n            \"[\\\"ipv6transentry-bp1kp5ixtm3001vmn****\\\", \\\"ipv6transentry-bp16dg87v006zwrd6****\\\"]\"\n          ]\n        }\n      }\n    ]\n  }\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<DescribeIPv6TranslatorsResponse>\n    <PageSize>10</PageSize>\n    <RequestId>54B48E3D-DF70-471B-AA93-08E683A1B45</RequestId>\n    <PageNumber>1</PageNumber>\n    <TotalCount>1</TotalCount>\n    <Ipv6Translators>\n        <Status>active</Status>\n        <Spec>small</Spec>\n        <CreateTime>1537151540000</CreateTime>\n        <PayType>Prepay</PayType>\n        <Ipv6TranslatorId>ipv6trans-bp1858ys*****</Ipv6TranslatorId>\n        <AllocateIpv4Addr>47.99.XX.XX</AllocateIpv4Addr>\n        <AvailableBandwidth>1</AvailableBandwidth>\n        <RegionId>cn-hangzhou</RegionId>\n        <EndTime>1539792000000</EndTime>\n        <Description>descriptionforinstance</Description>\n        <Bandwidth>1</Bandwidth>\n        <BusinessStatus>Normal</BusinessStatus>\n        <AllocateIpv6Addr>2400:3200:1600::XXXX</AllocateIpv6Addr>\n        <Name>test</Name>\n        <Ipv6TranslatorEntryIds>[\"ipv6transentry-bp1kp5ixtm3001vmn****\", \"ipv6transentry-bp16dg87v006zwrd6****\"]</Ipv6TranslatorEntryIds>\n    </Ipv6Translators>\n</DescribeIPv6TranslatorsResponse>",
+      "errorExample": ""
+    }
+  ]
+}

@@ -1,0 +1,315 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ModifyBgpGroupAttribute",
+  "group": "bgp",
+  "title": "修改BGP组的配置",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "BGP组所在的地域ID。 \n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-shanghai"
+      }
+    },
+    {
+      "name": "BgpGroupId",
+      "in": "query",
+      "schema": {
+        "description": "指定BGP组的ID。",
+        "type": "string",
+        "required": true,
+        "example": "bgpg-wz9f62v4fbg2g****"
+      }
+    },
+    {
+      "name": "Name",
+      "in": "query",
+      "schema": {
+        "description": "BGP组的名称。 \n\n长度为0～128个字符，不能以`http://` 或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "test"
+      }
+    },
+    {
+      "name": "Description",
+      "in": "query",
+      "schema": {
+        "description": "BGP组的描述信息。\n\n长度为0～256个字符，不能以`http://` 或`https://`开头。",
+        "type": "string",
+        "required": false,
+        "example": "BGP"
+      }
+    },
+    {
+      "name": "LocalAsn",
+      "in": "query",
+      "schema": {
+        "description": "自定义阿里云侧BGP AS号。取值：\n\n- **45104**\n- **64512~65534**\n- **4200000000~4294967294**\n\n> 其中**65025**为阿里云保留值，阿里侧默认使用**45104**作为**LocalAsn**，使用自定义**LocalAsn**功能在多线接入场景时可能存在BGP路由环路风险，请合理评估后使用。",
+        "type": "integer",
+        "format": "int64",
+        "required": false,
+        "example": "45104"
+      }
+    },
+    {
+      "name": "PeerAsn",
+      "in": "query",
+      "schema": {
+        "description": "本地侧设备的AS号。",
+        "type": "integer",
+        "format": "int64",
+        "required": false,
+        "example": "1****"
+      }
+    },
+    {
+      "name": "AuthKey",
+      "in": "query",
+      "schema": {
+        "description": "BGP组的认证密钥。",
+        "type": "string",
+        "required": false,
+        "example": "!PWZ2****"
+      }
+    },
+    {
+      "name": "IsFakeAsn",
+      "in": "query",
+      "schema": {
+        "description": "是否指定伪AS号。取值;\n\n- **false**（默认值）：否。\n- **true**：是。\n\n> 运行BGP的路由器一般只能属于一个AS。当需要用新的AS替代原有的AS（例如AS需要迁移或者和其他AS合并），并且因为业务等客观因素无法立即修改BGP配置时，可以通过指定伪AS号与本端建立连接，保证业务不中断。",
+        "type": "boolean",
+        "required": false,
+        "example": "false",
+        "default": "true"
+      }
+    },
+    {
+      "name": "ClientToken",
+      "in": "query",
+      "schema": {
+        "description": "客户端Token，用于保证请求的幂等性。\n\n从您的客户端生成一个参数值，确保不同请求间该参数值唯一。ClientToken只支持ASCII字符。\n\n> 若您未指定，则系统自动使用API请求的**RequestId**作为**ClientToken**标识。每次API请求的**RequestId**不一样。",
+        "type": "string",
+        "required": false,
+        "example": "123e4567-e89b-12d3-a456-426655440000"
+      }
+    },
+    {
+      "name": "RouteQuota",
+      "in": "query",
+      "schema": {
+        "description": "BGP邻居的路由条目上限。单位：条，默认值：**110**。",
+        "type": "integer",
+        "format": "int32",
+        "required": false,
+        "example": "110"
+      }
+    },
+    {
+      "name": "ClearAuthKey",
+      "in": "query",
+      "schema": {
+        "description": "是否需要清空密钥。取值：\n\n- **true**：是。\n- **false**（默认值）：否。",
+        "type": "boolean",
+        "required": false,
+        "example": "false",
+        "default": "false"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "请求ID。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "8C3C6D7C-A1CE-4FD8-BC57-DC493A55F76F"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "QuotaExceeded.Bgp",
+        "errorMessage": "bgp peer count per vbr quota exceed.",
+        "description": "边界路由器的BGP邻居数量已达到配额。"
+      },
+      {
+        "errorCode": "QuotaExceeded.Nqa",
+        "errorMessage": "nqa count per vbr quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "QuotaExceeded.BgpNetwork",
+        "errorMessage": "bgp network count per vbr quota exceed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidPeerIpAddress",
+        "errorMessage": "multi pconn peer ip can not be null.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidVbrNetwork",
+        "errorMessage": "vbr netowrk not exists",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpGroup",
+        "errorMessage": "bgp group not exists",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpName.Malformed",
+        "errorMessage": "Specified Bgp Group name is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpDiscription.Malformed",
+        "errorMessage": "Specified Bgp Group description is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpAuthkey.Malformed",
+        "errorMessage": "Specified Bgp Group authkey is not valid.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidIP.Malformed",
+        "errorMessage": "Ip malformed.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidPeerAsn.Malformed",
+        "errorMessage": "invalid peer asn cannot equals aliyun asn:45104",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.NotNull",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidBgpGroup.LocalAsnInvalid",
+        "errorMessage": "The specified BgpGroup LocalAsn is invalid, only support 64512 to 65534 or 4200000000 to 4294967294, and cannot be 65025.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.NotFound",
+        "errorMessage": "instance not found",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.AlreadyExists",
+        "errorMessage": "bgp network already exists",
+        "description": "BGP网络已经存在。"
+      },
+      {
+        "errorCode": "InvalidStatus.CannotOperate",
+        "errorMessage": "invalid status cannot operate",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidParams.PeerIpAddressMustPointOut",
+        "errorMessage": "vbr has 0 or more than 1 subif ,point out peerIpAddress.",
+        "description": "请指出PeerIpAddress"
+      },
+      {
+        "errorCode": "InvalidParams.PeerIpAddressInUse",
+        "errorMessage": "peer ip address in use ,cannot create bgp peer.",
+        "description": "对等IP地址正在使用，无法创建BGP对等。"
+      },
+      {
+        "errorCode": "IllegalParam.PeerAsn",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "IllegalParam.LocalAsn",
+        "errorMessage": "%s",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.PconnTrafficNotEnable",
+        "errorMessage": "The operation is failed because of PconnTrafficNotEnable.",
+        "description": "操作失败，因为出方向流量未开通。"
+      },
+      {
+        "errorCode": "OperationUnsupport",
+        "errorMessage": "Operation is unsupport, not in vbr support custom local asn white list.",
+        "description": "操作不支持"
+      },
+      {
+        "errorCode": "OperationFailed.ClearAuthKeyForbidden",
+        "errorMessage": "The specific auth key is not empty.",
+        "description": "指定密钥不为空，无法清空密钥。"
+      },
+      {
+        "errorCode": "IllegalParam.RouteLimit",
+        "errorMessage": "The operation is failed because of bgp group max route entry num quota exceed.",
+        "description": "BGP组中的每个BGP邻居可接收的路由条目数超过配额。"
+      },
+      {
+        "errorCode": "OperationDenied.VbrAttachEcrInMiddleStatus",
+        "errorMessage": "The operation is not allowed because of VBR attach or detach ECR in middle status.",
+        "description": "由于边界路由器正处于加载或者卸载专线网关过程中，当前操作无法执行，请您稍等后重试。"
+      },
+      {
+        "errorCode": "OperationUnsupported.VBRAttachedECR",
+        "errorMessage": "VBR already attached to ECR, please delete it from ECR.",
+        "description": "边界路由器已经绑定了专线网关, 先将边界路由器从专线网关中删除后重试。"
+      },
+      {
+        "errorCode": "OperationFailed.ResourceLockedBySystem",
+        "errorMessage": "The specified resource is locked by system.",
+        "description": "操作的资源已经被系统锁定，暂时无法操作。"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "Specified value of \"regionId\" is not supported.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"8C3C6D7C-A1CE-4FD8-BC57-DC493A55F76F\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ModifyBgpGroupAttributeResponse>\n    <RequestId>8C3C6D7C-A1CE-4FD8-BC57-DC493A55F76F</RequestId>\n</ModifyBgpGroupAttributeResponse>",
+      "errorExample": ""
+    }
+  ]
+}

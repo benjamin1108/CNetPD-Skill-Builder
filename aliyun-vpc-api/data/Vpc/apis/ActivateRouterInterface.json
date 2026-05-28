@@ -1,0 +1,121 @@
+{
+  "_layer": "L2",
+  "_version": "2.0.0",
+  "product": "Vpc",
+  "api": "ActivateRouterInterface",
+  "group": "router-interface",
+  "title": "激活路由器接口",
+  "methods": [
+    "post",
+    "get"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "security": [
+    {
+      "AK": []
+    }
+  ],
+  "operationType": "update",
+  "description": "调用ActivateRouterInterface接口后，路由器接口进入**Activating**状态，激活成功后进入**Active**状态。 \n\n> 无法激活处于欠费状态的路由器接口。",
+  "requestParamsDescription": "",
+  "responseParamsDescription": "",
+  "extraInfo": "",
+  "parameters": [
+    {
+      "name": "RegionId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口所在的地域ID。\n\n您可以通过调用DescribeRegions接口获取地域ID。",
+        "type": "string",
+        "required": true,
+        "example": "cn-hangzhou"
+      }
+    },
+    {
+      "name": "RouterInterfaceId",
+      "in": "query",
+      "schema": {
+        "description": "路由器接口ID。",
+        "type": "string",
+        "required": true,
+        "example": "ri-2zeo3xzyf38r4urz****"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "schema": {
+        "description": "返回信息。",
+        "type": "object",
+        "properties": {
+          "RequestId": {
+            "description": "请求ID。",
+            "type": "string",
+            "example": "079874CD-AEC1-43E6-AC03-ADD96B6E4907"
+          }
+        }
+      }
+    }
+  },
+  "errorCodes": {
+    "400": [
+      {
+        "errorCode": "IncorrectRIStatus",
+        "errorMessage": "RouterInterface can be operated by this action only when it's status is Inactive.",
+        "description": "只有当状态为“非活动”时，才能通过此操作操作RouterInterface。"
+      },
+      {
+        "errorCode": "Forbidden.FinancialLocked",
+        "errorMessage": "This RouterInterface is financiel locked because of bills outstanding.",
+        "description": ""
+      },
+      {
+        "errorCode": "OperationFailed.PconnTrafficNotEnable",
+        "errorMessage": "The operation is failed because of PconnTrafficNotEnable.",
+        "description": "操作失败，因为出方向流量未开通。"
+      },
+      {
+        "errorCode": "Forbbiden",
+        "errorMessage": "The router does not belong to your account.",
+        "description": "该路由器不属于您的账号。"
+      },
+      {
+        "errorCode": "NotSupportLinkrole",
+        "errorMessage": "This RouterInterface is not a vlan interface for connection.",
+        "description": "该路由器接口不是用于连接的虚拟网络接口。"
+      },
+      {
+        "errorCode": "OppositeRouterInterfaceIsDeleted",
+        "errorMessage": "The opposite router interface is already deleted.",
+        "description": "对端的路由器接口已被删除"
+      }
+    ],
+    "404": [
+      {
+        "errorCode": "InvalidRegionId.NotFound",
+        "errorMessage": "The specified RegionId does not exist in our records.",
+        "description": ""
+      },
+      {
+        "errorCode": "InvalidRouterInterfaceId.NotFound",
+        "errorMessage": "The specified RouterInterfaceId does not exist in our records.",
+        "description": ""
+      }
+    ]
+  },
+  "responseDemo": [
+    {
+      "type": "json",
+      "example": "{\n  \"RequestId\": \"079874CD-AEC1-43E6-AC03-ADD96B6E4907\"\n}",
+      "errorExample": ""
+    },
+    {
+      "type": "xml",
+      "example": "<ActivateRouterInterfaceResponse>\n    <RequestId>079874CD-AEC1-43E6-AC03-ADD96B6E4907</RequestId>\n</ActivateRouterInterfaceResponse>",
+      "errorExample": ""
+    }
+  ]
+}
