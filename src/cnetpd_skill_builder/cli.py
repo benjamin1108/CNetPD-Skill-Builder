@@ -28,6 +28,7 @@ def main(argv: list[str] | None = None) -> int:
     default_dist_root = repo_root / "dist"
     default_target = default_dist_root / SKILL_NAME
     default_install_source = repo_root / "skills" / SKILL_NAME
+    default_aws_models = repo_root / "tmp" / "api-models-aws" / "models"
     parser = argparse.ArgumentParser(
         description=f"{PROJECT_NAME} - build {SKILL_NAME}",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -48,6 +49,7 @@ Examples:
     parser.add_argument("--no-repo-version", action="store_true")
     parser.add_argument("--no-prepare", action="store_true")
     parser.add_argument("--refresh-meta", action="store_true")
+    parser.add_argument("--aws-models-dir", type=Path, default=default_aws_models if default_aws_models.exists() else None)
     parser.add_argument("--force", "-f", action="store_true")
     parser.add_argument("--no-overwrite", action="store_true")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -66,6 +68,7 @@ Examples:
         package_dir=Path(__file__).resolve().parent,
         no_prepare=args.no_prepare,
         refresh_meta=args.refresh_meta,
+        aws_models_dir=args.aws_models_dir,
         force=force,
     )
     elapsed = time.time() - t0

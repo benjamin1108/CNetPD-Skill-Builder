@@ -25,6 +25,8 @@ try:
         GITHUB_SKILL_SOURCE_URL,
         INSTALL_COMMAND,
         LATEST_VERSION_URL,
+        DEFAULT_SYNC_TTL_DAYS,
+        DATA_SCHEMA_VERSION,
         SKILL_NAME,
         SKILL_VERSION,
         SOURCE_REPO,
@@ -36,6 +38,8 @@ except ImportError:
     GITHUB_SKILL_SOURCE_URL = "https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill"
     INSTALL_COMMAND = "npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y"
     LATEST_VERSION_URL = "https://raw.githubusercontent.com/benjamin1108/CNetPD-Skill-Builder/main/version.json"
+    DEFAULT_SYNC_TTL_DAYS = 30
+    DATA_SCHEMA_VERSION = 2
     SKILL_NAME = "CNetPD-Skill"
     SKILL_VERSION = "1.1.0"
     SOURCE_REPO = "benjamin1108/CNetPD-Skill-Builder"
@@ -45,10 +49,7 @@ except ImportError:
 
 SKILL_ROOT = SCRIPT_DIR.parent
 PACKAGED_DATA_ROOT = Path(__file__).resolve().parent.parent / "data"
-CACHE_DATA_ROOT = Path(os.environ.get(
-    "CNETPD_CACHE_DIR",
-    Path.home() / ".cache" / "cnetpd-skill" / "data",
-)).expanduser()
+CACHE_DATA_ROOT = Path(os.environ.get("CNETPD_CACHE_DIR", Path.home() / ".cache" / "cnetpd-skill" / "data")).expanduser()
 SYNC_SCRIPT = SCRIPT_DIR / "sync_data.py"
 DEFAULT_PROVIDER = "aliyun"
 
@@ -58,7 +59,12 @@ def read_json(path: Path) -> dict:
 
 
 def valid_data_root(root: Path) -> bool:
-    return (root / "_cnetpd-index.json").exists() and (root / "_manifest.json").exists()
+    if not ((root / "_cnetpd-index.json").exists() and (root / "_manifest.json").exists()):
+        return False
+    try:
+        return int(manifest(root).get("schema_version", 0)) >= DATA_SCHEMA_VERSION
+    except (TypeError, ValueError):
+        return False
 
 
 def manifest(root: Path) -> dict:
@@ -79,9 +85,9 @@ def parse_dt(value: str | None) -> datetime | None:
 
 def sync_ttl() -> timedelta:
     try:
-        return timedelta(days=max(1, int(os.environ.get("CNETPD_SYNC_TTL_DAYS", "7"))))
+        return timedelta(days=max(1, int(os.environ.get("CNETPD_SYNC_TTL_DAYS", str(DEFAULT_SYNC_TTL_DAYS)))))
     except ValueError:
-        return timedelta(days=7)
+        return timedelta(days=DEFAULT_SYNC_TTL_DAYS)
 
 
 def stale(root: Path) -> bool:
@@ -227,6 +233,8 @@ def cmd_product(product: str, provider: str) -> None:
         return
     data = read_json(root / "index.json")
     print(f"产品: {provider}/{data.get('product', product)}  |  {data.get('totalApis', '?')} APIs\n")
+    if data.get("sourceService") and data.get("sourceService") != data.get("product"):
+        print(f"源服务: {data.get('sourceService')}  |  源模型 API: {data.get('sourceOperationCount', '?')}\n")
     print(f"{'Slug':<24} {'能力分区':<20} {'API数':>5}")
     print("-" * 56)
     for group in data.get("groups", []):
@@ -301,6 +309,8 @@ def cmd_detail(api_name: str, product: str, provider: str, full: bool = False) -
     print(f"能力: {provider}/{product}/{api.get('api', api_name)}")
     print(f"分区: {api.get('group', '')}")
     print(f"标题: {api.get('title', '')}")
+    if provider == "aws":
+        print(f"Smithy: {api.get('shapeId', '')}  |  sourceService={api.get('sourceService', product)}")
     if api.get("deprecated"):
         print("状态: 已废弃")
     desc = api.get("description", "")
@@ -318,8 +328,17 @@ def cmd_detail(api_name: str, product: str, provider: str, full: bool = False) -
     for response in api.get("responses", {}).values():
         schema = response.get("schema", {}) if isinstance(response, dict) else {}
         fields.extend(name for name in schema.get("properties", {}) if name != "RequestId")
+    if not fields and isinstance(api.get("output"), dict):
+        fields.extend(item.get("name", "") for item in api["output"].get("members", []))
     if fields:
         print("\n返回字段: " + ", ".join(dict.fromkeys(fields)))
+    if provider == "aws":
+        errors = [item.get("target", "") for item in api.get("errors", [])]
+        if errors:
+            print("\n错误形状: " + ", ".join(errors))
+        print("\n完整 Smithy 细节: L2 JSON 内含 operation/input/output/errors/shapeClosure；产品目录另有 source-model.json。")
+        if full and api.get("shapeClosure"):
+            print("Shape closure: " + ", ".join(sorted(api["shapeClosure"])[:80]))
 
 
 def cmd_constraints(api_name: str, product: str, provider: str) -> None:

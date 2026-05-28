@@ -2,7 +2,7 @@
 
 Cloud Networking PD Skill builder.
 
-本项目用于生成 `CNetPD-Skill`：一个面向云网络产品设计和 PRD 推理的 agent skill。当前数据源是 Alibaba Cloud 网络产品 API meta；目录和数据模型已经按 `provider` 分层，后续可以继续加入 AWS 等云厂商。
+本项目用于生成 `CNetPD-Skill`：一个面向云网络产品设计和 PRD 推理的 agent skill。当前数据源包括 Alibaba Cloud 网络产品 API meta 与 AWS `aws/api-models-aws` Smithy JSON AST；目录和数据模型按 `provider` 分层。
 
 ## 目录结构
 
@@ -11,6 +11,9 @@ src/cnetpd_skill_builder/       构建器源码
   constants.py                  provider、产品、主题定义
   metadata.py                   Aliyun API meta 下载
   aliyun_splitter.py            Aliyun 元数据拆分
+  aws_metadata.py               AWS Smithy 模型下载/本地克隆复用
+  aws_splitter.py               AWS Smithy 模型拆分
+  indexing.py                   provider-aware L-1 索引生成
   skill.py                      CNetPD-Skill 渲染与打包
   builder.py                    构建编排
   runtime/                      写入 skill 的运行时脚本模板
@@ -18,8 +21,9 @@ tools/
   build_cnetpd_skill.py         一键生成 CNetPD-Skill
   check_code_size.py            500 行代码门禁
 skills/CNetPD-Skill/            提交到 GitHub 的 npx 安装源，不内置静态 data
-.output/api_metadata/           本地下载的原始元数据，忽略提交
-.output/splitter/               本地 splitter 产物，忽略提交
+.output/api_metadata/           本地下载的原始元数据，按 provider 缓存，忽略提交
+.output/splitter/               本地 splitter 产物，按 provider 输出，忽略提交
+tmp/api-models-aws/             可选的 AWS API 模型浅克隆，用于本地分析/构建加速，忽略提交
 dist/CNetPD-Skill/              最终 skill 目录，忽略提交
 dist/CNetPD-Skill.zip           最终 zip 包，忽略提交
 dist/CNetPD-Skill.skill         最终 .skill 包，忽略提交
@@ -45,6 +49,19 @@ python3 tools/build_cnetpd_skill.py
 python3 tools/build_cnetpd_skill.py --refresh-meta
 ```
 
+如果本地已有 AWS API 模型仓库，可直接复用，避免触发在线下载：
+
+```bash
+gh repo clone aws/api-models-aws tmp/api-models-aws -- --depth=1
+python3 tools/build_cnetpd_skill.py
+```
+
+也可以显式指定：
+
+```bash
+python3 tools/build_cnetpd_skill.py --aws-models-dir tmp/api-models-aws/models
+```
+
 只使用已有 `.output/splitter/`：
 
 ```bash
@@ -66,7 +83,7 @@ dist/CNetPD-Skill.skill
 ~/.cache/cnetpd-skill/data
 ```
 
-缓存缺失或超过 7 天时会尝试自动同步；同步失败时回退内置快照。
+缓存缺失、schema 过旧或超过 30 天时会尝试自动同步；同步失败时回退内置快照。AWS 同步默认直接拉取 `raw.githubusercontent.com/aws/api-models-aws` 中固定 Smithy version 的模型文件，避免依赖 GitHub contents API rate limit。
 
 ## npx 安装
 
@@ -107,6 +124,8 @@ python3 dist/CNetPD-Skill/scripts/query.py topics
 python3 dist/CNetPD-Skill/scripts/query.py topic public-access
 python3 dist/CNetPD-Skill/scripts/query.py product Vpc --provider aliyun
 python3 dist/CNetPD-Skill/scripts/query.py detail CreateVpc --product Vpc --provider aliyun
+python3 dist/CNetPD-Skill/scripts/query.py product ec2-networking --provider aws
+python3 dist/CNetPD-Skill/scripts/query.py detail CreateVpc --product ec2-networking --provider aws
 python3 dist/CNetPD-Skill/scripts/query.py data-info
 python3 dist/CNetPD-Skill/scripts/query.py version
 python3 dist/CNetPD-Skill/scripts/query.py sync
@@ -118,6 +137,8 @@ python3 dist/CNetPD-Skill/scripts/query.py sync
 - `CNETPD_CACHE_DIR`：修改默认缓存 data 目录
 - `CNETPD_AUTO_SYNC=0`：关闭自动同步
 - `CNETPD_SYNC_TTL_DAYS=30`：修改缓存过期天数
+
+AWS 的 `ec2-networking` 是从 EC2 Smithy 模型单独抽取出的网络相关虚拟产品；其他 AWS 网络相关产品按源服务模型独立进入 `provider=aws`。每个 AWS 产品目录都会保留 `source-model.json` 原始 Smithy 模型，并按 L0/L1/L2 生成渐进加载入口。
 
 ## 代码门禁
 

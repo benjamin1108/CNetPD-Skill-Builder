@@ -10,6 +10,7 @@ import json
 import shutil
 import sys
 import time
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,20 +20,22 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 import aliyun_splitter  # noqa: E402
+import aws_splitter  # noqa: E402
+from indexing import build_cnetpd_index  # noqa: E402
 from cnetpd_constants import (  # noqa: E402
+    ALIYUN_PROVIDER,
+    AWS_API_MODELS_CONTENTS_URL,
+    AWS_API_MODELS_RAW_URL,
+    AWS_MODEL_VERSIONS,
+    AWS_PRODUCTS,
+    AWS_PROVIDER,
     BASE_URL,
     DATA_SCHEMA_VERSION,
     DEFAULT_CACHE_DIR,
     PRODUCT_CODES,
-    PRODUCTS,
+    PRODUCT_CODES_BY_PROVIDER,
     PRODUCTS_URL,
-    PROJECT_DESCRIPTION,
-    PROJECT_NAME,
-    PROVIDER,
-    PROVIDER_DISPLAY,
-    SKILL_NAME,
     SKILL_VERSION,
-    TOPICS,
 )
 
 
@@ -41,7 +44,7 @@ def log(message: str, *, quiet: bool) -> None:
         print(message, file=sys.stderr)
 
 
-def fetch_json(url: str, *, timeout: int = 60) -> dict | list:
+def fetch_json(url: str, *, timeout: int = 90) -> dict | list:
     request = urllib.request.Request(url, headers={"User-Agent": "CNetPD-Skill/1.0"})
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))
@@ -59,7 +62,7 @@ def fetch_api_docs(url: str, product: str, *, retries: int = 3) -> dict:
     raise RuntimeError(f"{product} metadata is invalid; missing apis: {last_shape}")
 
 
-def download_metadata(api_meta_dir: Path, *, quiet: bool) -> None:
+def download_aliyun_metadata(api_meta_dir: Path, *, quiet: bool) -> None:
     api_meta_dir.mkdir(parents=True, exist_ok=True)
     products_data = fetch_json(PRODUCTS_URL)
     if not isinstance(products_data, list):
@@ -78,7 +81,7 @@ def download_metadata(api_meta_dir: Path, *, quiet: bool) -> None:
         version = meta.get("defaultVersion") or (versions[0] if versions else None)
         if not version:
             raise RuntimeError(f"{product} has no downloadable version")
-        log(f"download metadata: {product}", quiet=quiet)
+        log(f"download aliyun metadata: {product}", quiet=quiet)
         url = f"{BASE_URL}products/{code}/versions/{version}/api-docs.json"
         (api_meta_dir / f"{code}.json").write_text(
             json.dumps(fetch_api_docs(url, product), ensure_ascii=False, indent=2),
@@ -86,76 +89,51 @@ def download_metadata(api_meta_dir: Path, *, quiet: bool) -> None:
         )
 
 
-def expand_topic_apis(topic: dict, provider_dir: Path) -> dict:
-    keywords = [keyword.lower() for keyword in topic.get("keywords", [])]
-    result = {}
-    for ref in topic.get("products", []):
-        product = ref["product"]
-        groups_dir = provider_dir / product / "groups"
-        if not groups_dir.exists():
-            continue
-        hits = []
-        for group_file in sorted(groups_dir.glob("*.json")):
-            group = json.loads(group_file.read_text(encoding="utf-8"))
-            for api in group.get("apis", []):
-                haystack = f"{api.get('name', '')} {api.get('summary', '')}".lower()
-                if any(keyword in haystack for keyword in keywords):
-                    hits.append({
-                        "api": api.get("name", ""),
-                        "group": group.get("group", group_file.stem),
-                        "summary": api.get("summary", ""),
-                    })
-                    if len(hits) >= 8:
-                        break
-            if len(hits) >= 8:
-                break
-        if hits:
-            result[f"{PROVIDER}/{product}"] = hits
-    return result
+def github_contents(path: str) -> list[dict]:
+    url = f"{AWS_API_MODELS_CONTENTS_URL}/{urllib.parse.quote(path.strip('/'))}"
+    data = fetch_json(url)
+    if not isinstance(data, list):
+        raise RuntimeError(f"GitHub contents response is not a list: {path}")
+    return [item for item in data if isinstance(item, dict)]
 
 
-def build_index(data_dir: Path) -> dict:
-    provider_dir = data_dir / "providers" / PROVIDER
-    products = []
-    for meta in PRODUCTS:
-        index_file = provider_dir / meta["product"] / "index.json"
-        product_index = json.loads(index_file.read_text(encoding="utf-8"))
-        products.append({
-            "provider": PROVIDER,
-            "product": meta["product"],
-            "slug": meta["product"].lower(),
-            "display": meta["display"],
-            "summary": meta["summary"],
-            "coverage": meta["coverage"],
-            "apiCount": product_index.get("totalApis", 0),
-            "groupCount": len(product_index.get("groups", [])),
-        })
-    topics = []
-    for topic in TOPICS:
-        item = {
-            "slug": topic["slug"],
-            "title": topic["title"],
-            "description": topic["description"],
-            "products": topic["products"],
-            "decisions": [{"when": when, "use": use} for when, use in topic["decisions"]],
-        }
-        relevant = expand_topic_apis(topic, provider_dir)
-        if relevant:
-            item["relevantApis"] = relevant
-        topics.append(item)
-    return {
-        "_layer": "L-1",
-        "_version": SKILL_VERSION,
-        "skill": SKILL_NAME,
-        "project": PROJECT_NAME,
-        "domain": "cloud-networking",
-        "description": PROJECT_DESCRIPTION,
-        "providers": [{"slug": PROVIDER, "display": PROVIDER_DISPLAY, "productCount": len(products)}],
-        "productCount": len(products),
-        "topicCount": len(topics),
-        "products": products,
-        "topics": topics,
-    }
+def aws_source_services() -> list[str]:
+    return sorted({item.get("sourceService", item["product"]) for item in AWS_PRODUCTS})
+
+
+def latest_aws_model(source_service: str) -> tuple[str, str, str]:
+    if source_service in AWS_MODEL_VERSIONS:
+        version = AWS_MODEL_VERSIONS[source_service]
+        name = f"{source_service}-{version}.json"
+        return version, name, f"{AWS_API_MODELS_RAW_URL}/{source_service}/service/{version}/{name}"
+    versions = sorted(
+        item["name"]
+        for item in github_contents(f"{source_service}/service")
+        if item.get("type") == "dir" and item.get("name")
+    )
+    if not versions:
+        raise RuntimeError(f"AWS service has no versions: {source_service}")
+    version = versions[-1]
+    files = github_contents(f"{source_service}/service/{version}")
+    model = next((item for item in files if str(item.get("name", "")).endswith(".json")), None)
+    if not model:
+        raise RuntimeError(f"AWS service version has no JSON model: {source_service}/{version}")
+    name = str(model["name"])
+    download_url = model.get("download_url") or f"{AWS_API_MODELS_RAW_URL}/{source_service}/service/{version}/{name}"
+    return version, name, str(download_url)
+
+
+def download_aws_metadata(api_meta_dir: Path, *, quiet: bool) -> None:
+    api_meta_dir.mkdir(parents=True, exist_ok=True)
+    for service in aws_source_services():
+        log(f"download aws model: {service}", quiet=quiet)
+        version, name, url = latest_aws_model(service)
+        data = fetch_json(url)
+        if not isinstance(data, dict) or not data.get("shapes"):
+            raise RuntimeError(f"AWS model is invalid; missing shapes: {service}")
+        out = api_meta_dir / service / "service" / version / name
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def sha256(path: Path) -> str:
@@ -166,51 +144,76 @@ def sha256(path: Path) -> str:
     return "sha256:" + h.hexdigest()
 
 
+def product_stats(data_dir: Path) -> list[dict]:
+    stats = []
+    for provider, products in PRODUCT_CODES_BY_PROVIDER.items():
+        provider_dir = data_dir / "providers" / provider
+        for product in products:
+            index_file = provider_dir / product / "index.json"
+            if not index_file.exists():
+                continue
+            idx = json.loads(index_file.read_text(encoding="utf-8"))
+            stats.append({
+                "provider": provider,
+                "product": product,
+                "sourceService": idx.get("sourceService", product),
+                "apiCount": idx.get("totalApis", 0),
+                "sourceApiCount": idx.get("sourceOperationCount"),
+                "groupCount": len(idx.get("groups", [])),
+            })
+    return stats
+
+
 def write_manifest(data_dir: Path) -> None:
     checksums = {}
     for path in sorted(data_dir.rglob("*.json")):
         if path.name == "_manifest.json":
             continue
         checksums[path.relative_to(data_dir).as_posix()] = sha256(path)
-    product_stats = []
-    provider_dir = data_dir / "providers" / PROVIDER
-    for product in PRODUCT_CODES:
-        idx = json.loads((provider_dir / product / "index.json").read_text(encoding="utf-8"))
-        product_stats.append({
-            "provider": PROVIDER,
-            "product": product,
-            "apiCount": idx.get("totalApis", 0),
-            "groupCount": len(idx.get("groups", [])),
-        })
+    providers = list(PRODUCT_CODES_BY_PROVIDER)
     manifest = {
         "schema_version": DATA_SCHEMA_VERSION,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "source": "aliyun-api-meta",
+        "source": "cloud-api-meta",
         "kind": "cache",
-        "providers": [PROVIDER],
-        "products": PRODUCT_CODES,
-        "product_stats": product_stats,
+        "providers": providers,
+        "products": [
+            {"provider": provider, "product": product}
+            for provider, products in PRODUCT_CODES_BY_PROVIDER.items()
+            for product in products
+        ],
+        "product_stats": product_stats(data_dir),
         "file_count": len(checksums),
         "checksums": checksums,
     }
     (data_dir / "_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def split_metadata(api_meta_dir: Path, output_dir: Path, *, quiet: bool) -> None:
+    log("split aliyun metadata", quiet=quiet)
+    aliyun_output = output_dir / "providers" / ALIYUN_PROVIDER
+    aliyun_result = aliyun_splitter.split_batch(api_meta_dir / ALIYUN_PROVIDER, aliyun_output, products_filter=set(PRODUCT_CODES), validate=True)
+    log("split aws metadata", quiet=quiet)
+    aws_output = output_dir / "providers" / AWS_PROVIDER
+    aws_result = aws_splitter.split_batch(api_meta_dir / AWS_PROVIDER, aws_output, products=AWS_PRODUCTS, validate=True)
+    errors = [*aliyun_result.get("errors", []), *aws_result.get("errors", [])]
+    if errors:
+        raise RuntimeError(f"splitter validation failed: {errors[:5]}")
+
+
 def build_data(staging: Path, *, quiet: bool) -> Path:
     api_meta_dir = staging / "api_metadata"
     output_dir = staging / "output"
     data_dir = staging / "data"
-    provider_dir = data_dir / "providers" / PROVIDER
-    download_metadata(api_meta_dir, quiet=quiet)
-    log("split metadata", quiet=quiet)
-    result = aliyun_splitter.split_batch(api_meta_dir, output_dir, products_filter=set(PRODUCT_CODES), validate=True)
-    if result.get("errors"):
-        raise RuntimeError(f"splitter validation failed: {result['errors'][:5]}")
-    provider_dir.mkdir(parents=True)
-    for product in PRODUCT_CODES:
-        shutil.copytree(output_dir / product, provider_dir / product)
+    download_aliyun_metadata(api_meta_dir / ALIYUN_PROVIDER, quiet=quiet)
+    download_aws_metadata(api_meta_dir / AWS_PROVIDER, quiet=quiet)
+    split_metadata(api_meta_dir, output_dir, quiet=quiet)
+    providers_dir = data_dir / "providers"
+    providers_dir.mkdir(parents=True)
+    for provider in PRODUCT_CODES_BY_PROVIDER:
+        shutil.copytree(output_dir / "providers" / provider, providers_dir / provider)
     (data_dir / "_cnetpd-index.json").write_text(
-        json.dumps(build_index(data_dir), ensure_ascii=False, indent=2),
+        json.dumps(build_cnetpd_index(data_dir), ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
     write_manifest(data_dir)

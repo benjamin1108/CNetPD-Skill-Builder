@@ -10,109 +10,22 @@ from pathlib import Path
 from . import VERSION
 from .constants import (
     DEFAULT_CACHE_DIR,
+    DEFAULT_SYNC_TTL_DAYS,
     GITHUB_SKILL_SOURCE_URL,
     INSTALL_COMMAND,
     LATEST_VERSION_URL,
-    PRODUCT_CODES,
-    PRODUCTS,
+    PRODUCT_CODES_BY_PROVIDER,
     PROJECT_DESCRIPTION,
     PROJECT_NAME,
-    PROVIDER,
-    PROVIDER_DISPLAY,
+    PROVIDERS,
     SKILL_NAME,
     SOURCE_REPO,
     SOURCE_URL,
     UPDATE_COMMAND,
     UPDATE_COMMAND_GLOBAL,
-    TOPICS,
 )
+from .indexing import build_cnetpd_index
 from .manifest import write_manifest
-
-
-def expand_topic_apis(topic: dict, provider_dir: Path, max_per_product: int = 8) -> dict:
-    result: dict[str, list[dict]] = {}
-    keywords = [keyword.lower() for keyword in topic.get("keywords", [])]
-    if not keywords:
-        return result
-    for ref in topic.get("products", []):
-        if ref.get("provider") != PROVIDER:
-            continue
-        product = ref["product"]
-        groups_dir = provider_dir / product / "groups"
-        if not groups_dir.exists():
-            continue
-        matches = []
-        for group_file in sorted(groups_dir.glob("*.json")):
-            group = json.loads(group_file.read_text(encoding="utf-8"))
-            for api in group.get("apis", []):
-                haystack = f"{api.get('name', '')} {api.get('summary', '')}".lower()
-                if any(keyword in haystack for keyword in keywords):
-                    matches.append({
-                        "api": api.get("name", ""),
-                        "group": group.get("group", group_file.stem),
-                        "summary": api.get("summary", ""),
-                    })
-                    if len(matches) >= max_per_product:
-                        break
-            if len(matches) >= max_per_product:
-                break
-        if matches:
-            result[f"{PROVIDER}/{product}"] = matches
-    return result
-
-
-def build_cnetpd_index_from_provider(provider_dir: Path) -> dict:
-    products = []
-    for meta in PRODUCTS:
-        index_file = provider_dir / meta["product"] / "index.json"
-        api_count = 0
-        group_count = 0
-        if index_file.exists():
-            index = json.loads(index_file.read_text(encoding="utf-8"))
-            api_count = index.get("totalApis", 0)
-            group_count = len(index.get("groups", []))
-        products.append({
-            "provider": PROVIDER,
-            "product": meta["product"],
-            "slug": meta["product"].lower(),
-            "display": meta["display"],
-            "summary": meta["summary"],
-            "coverage": meta["coverage"],
-            "apiCount": api_count,
-            "groupCount": group_count,
-        })
-
-    topics = []
-    for topic in TOPICS:
-        item = {
-            "slug": topic["slug"],
-            "title": topic["title"],
-            "description": topic["description"],
-            "products": topic["products"],
-            "decisions": [{"when": when, "use": use} for when, use in topic["decisions"]],
-        }
-        relevant = expand_topic_apis(topic, provider_dir)
-        if relevant:
-            item["relevantApis"] = relevant
-        topics.append(item)
-
-    return {
-        "_layer": "L-1",
-        "_version": VERSION,
-        "skill": SKILL_NAME,
-        "project": PROJECT_NAME,
-        "domain": "cloud-networking",
-        "description": PROJECT_DESCRIPTION,
-        "providers": [{"slug": PROVIDER, "display": PROVIDER_DISPLAY, "productCount": len(products)}],
-        "productCount": len(products),
-        "topicCount": len(topics),
-        "products": products,
-        "topics": topics,
-    }
-
-
-def build_cnetpd_index(data_dir: Path) -> dict:
-    return build_cnetpd_index_from_provider(data_dir / "providers" / PROVIDER)
 
 
 def version_info() -> dict:
@@ -161,7 +74,7 @@ def render_skill_md(index: dict, *, packaged_data: bool) -> str:
     )
     data_note = (
         f"内置 `data/` 是可离线使用的快照。查询脚本优先使用 `{DEFAULT_CACHE_DIR}`；"
-        "缓存缺失或超过 7 天会尝试自动同步，失败时回退内置快照。"
+        f"缓存缺失或超过 {DEFAULT_SYNC_TTL_DAYS} 天会尝试自动同步，失败时回退内置快照。"
         if packaged_data else
         f"`npx skills add` 安装源不内置静态 data。首次查询会自动同步到 `{DEFAULT_CACHE_DIR}`；"
         "也可以先运行 `python3 $SCRIPT sync`。如果当前环境不能联网，请改用 `dist/` 下的离线包。"
@@ -170,7 +83,7 @@ def render_skill_md(index: dict, *, packaged_data: bool) -> str:
 name: {SKILL_NAME}
 description: |
   Cloud Networking PD Skill. 面向云网络产品设计与 PRD 推理，提供跨云厂商网络能力地图。
-  当前内置 Alibaba Cloud 网络产品知识库；结构已按 provider 分层，后续可加入 AWS 等云厂商。
+  当前内置 Alibaba Cloud 与 AWS 网络产品知识库；AWS 数据来自 aws/api-models-aws Smithy JSON AST。
   当用户询问云网络规划、VPC/负载均衡/跨地域/混合云/私网打通/IP 治理/网络诊断方案时使用本 skill。
 ---
 
@@ -190,8 +103,10 @@ python3 $SCRIPT providers
 python3 $SCRIPT topics
 python3 $SCRIPT topic <slug>
 python3 $SCRIPT product <product> --provider aliyun
+python3 $SCRIPT product ec2-networking --provider aws
 python3 $SCRIPT group <group> --product <product> --provider aliyun
 python3 $SCRIPT detail <Api> --product <product> --provider aliyun
+python3 $SCRIPT detail CreateVpc --product ec2-networking --provider aws
 python3 $SCRIPT search "<关键词>"
 python3 $SCRIPT data-info
 python3 $SCRIPT version
@@ -259,7 +174,9 @@ python3 $SCRIPT version
 1. 先定位主题和 provider，不要直接堆 API。
 2. 说明产品组合和选型依据。
 3. 需要证据时再查询 `product`、`group` 或 `detail`。
-4. 标注异步/同步、配额、计费、废弃状态等非功能约束。
+4. AWS 的 `ec2-networking` 是从 EC2 Smithy 模型中按网络相关 operation 单独抽取；其他 AWS 网络产品按服务模型独立进入 `provider=aws`。
+5. 需要完整模型细节时读取对应产品目录下的 `source-model.json`；常规回答优先使用 L0/L1/L2 渐进查询。
+6. 标注异步/同步、配额、计费、废弃状态等非功能约束。
 """
 
 
@@ -271,8 +188,10 @@ def copy_runtime_files(target_dir: Path, package_dir: Path) -> None:
         dst = scripts_dir / name
         shutil.copy2(runtime_dir / name, dst)
         dst.chmod(0o755)
+    shutil.copy2(package_dir / "indexing.py", scripts_dir / "indexing.py")
     shutil.copy2(package_dir / "constants.py", scripts_dir / "cnetpd_constants.py")
     shutil.copy2(package_dir / "aliyun_splitter.py", scripts_dir / "aliyun_splitter.py")
+    shutil.copy2(package_dir / "aws_splitter.py", scripts_dir / "aws_splitter.py")
 
 
 def package_skill_dir(target_dir: Path) -> tuple[Path, Path]:
@@ -298,22 +217,31 @@ def prepare_target(target_dir: Path, *, force: bool) -> None:
 
 
 def validate_source(source_dir: Path) -> list[str]:
-    missing = [product for product in PRODUCT_CODES if not (source_dir / product).exists()]
+    missing = []
+    for provider, products in PRODUCT_CODES_BY_PROVIDER.items():
+        provider_dir = source_dir / "providers" / provider
+        missing.extend(f"{provider}/{product}" for product in products if not (provider_dir / product).exists())
     if missing:
         raise RuntimeError("missing splitter output: " + ", ".join(missing))
-    return PRODUCT_CODES
+    return missing
 
 
 def build_install_source(source_dir: Path, target_dir: Path, *, force: bool, package_dir: Path) -> dict:
     prepare_target(target_dir, force=force)
     validate_source(source_dir)
-    index = build_cnetpd_index_from_provider(source_dir)
+    data_dir = target_dir / "_index_input"
+    providers_dir = data_dir / "providers"
+    providers_dir.mkdir(parents=True)
+    for provider in PRODUCT_CODES_BY_PROVIDER:
+        shutil.copytree(source_dir / "providers" / provider, providers_dir / provider)
+    index = build_cnetpd_index(data_dir)
+    shutil.rmtree(data_dir)
     (target_dir / "SKILL.md").write_text(render_skill_md(index, packaged_data=False), encoding="utf-8")
     copy_runtime_files(target_dir, package_dir)
     write_version_file(target_dir)
     return {
         "target": str(target_dir),
-        "products_available": len(PRODUCT_CODES),
+        "products_available": sum(len(items) for items in PRODUCT_CODES_BY_PROVIDER.values()),
         "topics_count": len(index["topics"]),
     }
 
@@ -321,18 +249,18 @@ def build_install_source(source_dir: Path, target_dir: Path, *, force: bool, pac
 def build_skill(source_dir: Path, target_dir: Path, *, force: bool, package_dir: Path) -> dict:
     prepare_target(target_dir, force=force)
     data_dir = target_dir / "data"
-    provider_dir = data_dir / "providers" / PROVIDER
-    provider_dir.mkdir(parents=True)
-
     copied = []
     missing = []
-    for product in PRODUCT_CODES:
-        src = source_dir / product
-        if not src.exists():
-            missing.append(product)
-            continue
-        shutil.copytree(src, provider_dir / product)
-        copied.append(product)
+    for provider in PRODUCT_CODES_BY_PROVIDER:
+        provider_dir = data_dir / "providers" / provider
+        provider_dir.mkdir(parents=True)
+        for product in PRODUCT_CODES_BY_PROVIDER[provider]:
+            src = source_dir / "providers" / provider / product
+            if not src.exists():
+                missing.append(f"{provider}/{product}")
+                continue
+            shutil.copytree(src, provider_dir / product)
+            copied.append(f"{provider}/{product}")
     if missing:
         raise RuntimeError("missing splitter output: " + ", ".join(missing))
 
