@@ -1,20 +1,19 @@
-# 源数据（从阿里云官方下载，体积 >200MB）
-api_metadata/
+# Temporary build output
+.output/
 
-# splitter 产出（可由 splitter.py 重新生成）
-output/
-output_v2/
+# Final generated skill artifacts
+dist/
 
-# build_skill 产出（可由 build_skill.py 重新生成）
-skills/
-
-# 打包/下载产物
+# Packages / temporary files
 *.zip
+*.skill
+tmp/
 
 # Python
 __pycache__/
 *.py[cod]
 *.egg-info/
+.pytest_cache/
 .venv/
 venv/
 
