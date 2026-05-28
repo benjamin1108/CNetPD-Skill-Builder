@@ -120,7 +120,7 @@ skills/CNetPD-Skill/
 - `CNETPD_VERSION_CHECK=0`：跳过 skill 版本检查
 - `CNETPD_AUTO_UPDATE=0`：检查到新版本时停止查询但不自动更新
 - `CNETPD_UPDATE_TIMEOUT_SECONDS=180`：修改自动更新命令超时时间
-- `CNETPD_SKILL_ARCHIVE_URL`：覆盖直接更新当前目录时使用的 GitHub tarball URL
+- `CNETPD_SKILL_ARCHIVE_URL`：覆盖直接更新当前目录时使用的 GitHub archive URL
 
 ## 开发
 

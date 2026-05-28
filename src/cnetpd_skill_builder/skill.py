@@ -19,6 +19,7 @@ from .constants import (
     PROJECT_NAME,
     PROVIDERS,
     SKILL_NAME,
+    SOURCE_ARCHIVE_URL,
     SOURCE_REPO,
     SOURCE_URL,
     UPDATE_COMMAND,
@@ -36,6 +37,7 @@ def version_info() -> dict:
         "sourceUrl": SOURCE_URL,
         "githubSkillSourceUrl": GITHUB_SKILL_SOURCE_URL,
         "latestVersionUrl": LATEST_VERSION_URL,
+        "sourceArchiveUrl": SOURCE_ARCHIVE_URL,
         "installCommand": INSTALL_COMMAND,
         "updateCommand": UPDATE_COMMAND,
         "installChannels": {

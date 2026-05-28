@@ -33,6 +33,7 @@ try:
         DATA_SCHEMA_VERSION,
         SKILL_NAME,
         SKILL_VERSION,
+        SOURCE_ARCHIVE_URL,
         SOURCE_REPO,
         SOURCE_URL,
         UPDATE_COMMAND,
@@ -41,11 +42,12 @@ try:
 except ImportError:
     GITHUB_SKILL_SOURCE_URL = "https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill"
     INSTALL_COMMAND = "npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill"
-    LATEST_VERSION_URL = "https://api.github.com/repos/benjamin1108/CNetPD-Skill-Builder/contents/version.json?ref=main"
+    LATEST_VERSION_URL = "https://raw.githubusercontent.com/benjamin1108/CNetPD-Skill-Builder/main/version.json"
     DEFAULT_SYNC_TTL_DAYS = 30
     DATA_SCHEMA_VERSION = 2
     SKILL_NAME = "CNetPD-Skill"
     SKILL_VERSION = "1.1.0"
+    SOURCE_ARCHIVE_URL = "https://github.com/benjamin1108/CNetPD-Skill-Builder/archive/refs/heads/main.tar.gz"
     SOURCE_REPO = "benjamin1108/CNetPD-Skill-Builder"
     SOURCE_URL = "https://github.com/benjamin1108/CNetPD-Skill-Builder"
     UPDATE_COMMAND = "npx skills update CNetPD-Skill"
@@ -501,7 +503,7 @@ def run_update_command(local: dict) -> subprocess.CompletedProcess[str]:
 
 
 def github_archive_url() -> str:
-    return os.environ.get("CNETPD_SKILL_ARCHIVE_URL", f"https://api.github.com/repos/{SOURCE_REPO}/tarball/main")
+    return os.environ.get("CNETPD_SKILL_ARCHIVE_URL", SOURCE_ARCHIVE_URL)
 
 
 def download_file(url: str, target: Path, *, timeout: int = DIRECT_UPDATE_TIMEOUT_SECONDS) -> None:
