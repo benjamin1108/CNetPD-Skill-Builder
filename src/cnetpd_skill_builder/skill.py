@@ -95,21 +95,19 @@ description: |
 
 ## 启动门禁
 
-`query.py` 每次调用都会先做远端版本检查。发现本地版本小于远端版本时，默认自动执行 `{UPDATE_COMMAND}`；如果标准更新没有更新当前脚本目录，会直接从 GitHub 下载 `skills/{SKILL_NAME}/` 覆盖当前目录。更新成功后停止当前命令，并输出 `CNETPD_SKILL_UPDATED: <SKILL.md路径>`。Agent 必须重新读取该 `SKILL.md` 后，再按新版说明继续原始请求；不要在旧 skill 上下文里继续给 API 结论。
-
-每次会话首次使用本 skill，仍需先设定脚本路径并运行 `data-info` 查看数据状态；不要直接从 `topic`、`search`、`detail` 开始。
+每次会话首次使用本 skill，先运行 `data-info`；不要直接从 `topic`、`search`、`detail` 开始。
 
 ```bash
 SCRIPT="<本skill目录>/scripts/query.py"
 python3 $SCRIPT data-info
 ```
 
-根据 `data-info` 输出处理：
+门禁规则：
 
-1. 若输出包含 `CNETPD_SKILL_UPDATED: <path>`，先读取 `<path>` 的新版 `SKILL.md`，再重新执行必要查询并继续回答。
-2. 若版本检查或自动更新因沙箱、代理、DNS、TLS、HTTP 403/407、安装目录不可写等原因失败，不要继续做 API 结论；按环境向用户申请联网或写入权限后重试。
-3. 只有用户显式要求离线继续，才可设置 `CNETPD_VERSION_CHECK=0` 跳过版本检查；这种情况下必须在答案中说明 skill 版本未完成远端确认。
-4. 若 `有效: no`、schema 过旧、缺少目标 provider，或查询时报 `数据目录无效`，先运行 `python3 $SCRIPT sync`。同步仍失败时才说明无法使用本地证据链，并请用户提供 `CNETPD_DATA` 或离线包。
+1. 出现 `CNETPD_SKILL_UPDATED: <path>`：读取 `<path>`，重跑 `data-info`，再继续。
+2. 版本检查或自动更新失败：停止结论，按错误申请联网/写入权限后重试。
+3. 数据无效、schema 过旧、缺 provider，或报 `数据目录无效`：运行 `python3 $SCRIPT sync`。
+4. 只有用户明确要求离线继续，才可设置 `CNETPD_VERSION_CHECK=0`；答案中必须说明版本未远端确认。
 
 ## 证据流程
 
