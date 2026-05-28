@@ -9,8 +9,11 @@ import json
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
+import tarfile
+import tempfile
 import urllib.error
 import urllib.request
 from collections import defaultdict
@@ -55,6 +58,7 @@ SYNC_SCRIPT = SCRIPT_DIR / "sync_data.py"
 DEFAULT_PROVIDER = "aliyun"
 VERSION_CHECK_OFF = {"0", "false", "no", "off"}
 DEFAULT_UPDATE_TIMEOUT_SECONDS = 180
+DIRECT_UPDATE_TIMEOUT_SECONDS = 90
 
 
 def read_json(path: Path) -> dict: return json.loads(path.read_text(encoding="utf-8"))
@@ -458,6 +462,73 @@ def run_update_command(local: dict) -> subprocess.CompletedProcess[str]:
     )
 
 
+def github_archive_url() -> str:
+    return os.environ.get("CNETPD_SKILL_ARCHIVE_URL", f"https://api.github.com/repos/{SOURCE_REPO}/tarball/main")
+
+
+def download_file(url: str, target: Path, *, timeout: int = DIRECT_UPDATE_TIMEOUT_SECONDS) -> None:
+    request = urllib.request.Request(url, headers={"User-Agent": f"{SKILL_NAME}/{SKILL_VERSION}"})
+    with urllib.request.urlopen(request, timeout=timeout) as response, target.open("wb") as output:
+        shutil.copyfileobj(response, output)
+
+
+def extract_skill_from_archive(archive_path: Path, target_dir: Path) -> Path:
+    target_dir.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(archive_path, "r:gz") as archive:
+        for member in archive.getmembers():
+            parts = Path(member.name).parts
+            if len(parts) < 3 or parts[1] != "skills" or parts[2] != SKILL_NAME:
+                continue
+            relative_parts = parts[3:]
+            if not relative_parts:
+                continue
+            destination = target_dir.joinpath(*relative_parts)
+            if member.isdir():
+                destination.mkdir(parents=True, exist_ok=True)
+                continue
+            if not member.isfile():
+                continue
+            source = archive.extractfile(member)
+            if source is None:
+                continue
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with source, destination.open("wb") as output:
+                shutil.copyfileobj(source, output)
+            try:
+                destination.chmod(member.mode & 0o777)
+            except OSError:
+                pass
+    required = [target_dir / "SKILL.md", target_dir / "version.json", target_dir / "scripts" / "query.py"]
+    missing = [str(path) for path in required if not path.exists()]
+    if missing:
+        raise RuntimeError("downloaded skill archive is incomplete: " + ", ".join(missing))
+    return target_dir
+
+
+def replace_current_skill(staged_skill: Path) -> None:
+    for item in staged_skill.iterdir():
+        destination = SKILL_ROOT / item.name
+        if destination.exists():
+            if destination.is_dir() and not destination.is_symlink():
+                shutil.rmtree(destination)
+            else:
+                destination.unlink()
+        if item.is_dir():
+            shutil.copytree(item, destination)
+        else:
+            shutil.copy2(item, destination)
+
+
+def run_direct_current_dir_update() -> None:
+    with tempfile.TemporaryDirectory(prefix="cnetpd-skill-update-") as tmp:
+        tmp_dir = Path(tmp)
+        archive_path = tmp_dir / "skill.tar.gz"
+        staged_skill = tmp_dir / "skill"
+        download_file(github_archive_url(), archive_path)
+        extract_skill_from_archive(archive_path, staged_skill)
+        replace_current_skill(staged_skill)
+
+
 def print_command_output(result: subprocess.CompletedProcess[str]) -> None:
     stdout = (result.stdout or "").strip()
     stderr = (result.stderr or "").strip()
@@ -493,27 +564,52 @@ def maybe_self_update(args: argparse.Namespace) -> None:
         f"CNetPD-Skill 检测到新版本: {local_version} -> {latest_version}，正在自动更新...",
         file=sys.stderr,
     )
+    result: subprocess.CompletedProcess[str] | None = None
     try:
         result = run_update_command(local)
     except (OSError, subprocess.TimeoutExpired, RuntimeError) as exc:
-        raise SystemExit(
-            "CNetPD-Skill 自动更新失败，已停止本次查询。\n"
-            f"原因: {exc}\n"
-            f"可手动核查命令: {local.get('updateCommand', UPDATE_COMMAND)}"
-        ) from exc
-    if result.returncode != 0:
-        print_command_output(result)
-        raise SystemExit(
-            "CNetPD-Skill 自动更新命令返回失败，已停止本次查询。\n"
-            f"命令: {local.get('updateCommand', UPDATE_COMMAND)}\n"
-            f"退出码: {result.returncode}"
-        )
+        print(f"CNetPD-Skill 标准更新命令失败，尝试直接更新当前脚本目录。原因: {exc}", file=sys.stderr)
+        try:
+            run_direct_current_dir_update()
+        except (OSError, urllib.error.URLError, tarfile.TarError, RuntimeError) as fallback_exc:
+            raise SystemExit(
+                "CNetPD-Skill 自动更新失败，已停止本次查询。\n"
+                f"标准更新失败原因: {exc}\n"
+                f"直接更新失败原因: {fallback_exc}\n"
+                f"可手动核查命令: {local.get('updateCommand', UPDATE_COMMAND)}"
+            ) from fallback_exc
+    else:
+        if result.returncode != 0:
+            print_command_output(result)
+            print("CNetPD-Skill 标准更新命令返回失败，尝试直接更新当前脚本目录。", file=sys.stderr)
+            try:
+                run_direct_current_dir_update()
+            except (OSError, urllib.error.URLError, tarfile.TarError, RuntimeError) as fallback_exc:
+                raise SystemExit(
+                    "CNetPD-Skill 自动更新命令返回失败，且直接更新当前目录也失败，已停止本次查询。\n"
+                    f"命令: {local.get('updateCommand', UPDATE_COMMAND)}\n"
+                    f"退出码: {result.returncode}\n"
+                    f"直接更新失败原因: {fallback_exc}"
+                ) from fallback_exc
     refreshed = local_version_info()
     refreshed_version = str(refreshed.get("version", SKILL_VERSION))
     if version_tuple(refreshed_version) < version_tuple(latest_version):
-        print_command_output(result)
+        if result is not None:
+            print_command_output(result)
+        print("CNetPD-Skill 标准更新未更新当前脚本目录，尝试直接更新当前脚本目录。", file=sys.stderr)
+        try:
+            run_direct_current_dir_update()
+        except (OSError, urllib.error.URLError, tarfile.TarError, RuntimeError) as fallback_exc:
+            raise SystemExit(
+                "CNetPD-Skill 自动更新命令执行完成，但当前脚本目录仍不是最新版本，且直接更新失败，已停止本次查询。\n"
+                f"当前脚本目录版本: {refreshed_version}; 最新版本: {latest_version}\n"
+                f"直接更新失败原因: {fallback_exc}"
+            ) from fallback_exc
+        refreshed = local_version_info()
+        refreshed_version = str(refreshed.get("version", SKILL_VERSION))
+    if version_tuple(refreshed_version) < version_tuple(latest_version):
         raise SystemExit(
-            "CNetPD-Skill 自动更新命令执行完成，但当前脚本目录仍不是最新版本，已停止本次查询。\n"
+            "CNetPD-Skill 直接更新当前目录后仍不是最新版本，已停止本次查询。\n"
             f"当前脚本目录版本: {refreshed_version}; 最新版本: {latest_version}"
         )
     skill_md = SKILL_ROOT / "SKILL.md"

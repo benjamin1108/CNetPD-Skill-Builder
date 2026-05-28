@@ -95,7 +95,7 @@ description: |
 
 ## 启动门禁
 
-`query.py` 每次调用都会先做远端版本检查。发现本地版本小于远端版本时，默认自动执行 `{UPDATE_COMMAND}`；更新成功后停止当前命令，并输出 `CNETPD_SKILL_UPDATED: <SKILL.md路径>`。Agent 必须重新读取该 `SKILL.md` 后，再按新版说明继续原始请求；不要在旧 skill 上下文里继续给 API 结论。
+`query.py` 每次调用都会先做远端版本检查。发现本地版本小于远端版本时，默认自动执行 `{UPDATE_COMMAND}`；如果标准更新没有更新当前脚本目录，会直接从 GitHub 下载 `skills/{SKILL_NAME}/` 覆盖当前目录。更新成功后停止当前命令，并输出 `CNETPD_SKILL_UPDATED: <SKILL.md路径>`。Agent 必须重新读取该 `SKILL.md` 后，再按新版说明继续原始请求；不要在旧 skill 上下文里继续给 API 结论。
 
 每次会话首次使用本 skill，仍需先设定脚本路径并运行 `data-info` 查看数据状态；不要直接从 `topic`、`search`、`detail` 开始。
 
@@ -151,7 +151,7 @@ python3 $SCRIPT sync
 - GitHub：`{SOURCE_URL}`
 - 手动安装源：`{GITHUB_SKILL_SOURCE_URL}`
 - 数据：{data_note}
-- 环境变量：`CNETPD_DATA`、`CNETPD_CACHE_DIR`、`CNETPD_AUTO_SYNC=0`、`CNETPD_SYNC_TTL_DAYS=30`、`CNETPD_VERSION_CHECK=0`、`CNETPD_AUTO_UPDATE=0`、`CNETPD_UPDATE_TIMEOUT_SECONDS=180`
+- 环境变量：`CNETPD_DATA`、`CNETPD_CACHE_DIR`、`CNETPD_AUTO_SYNC=0`、`CNETPD_SYNC_TTL_DAYS=30`、`CNETPD_VERSION_CHECK=0`、`CNETPD_AUTO_UPDATE=0`、`CNETPD_UPDATE_TIMEOUT_SECONDS=180`、`CNETPD_SKILL_ARCHIVE_URL`
 
 ## 主题入口
 

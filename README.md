@@ -37,7 +37,7 @@ CNetPD-Skill-Builder/
 npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill
 ```
 
-查询脚本默认会在每次调用时检查远端版本；发现本地版本小于远端版本时，会自动执行 `npx skills update CNetPD-Skill`，更新成功后输出 `CNETPD_SKILL_UPDATED: <SKILL.md路径>` 并停止当前命令，由 Agent 重新读取新版 `SKILL.md` 后继续。手动检查版本：
+查询脚本默认会在每次调用时检查远端版本；发现本地版本小于远端版本时，会自动执行 `npx skills update CNetPD-Skill`。如果标准更新没有更新当前脚本目录，会直接从 GitHub 下载 `skills/CNetPD-Skill/` 覆盖当前目录。更新成功后输出 `CNETPD_SKILL_UPDATED: <SKILL.md路径>` 并停止当前命令，由 Agent 重新读取新版 `SKILL.md` 后继续。手动检查版本：
 
 ```bash
 python3 <Skill目录>/scripts/query.py version
@@ -120,6 +120,7 @@ skills/CNetPD-Skill/
 - `CNETPD_VERSION_CHECK=0`：跳过 skill 版本检查
 - `CNETPD_AUTO_UPDATE=0`：检查到新版本时停止查询但不自动更新
 - `CNETPD_UPDATE_TIMEOUT_SECONDS=180`：修改自动更新命令超时时间
+- `CNETPD_SKILL_ARCHIVE_URL`：覆盖直接更新当前目录时使用的 GitHub tarball URL
 
 ## 开发
 
