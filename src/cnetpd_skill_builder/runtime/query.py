@@ -473,12 +473,6 @@ def reexec_current_command() -> None:
     os.execv(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]])
 
 
-def print_agent_reload_instruction() -> None:
-    skill_md = SKILL_ROOT / "SKILL.md"
-    print(f"AGENT_RELOAD_SKILL: {skill_md}", file=sys.stderr)
-    print("Agent 在继续回答前必须读取更新后的 SKILL.md，并按新版说明执行。", file=sys.stderr)
-
-
 def maybe_self_update(args: argparse.Namespace) -> None:
     if command_skips_remote_check(args):
         return
@@ -533,7 +527,6 @@ def maybe_self_update(args: argparse.Namespace) -> None:
             "CNetPD-Skill 自动更新命令执行完成，但当前脚本目录仍不是最新版本，已停止本次查询。\n"
             f"当前脚本目录版本: {refreshed_version}; 最新版本: {latest_version}"
         )
-    print_agent_reload_instruction()
     print("CNetPD-Skill 自动更新完成，重新执行原命令。", file=sys.stderr)
     reexec_current_command()
 
@@ -559,7 +552,7 @@ def print_remote_version_status(local: dict, local_version: str, github_channel:
     latest_tuple = version_tuple(latest_version)
     local_tuple = version_tuple(local_version)
     if latest_tuple > local_tuple:
-        print(f"状态: 有新版本\n需要先更新 skill 本体，否则 Agent 仍可能读取旧 SKILL.md 和旧脚本。\n执行以下命令更新:\n  {local.get('updateCommand', UPDATE_COMMAND)}\n更新后建议开启新会话重新加载 skill。")
+        print(f"状态: 有新版本\n查询脚本会在执行命令前自动更新；也可以手动执行:\n  {local.get('updateCommand', UPDATE_COMMAND)}")
         print("如果当前环境不支持 npx skills add:")
         print(f"  打开 {github_channel.get('homepage', local.get('sourceUrl', SOURCE_URL))}")
         print(f"  按对应客户端的方式安装或覆盖 {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
