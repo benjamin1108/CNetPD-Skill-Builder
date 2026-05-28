@@ -9,7 +9,7 @@ from pathlib import Path
 from .aliyun_splitter import split_batch
 from .constants import PRODUCT_CODES, SKILL_NAME
 from .metadata import download_network_metadata, missing_metadata
-from .skill import build_skill
+from .skill import build_install_source, build_skill
 
 logger = logging.getLogger("cnetpd_builder")
 
@@ -51,6 +51,7 @@ def build(
     api_meta_dir: Path,
     output_dir: Path,
     target_dir: Path,
+    install_source_dir: Path | None,
     package_dir: Path,
     no_prepare: bool = False,
     refresh_meta: bool = False,
@@ -61,5 +62,13 @@ def build(
     elif not output_dir.is_dir():
         raise SystemExit(f"source dir does not exist: {output_dir}")
     result = build_skill(output_dir, target_dir, force=force, package_dir=package_dir)
+    if install_source_dir is not None:
+        install_result = build_install_source(
+            output_dir,
+            install_source_dir,
+            force=True,
+            package_dir=package_dir,
+        )
+        result["install_source"] = install_result["target"]
     logger.info("%s built at %s", SKILL_NAME, target_dir)
     return result

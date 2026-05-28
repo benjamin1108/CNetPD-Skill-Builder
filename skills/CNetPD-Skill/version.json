@@ -1,0 +1,11 @@
+{
+  "skill": "CNetPD-Skill",
+  "version": "1.1.0",
+  "project": "CNetPD-Skill-Builder",
+  "sourceRepo": "benjamin1108/CNetPD-Skill-Builder",
+  "sourceUrl": "https://github.com/benjamin1108/CNetPD-Skill-Builder",
+  "latestVersionUrl": "https://raw.githubusercontent.com/benjamin1108/CNetPD-Skill-Builder/main/version.json",
+  "installCommand": "npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y",
+  "updateCommand": "npx -y skills update CNetPD-Skill -y",
+  "globalUpdateCommand": "npx -y skills update CNetPD-Skill -g -y"
+}

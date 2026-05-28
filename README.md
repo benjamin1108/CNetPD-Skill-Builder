@@ -17,6 +17,7 @@ src/cnetpd_skill_builder/       构建器源码
 tools/
   build_cnetpd_skill.py         一键生成 CNetPD-Skill
   check_code_size.py            500 行代码门禁
+skills/CNetPD-Skill/            提交到 GitHub 的 npx 安装源，不内置静态 data
 .output/api_metadata/           本地下载的原始元数据，忽略提交
 .output/splitter/               本地 splitter 产物，忽略提交
 dist/CNetPD-Skill/              最终 skill 目录，忽略提交
@@ -47,18 +48,41 @@ python3 tools/build_cnetpd_skill.py --no-prepare --source-dir .output/splitter
 默认输出：
 
 ```text
+skills/CNetPD-Skill/
 dist/CNetPD-Skill/
 dist/CNetPD-Skill.zip
 dist/CNetPD-Skill.skill
 ```
 
-生成的 skill 内置一份可离线使用的 `data/` 快照，同时带有 `scripts/sync_data.py`。分发后查询脚本会优先读取本地缓存：
+`dist/` 里的 skill 内置一份可离线使用的 `data/` 快照，同时带有 `scripts/sync_data.py`。分发后查询脚本会优先读取本地缓存：
 
 ```text
 ~/.cache/cnetpd-skill/data
 ```
 
 缓存缺失或超过 7 天时会尝试自动同步；同步失败时回退内置快照。
+
+## npx 安装
+
+仓库提交 `skills/CNetPD-Skill/` 作为 npx 安装源，不提交静态 data。安装后首次查询会自动同步最新 API 数据到本机缓存，不需要手动下载 data。
+
+安装到 Codex 全局 skill 目录：
+
+```bash
+npx -y skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill -a codex -g -y
+```
+
+检查 skill 版本：
+
+```bash
+python3 ~/.codex/skills/cnetpd-skill/scripts/query.py version
+```
+
+如果提示有新版本，让 agent 执行：
+
+```bash
+npx -y skills update CNetPD-Skill -g -y
+```
 
 ## 使用生成的 Skill
 
@@ -69,6 +93,7 @@ python3 dist/CNetPD-Skill/scripts/query.py topic public-access
 python3 dist/CNetPD-Skill/scripts/query.py product Vpc --provider aliyun
 python3 dist/CNetPD-Skill/scripts/query.py detail CreateVpc --product Vpc --provider aliyun
 python3 dist/CNetPD-Skill/scripts/query.py data-info
+python3 dist/CNetPD-Skill/scripts/query.py version
 python3 dist/CNetPD-Skill/scripts/query.py sync
 ```
 
@@ -98,4 +123,5 @@ python3 tools/check_code_size.py
 - `tmp/`
 - Python 缓存与虚拟环境
 
-仓库只提交构建器、运行时模板和说明；不提交下载数据、拆分产物或生成后的 skill。
+仓库只提交构建器、运行时模板和说明；不提交下载数据、拆分产物或 `dist/` 离线包。
+例外：`skills/CNetPD-Skill/` 是 npx 安装源，只包含 skill 指令和运行时脚本，不包含静态 data 快照。

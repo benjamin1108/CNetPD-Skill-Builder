@@ -27,6 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     default_output_root = repo_root / ".output"
     default_dist_root = repo_root / "dist"
     default_target = default_dist_root / SKILL_NAME
+    default_install_source = repo_root / "skills" / SKILL_NAME
     parser = argparse.ArgumentParser(
         description=f"{PROJECT_NAME} - build {SKILL_NAME}",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -35,11 +36,14 @@ Examples:
   python3 tools/build_cnetpd_skill.py
   python3 tools/build_cnetpd_skill.py --refresh-meta
   python3 tools/build_cnetpd_skill.py --no-prepare --source-dir .output/splitter
+  python3 tools/build_cnetpd_skill.py --no-install-source
         """,
     )
     parser.add_argument("--source-dir", type=Path, default=default_output_root / "splitter")
     parser.add_argument("--api-meta-dir", type=Path, default=default_output_root / "api_metadata")
     parser.add_argument("--target", "-t", type=Path, default=default_target)
+    parser.add_argument("--install-source-dir", type=Path, default=default_install_source)
+    parser.add_argument("--no-install-source", action="store_true")
     parser.add_argument("--no-prepare", action="store_true")
     parser.add_argument("--refresh-meta", action="store_true")
     parser.add_argument("--force", "-f", action="store_true")
@@ -55,6 +59,7 @@ Examples:
         api_meta_dir=args.api_meta_dir,
         output_dir=args.source_dir,
         target_dir=args.target,
+        install_source_dir=None if args.no_install_source else args.install_source_dir,
         package_dir=Path(__file__).resolve().parent,
         no_prepare=args.no_prepare,
         refresh_meta=args.refresh_meta,
@@ -65,6 +70,8 @@ Examples:
     print(f"  {SKILL_NAME} build complete ({elapsed:.1f}s)")
     print("=" * 60)
     print(f"  output: {result['target']}")
+    if result.get("install_source"):
+        print(f"  npx install source: {result['install_source']}")
     print(f"  zip: {result['zip']}")
     print(f"  skill: {result['skill']}")
     print(f"  products: {result['products_copied']}")

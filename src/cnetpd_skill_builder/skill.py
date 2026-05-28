@@ -10,6 +10,8 @@ from pathlib import Path
 from . import VERSION
 from .constants import (
     DEFAULT_CACHE_DIR,
+    INSTALL_COMMAND,
+    LATEST_VERSION_URL,
     PRODUCT_CODES,
     PRODUCTS,
     PROJECT_DESCRIPTION,
@@ -17,6 +19,10 @@ from .constants import (
     PROVIDER,
     PROVIDER_DISPLAY,
     SKILL_NAME,
+    SOURCE_REPO,
+    SOURCE_URL,
+    UPDATE_COMMAND,
+    UPDATE_COMMAND_GLOBAL,
     TOPICS,
 )
 from .manifest import write_manifest
@@ -54,8 +60,7 @@ def expand_topic_apis(topic: dict, provider_dir: Path, max_per_product: int = 8)
     return result
 
 
-def build_cnetpd_index(data_dir: Path) -> dict:
-    provider_dir = data_dir / "providers" / PROVIDER
+def build_cnetpd_index_from_provider(provider_dir: Path) -> dict:
     products = []
     for meta in PRODUCTS:
         index_file = provider_dir / meta["product"] / "index.json"
@@ -105,7 +110,31 @@ def build_cnetpd_index(data_dir: Path) -> dict:
     }
 
 
-def render_skill_md(index: dict) -> str:
+def build_cnetpd_index(data_dir: Path) -> dict:
+    return build_cnetpd_index_from_provider(data_dir / "providers" / PROVIDER)
+
+
+def version_info() -> dict:
+    return {
+        "skill": SKILL_NAME,
+        "version": VERSION,
+        "project": PROJECT_NAME,
+        "sourceRepo": SOURCE_REPO,
+        "sourceUrl": SOURCE_URL,
+        "latestVersionUrl": LATEST_VERSION_URL,
+        "installCommand": INSTALL_COMMAND,
+        "updateCommand": UPDATE_COMMAND,
+        "globalUpdateCommand": UPDATE_COMMAND_GLOBAL,
+    }
+
+
+def write_version_file(target_dir: Path) -> Path:
+    path = target_dir / "version.json"
+    path.write_text(json.dumps(version_info(), ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
+
+
+def render_skill_md(index: dict, *, packaged_data: bool) -> str:
     topic_row_items = []
     for topic in index["topics"]:
         topic_products = "、".join(f"{p['provider']}/{p['product']}" for p in topic["products"])
@@ -115,6 +144,13 @@ def render_skill_md(index: dict) -> str:
         f"| `{item['provider']}/{item['slug']}` | {item['display']} | {item['apiCount']} | "
         f"{'、'.join(item['coverage'])} |"
         for item in index["products"]
+    )
+    data_note = (
+        f"内置 `data/` 是可离线使用的快照。查询脚本优先使用 `{DEFAULT_CACHE_DIR}`；"
+        "缓存缺失或超过 7 天会尝试自动同步，失败时回退内置快照。"
+        if packaged_data else
+        f"`npx skills add` 安装源不内置静态 data。首次查询会自动同步到 `{DEFAULT_CACHE_DIR}`；"
+        "也可以先运行 `python3 $SCRIPT sync`。如果当前环境不能联网，请改用 `dist/` 下的离线包。"
     )
     return f"""---
 name: {SKILL_NAME}
@@ -144,12 +180,39 @@ python3 $SCRIPT group <group> --product <product> --provider aliyun
 python3 $SCRIPT detail <Api> --product <product> --provider aliyun
 python3 $SCRIPT search "<关键词>"
 python3 $SCRIPT data-info
+python3 $SCRIPT version
 python3 $SCRIPT sync
+```
+
+## 安装与自更新
+
+使用 npx 安装到 Codex 全局 skill 目录：
+
+```bash
+{INSTALL_COMMAND}
+```
+
+检查当前 skill 版本：
+
+```bash
+python3 $SCRIPT version
+```
+
+如果版本检查提示有新版本，让 agent 执行：
+
+```bash
+{UPDATE_COMMAND}
+```
+
+如果是全局安装，执行：
+
+```bash
+{UPDATE_COMMAND_GLOBAL}
 ```
 
 ## 数据更新
 
-内置 `data/` 是可离线使用的快照。查询脚本优先使用 `{DEFAULT_CACHE_DIR}`；缓存缺失或超过 7 天会尝试自动同步，失败时回退内置快照。
+{data_note}
 
 环境变量：
 
@@ -205,12 +268,37 @@ def package_skill_dir(target_dir: Path) -> tuple[Path, Path]:
     return zip_path, skill_path
 
 
-def build_skill(source_dir: Path, target_dir: Path, *, force: bool, package_dir: Path) -> dict:
+def prepare_target(target_dir: Path, *, force: bool) -> None:
     if target_dir.exists():
         if not force:
             raise SystemExit(f"{target_dir} already exists. Use --force to overwrite.")
         shutil.rmtree(target_dir)
     target_dir.mkdir(parents=True)
+
+
+def validate_source(source_dir: Path) -> list[str]:
+    missing = [product for product in PRODUCT_CODES if not (source_dir / product).exists()]
+    if missing:
+        raise RuntimeError("missing splitter output: " + ", ".join(missing))
+    return PRODUCT_CODES
+
+
+def build_install_source(source_dir: Path, target_dir: Path, *, force: bool, package_dir: Path) -> dict:
+    prepare_target(target_dir, force=force)
+    validate_source(source_dir)
+    index = build_cnetpd_index_from_provider(source_dir)
+    (target_dir / "SKILL.md").write_text(render_skill_md(index, packaged_data=False), encoding="utf-8")
+    copy_runtime_files(target_dir, package_dir)
+    write_version_file(target_dir)
+    return {
+        "target": str(target_dir),
+        "products_available": len(PRODUCT_CODES),
+        "topics_count": len(index["topics"]),
+    }
+
+
+def build_skill(source_dir: Path, target_dir: Path, *, force: bool, package_dir: Path) -> dict:
+    prepare_target(target_dir, force=force)
     data_dir = target_dir / "data"
     provider_dir = data_dir / "providers" / PROVIDER
     provider_dir.mkdir(parents=True)
@@ -231,8 +319,9 @@ def build_skill(source_dir: Path, target_dir: Path, *, force: bool, package_dir:
     index_path = data_dir / "_cnetpd-index.json"
     index_path.write_text(json.dumps(index, ensure_ascii=False, indent=2), encoding="utf-8")
     manifest_path = write_manifest(data_dir, kind="snapshot")
-    (target_dir / "SKILL.md").write_text(render_skill_md(index), encoding="utf-8")
+    (target_dir / "SKILL.md").write_text(render_skill_md(index, packaged_data=True), encoding="utf-8")
     copy_runtime_files(target_dir, package_dir)
+    version_path = write_version_file(target_dir)
     zip_path, skill_path = package_skill_dir(target_dir)
     return {
         "target": str(target_dir),
@@ -241,5 +330,6 @@ def build_skill(source_dir: Path, target_dir: Path, *, force: bool, package_dir:
         "products_copied": len(copied),
         "index_bytes": index_path.stat().st_size,
         "manifest_bytes": manifest_path.stat().st_size,
+        "version_bytes": version_path.stat().st_size,
         "topics_count": len(index["topics"]),
     }
