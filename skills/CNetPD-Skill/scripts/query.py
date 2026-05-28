@@ -8,6 +8,7 @@ import argparse
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import urllib.error
@@ -53,6 +54,8 @@ CACHE_DATA_ROOT = Path(os.environ.get("CNETPD_CACHE_DIR", Path.home() / ".cache"
 SYNC_SCRIPT = SCRIPT_DIR / "sync_data.py"
 DEFAULT_PROVIDER = "aliyun"
 VERSION_CHECK_OFF = {"0", "false", "no", "off"}
+SELF_UPDATE_REEXEC_ENV = "CNETPD_SELF_UPDATE_REEXECED"
+DEFAULT_UPDATE_TIMEOUT_SECONDS = 180
 
 
 def read_json(path: Path) -> dict: return json.loads(path.read_text(encoding="utf-8"))
@@ -162,7 +165,13 @@ def select_data_root() -> tuple[str, Path]:
     return "none", PACKAGED_DATA_ROOT
 
 
-DATA_SOURCE, DATA_ROOT = select_data_root()
+DATA_SOURCE = "none"
+DATA_ROOT = PACKAGED_DATA_ROOT
+
+
+def init_data_root() -> None:
+    global DATA_SOURCE, DATA_ROOT
+    DATA_SOURCE, DATA_ROOT = select_data_root()
 
 
 def index() -> dict:
@@ -421,6 +430,113 @@ def version_tuple(value: str) -> tuple[int, int, int]:
 
 def remote_version_check_enabled() -> bool: return os.environ.get("CNETPD_VERSION_CHECK", "1").lower() not in VERSION_CHECK_OFF
 
+
+def auto_update_enabled() -> bool: return os.environ.get("CNETPD_AUTO_UPDATE", "1").lower() not in VERSION_CHECK_OFF
+
+
+def update_timeout_seconds() -> int:
+    try:
+        return max(10, int(os.environ.get("CNETPD_UPDATE_TIMEOUT_SECONDS", str(DEFAULT_UPDATE_TIMEOUT_SECONDS))))
+    except ValueError:
+        return DEFAULT_UPDATE_TIMEOUT_SECONDS
+
+
+def command_skips_remote_check(args: argparse.Namespace) -> bool:
+    return bool(getattr(args, "no_remote", False)) or not remote_version_check_enabled()
+
+
+def run_update_command(local: dict) -> subprocess.CompletedProcess[str]:
+    command_text = os.environ.get("CNETPD_UPDATE_COMMAND", str(local.get("updateCommand", UPDATE_COMMAND)))
+    command = shlex.split(command_text)
+    if not command:
+        raise RuntimeError("update command is empty")
+    return subprocess.run(
+        command,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=update_timeout_seconds(),
+    )
+
+
+def print_command_output(result: subprocess.CompletedProcess[str]) -> None:
+    stdout = (result.stdout or "").strip()
+    stderr = (result.stderr or "").strip()
+    if stdout:
+        print(stdout, file=sys.stderr)
+    if stderr:
+        print(stderr, file=sys.stderr)
+
+
+def reexec_current_command() -> None:
+    os.environ[SELF_UPDATE_REEXEC_ENV] = "1"
+    os.execv(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:]])
+
+
+def print_agent_reload_instruction() -> None:
+    skill_md = SKILL_ROOT / "SKILL.md"
+    print(f"AGENT_RELOAD_SKILL: {skill_md}", file=sys.stderr)
+    print("Agent 在继续回答前必须读取更新后的 SKILL.md，并按新版说明执行。", file=sys.stderr)
+
+
+def maybe_self_update(args: argparse.Namespace) -> None:
+    if command_skips_remote_check(args):
+        return
+    local = local_version_info()
+    local_version = str(local.get("version", SKILL_VERSION))
+    try:
+        latest = fetch_latest_version()
+    except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
+        raise SystemExit(
+            "CNetPD-Skill 版本检查失败，已停止本次查询，避免使用过期 skill 得出结论。\n"
+            f"原因: {exc}\n"
+            "如果当前环境是沙箱、企业代理、DNS、TLS 或 HTTP 403/407 限制，请先允许联网后重试；"
+            "确需离线继续时显式设置 CNETPD_VERSION_CHECK=0。"
+        ) from exc
+    latest_version = str(latest.get("version", "0.0.0"))
+    if version_tuple(latest_version) <= version_tuple(local_version):
+        return
+    if os.environ.get(SELF_UPDATE_REEXEC_ENV) == "1":
+        raise SystemExit(
+            f"CNetPD-Skill 自动更新后仍检测到旧版本: 本地 {local_version}, 最新 {latest_version}。\n"
+            "请检查 skills 安装目录是否可写，或当前脚本是否来自未安装的源码目录。"
+        )
+    if not auto_update_enabled():
+        raise SystemExit(
+            f"CNetPD-Skill 有新版本: 本地 {local_version}, 最新 {latest_version}。\n"
+            "自动更新已被 CNETPD_AUTO_UPDATE=0 关闭，因此本次查询停止。"
+        )
+    print(
+        f"CNetPD-Skill 检测到新版本: {local_version} -> {latest_version}，正在自动更新...",
+        file=sys.stderr,
+    )
+    try:
+        result = run_update_command(local)
+    except (OSError, subprocess.TimeoutExpired, RuntimeError) as exc:
+        raise SystemExit(
+            "CNetPD-Skill 自动更新失败，已停止本次查询。\n"
+            f"原因: {exc}\n"
+            f"可手动核查命令: {local.get('updateCommand', UPDATE_COMMAND)}"
+        ) from exc
+    if result.returncode != 0:
+        print_command_output(result)
+        raise SystemExit(
+            "CNetPD-Skill 自动更新命令返回失败，已停止本次查询。\n"
+            f"命令: {local.get('updateCommand', UPDATE_COMMAND)}\n"
+            f"退出码: {result.returncode}"
+        )
+    refreshed = local_version_info()
+    refreshed_version = str(refreshed.get("version", SKILL_VERSION))
+    if version_tuple(refreshed_version) < version_tuple(latest_version):
+        print_command_output(result)
+        raise SystemExit(
+            "CNetPD-Skill 自动更新命令执行完成，但当前脚本目录仍不是最新版本，已停止本次查询。\n"
+            f"当前脚本目录版本: {refreshed_version}; 最新版本: {latest_version}"
+        )
+    print_agent_reload_instruction()
+    print("CNetPD-Skill 自动更新完成，重新执行原命令。", file=sys.stderr)
+    reexec_current_command()
+
 def print_version_header(local: dict) -> tuple[str, dict]:
     local_version = str(local.get("version", SKILL_VERSION))
     channels = local.get("installChannels", {})
@@ -440,11 +556,15 @@ def print_remote_version_status(local: dict, local_version: str, github_channel:
         return
     latest_version = str(latest.get("version", "0.0.0"))
     print(f"最新版本: {latest_version}")
-    if version_tuple(latest_version) > version_tuple(local_version):
+    latest_tuple = version_tuple(latest_version)
+    local_tuple = version_tuple(local_version)
+    if latest_tuple > local_tuple:
         print(f"状态: 有新版本\n需要先更新 skill 本体，否则 Agent 仍可能读取旧 SKILL.md 和旧脚本。\n执行以下命令更新:\n  {local.get('updateCommand', UPDATE_COMMAND)}\n更新后建议开启新会话重新加载 skill。")
         print("如果当前环境不支持 npx skills add:")
         print(f"  打开 {github_channel.get('homepage', local.get('sourceUrl', SOURCE_URL))}")
         print(f"  按对应客户端的方式安装或覆盖 {github_channel.get('skillSource', local.get('githubSkillSourceUrl', GITHUB_SKILL_SOURCE_URL))}")
+    elif latest_tuple < local_tuple:
+        print("状态: 本地版本高于远端（可能是未发布开发版）")
     else:
         print("状态: 已是最新")
 
@@ -475,6 +595,8 @@ def main() -> None:
     if not args.command:
         parser.print_help()
         return
+    maybe_self_update(args)
+    init_data_root()
     data_free_commands = {"data-info", "sync", "version", "check-update"}
     if args.command not in data_free_commands and not valid_data_root(DATA_ROOT):
         raise SystemExit(f"数据目录无效: {DATA_ROOT}")

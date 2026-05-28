@@ -95,7 +95,9 @@ description: |
 
 ## 启动门禁
 
-每次会话首次使用本 skill，先设定脚本路径并运行 `data-info`；不要直接从 `topic`、`search`、`detail` 开始。
+`query.py` 每次调用都会先做远端版本检查。发现新版本时，默认自动执行 `{UPDATE_COMMAND}`，更新成功后重新执行原命令；更新失败则停止本次查询，避免继续用旧 skill 给出 API 结论。自动更新成功后，当前命令会用新脚本重跑，并输出 `AGENT_RELOAD_SKILL: <path>`；Agent 在继续回答前必须读取该路径的新版 `SKILL.md` 并按新版说明执行。新会话仍是最可靠的完整重载方式。
+
+每次会话首次使用本 skill，仍需先设定脚本路径并运行 `data-info` 查看数据状态；不要直接从 `topic`、`search`、`detail` 开始。
 
 ```bash
 SCRIPT="<本skill目录>/scripts/query.py"
@@ -104,10 +106,11 @@ python3 $SCRIPT data-info
 
 根据 `data-info` 输出处理：
 
-1. 若出现 `状态: 有新版本`，先提示用户执行 `{UPDATE_COMMAND}` 并建议开启新会话；除非用户明确要求继续，否则不要继续做 API 结论。
-2. 若远端版本检查因沙箱、代理、DNS、TLS、HTTP 403/407 失败，向用户申请联网权限后重试。推荐文案：`需要联网检查 CNetPD-Skill 版本和初始化云网络 API 数据缓存，否则可能使用旧 skill 或缺失本地证据链。是否允许我联网重试？`
-3. 若 `有效: no`、schema 过旧、缺少目标 provider，或查询时报 `数据目录无效`，先运行 `python3 $SCRIPT sync`。同步仍失败时才说明无法使用本地证据链，并请用户提供 `CNETPD_DATA` 或离线包。
-4. 若缓存有效但版本检查被用户拒绝联网，允许继续使用本地数据，但必须在答案中说明 skill 版本未完成远端确认。
+1. 若输出包含 `AGENT_RELOAD_SKILL: <path>`，先读取 `<path>` 的新版 `SKILL.md`，再继续回答或继续查询。
+2. 若自动更新输出显示已重新执行原命令，以重新执行后的结果为准。
+3. 若版本检查或自动更新因沙箱、代理、DNS、TLS、HTTP 403/407、安装目录不可写等原因失败，不要继续做 API 结论；按环境向用户申请联网或写入权限后重试。
+4. 只有用户显式要求离线继续，才可设置 `CNETPD_VERSION_CHECK=0` 跳过版本检查；这种情况下必须在答案中说明 skill 版本未完成远端确认。
+5. 若 `有效: no`、schema 过旧、缺少目标 provider，或查询时报 `数据目录无效`，先运行 `python3 $SCRIPT sync`。同步仍失败时才说明无法使用本地证据链，并请用户提供 `CNETPD_DATA` 或离线包。
 
 ## 证据流程
 
@@ -149,7 +152,7 @@ python3 $SCRIPT sync
 - GitHub：`{SOURCE_URL}`
 - 手动安装源：`{GITHUB_SKILL_SOURCE_URL}`
 - 数据：{data_note}
-- 环境变量：`CNETPD_DATA`、`CNETPD_CACHE_DIR`、`CNETPD_AUTO_SYNC=0`、`CNETPD_SYNC_TTL_DAYS=30`、`CNETPD_VERSION_CHECK=0`
+- 环境变量：`CNETPD_DATA`、`CNETPD_CACHE_DIR`、`CNETPD_AUTO_SYNC=0`、`CNETPD_SYNC_TTL_DAYS=30`、`CNETPD_VERSION_CHECK=0`、`CNETPD_AUTO_UPDATE=0`、`CNETPD_UPDATE_TIMEOUT_SECONDS=180`
 
 ## 主题入口
 

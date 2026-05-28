@@ -37,7 +37,7 @@ CNetPD-Skill-Builder/
 npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill
 ```
 
-检查版本：
+查询脚本默认会在每次调用时检查远端版本；发现新版本会自动执行 `npx skills update CNetPD-Skill`，更新成功后重新执行原命令，并输出 `AGENT_RELOAD_SKILL: <path>` 提醒当前 Agent 读取更新后的 `SKILL.md`。手动检查版本：
 
 ```bash
 python3 <Skill目录>/scripts/query.py version
@@ -115,8 +115,11 @@ skills/CNetPD-Skill/
 
 - `CNETPD_DATA`：指定数据目录
 - `CNETPD_CACHE_DIR`：修改缓存目录
-- `CNETPD_AUTO_SYNC=0`：关闭自动更新
+- `CNETPD_AUTO_SYNC=0`：关闭数据缓存自动同步
 - `CNETPD_SYNC_TTL_DAYS=30`：修改缓存过期天数
+- `CNETPD_VERSION_CHECK=0`：跳过 skill 版本检查
+- `CNETPD_AUTO_UPDATE=0`：检查到新版本时停止查询但不自动更新
+- `CNETPD_UPDATE_TIMEOUT_SECONDS=180`：修改自动更新命令超时时间
 
 ## 开发
 
