@@ -37,7 +37,7 @@ try:
 except ImportError:
     GITHUB_SKILL_SOURCE_URL = "https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill"
     INSTALL_COMMAND = "npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill"
-    LATEST_VERSION_URL = "https://raw.githubusercontent.com/benjamin1108/CNetPD-Skill-Builder/main/version.json"
+    LATEST_VERSION_URL = "https://api.github.com/repos/benjamin1108/CNetPD-Skill-Builder/contents/version.json?ref=main"
     DEFAULT_SYNC_TTL_DAYS = 30
     DATA_SCHEMA_VERSION = 2
     SKILL_NAME = "CNetPD-Skill"
@@ -406,7 +406,7 @@ def fetch_latest_version(timeout: int = 8) -> dict:
     latest_url = os.environ.get("CNETPD_LATEST_VERSION_URL", LATEST_VERSION_URL)
     request = urllib.request.Request(
         latest_url,
-        headers={"User-Agent": f"{SKILL_NAME}/{SKILL_VERSION}"},
+        headers={"User-Agent": f"{SKILL_NAME}/{SKILL_VERSION}", "Accept": "application/vnd.github.raw"},
     )
     with urllib.request.urlopen(request, timeout=timeout) as response:
         return json.loads(response.read().decode("utf-8"))

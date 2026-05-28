@@ -1,11 +1,11 @@
 {
   "skill": "CNetPD-Skill",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "project": "CNetPD-Skill-Builder",
   "sourceRepo": "benjamin1108/CNetPD-Skill-Builder",
   "sourceUrl": "https://github.com/benjamin1108/CNetPD-Skill-Builder",
   "githubSkillSourceUrl": "https://github.com/benjamin1108/CNetPD-Skill-Builder/tree/main/skills/CNetPD-Skill",
-  "latestVersionUrl": "https://raw.githubusercontent.com/benjamin1108/CNetPD-Skill-Builder/main/version.json",
+  "latestVersionUrl": "https://api.github.com/repos/benjamin1108/CNetPD-Skill-Builder/contents/version.json?ref=main",
   "installCommand": "npx skills add benjamin1108/CNetPD-Skill-Builder --skill CNetPD-Skill",
   "updateCommand": "npx skills update CNetPD-Skill",
   "installChannels": {
