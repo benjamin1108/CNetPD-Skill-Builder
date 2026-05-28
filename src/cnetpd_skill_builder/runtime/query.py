@@ -269,6 +269,40 @@ def cmd_group(slug: str, product: str, provider: str) -> None:
             print(f"    必填: {', '.join(api['required'])}")
 
 
+def collect_text(value: object) -> list[str]:
+    if isinstance(value, dict):
+        parts: list[str] = []
+        for key, item in value.items():
+            parts.append(str(key))
+            parts.extend(collect_text(item))
+        return parts
+    if isinstance(value, list):
+        parts = []
+        for item in value:
+            parts.extend(collect_text(item))
+        return parts
+    if isinstance(value, str):
+        return [value]
+    if value is None:
+        return []
+    return [str(value)]
+
+
+def match_snippet(parts: list[str], keyword: str, *, limit: int = 150) -> str:
+    kw = keyword.lower()
+    for part in parts:
+        compact = " ".join(part.split())
+        pos = compact.lower().find(kw)
+        if pos < 0:
+            continue
+        start = max(0, pos - 50)
+        end = min(len(compact), pos + len(keyword) + 80)
+        prefix = "..." if start > 0 else ""
+        suffix = "..." if end < len(compact) else ""
+        return (prefix + compact[start:end] + suffix)[:limit]
+    return ""
+
+
 def cmd_search(keyword: str, provider: str | None) -> None:
     kw = keyword.lower()
     providers = [provider] if provider else [item["slug"] for item in index()["providers"]]
@@ -279,16 +313,20 @@ def cmd_search(keyword: str, provider: str | None) -> None:
             continue
         for product in sorted(path.name for path in root.iterdir() if path.is_dir()):
             hits = []
-            for group_file in sorted((root / product / "groups").glob("*.json")):
-                group = read_json(group_file)
-                for api in group.get("apis", []):
-                    haystack = f"{api.get('name', '')} {api.get('summary', '')}".lower()
-                    if kw in haystack:
-                        hits.append((group.get("group", group_file.stem), api))
+            for api_file in sorted((root / product / "apis").glob("*.json")):
+                api = read_json(api_file)
+                parts = collect_text(api)
+                haystack = " ".join(parts).lower()
+                if kw in haystack:
+                    hits.append((api.get("group", ""), api, match_snippet(parts, keyword)))
             if hits:
                 print(f"\n【{provider_slug}/{product}】{len(hits)} matches")
-                for group, api in hits[:15]:
-                    print(f"  {api['name']} ({group}) - {api.get('summary', '')}")
+                for group, api, snippet in hits[:15]:
+                    desc_lines = api.get("description", "").splitlines()
+                    summary = api.get("summary") or (desc_lines[0] if desc_lines else "")
+                    print(f"  {api['api']} ({group}) - {summary}")
+                    if snippet:
+                        print(f"    命中: {snippet}")
                 total += len(hits)
     if total == 0:
         print(f"未找到: {keyword}")
