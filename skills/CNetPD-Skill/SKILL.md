@@ -35,7 +35,7 @@ python3 $SCRIPT data-info
 
 1. 拆解问题：场景、资源对象、动作、范围约束、云厂商。
 2. 先用 `topics` / `topic <slug>` 定位候选产品，再用 `product <product> --provider <provider>` 看能力分区。
-3. 检索不要只搜用户原句。分别搜索核心名词、动作词、API 片段、参数名、缩写、英文/中文同义词、连字符/空格/驼峰拆分词。
+3. 检索先广后窄：`search` 会搜产品、分组、API 名、参数、嵌套模型说明并返回字段路径；语义同义词由 agent 自己生成，多跑几组关键词交叉验证。
 4. 命中 API 后用 `detail` 查参数、约束、异步性、配额、废弃状态；如果字段在嵌套属性、默认行为或模型说明中，读取本地产品 JSON 或 `source-model.json`。
 5. 竞品分析、缺口判断、能力有无结论必须用官方互联网文档复核；只做 API 定位或字段解释时可不联网。
 
@@ -68,6 +68,7 @@ python3 $SCRIPT group <group> --product <product> --provider aliyun
 python3 $SCRIPT detail <Api> --product <product> --provider aliyun
 python3 $SCRIPT detail CreateVpc --product ec2-networking --provider aws
 python3 $SCRIPT search "<关键词>"
+python3 $SCRIPT search "<关键词>" --provider <provider> --product <product> --limit 20
 python3 $SCRIPT version
 python3 $SCRIPT sync
 ```

@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import os
 import re
@@ -290,10 +291,315 @@ def collect_text(value: object) -> list[str]:
     return [str(value)]
 
 
-def match_snippet(parts: list[str], keyword: str, *, limit: int = 150) -> str:
+def clean_display_text(value: str) -> str:
+    text = html.unescape(value)
+    text = re.sub(r"<[^>]+>", " ", text)
+    return " ".join(text.split())
+
+
+def iter_text_fields(value: object, path: str = "") -> list[tuple[str, str]]:
+    if isinstance(value, dict):
+        fields: list[tuple[str, str]] = []
+        for key, item in value.items():
+            key_path = f"{path}.{key}" if path else str(key)
+            fields.append((key_path, str(key)))
+            fields.extend(iter_text_fields(item, key_path))
+        return fields
+    if isinstance(value, list):
+        fields = []
+        for index, item in enumerate(value):
+            fields.extend(iter_text_fields(item, f"{path}[{index}]"))
+        return fields
+    if isinstance(value, str):
+        return [(path, value)]
+    if value is None:
+        return []
+    return [(path, str(value))]
+
+
+def normalized_token(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.lower())
+
+
+def token_in_text(token: str, text: str) -> bool:
+    clean_token = token.strip().lower()
+    clean_text = clean_display_text(text).lower()
+    ascii_token = normalized_token(clean_token)
+    ascii_text = normalized_token(clean_text)
+    if ascii_token and ascii_token in ascii_text:
+        return True
+    return bool(clean_token and clean_token in clean_text)
+
+
+def cjk_ngrams(value: str, *, min_size: int = 2, max_size: int = 4) -> list[str]:
+    if len(value) < min_size:
+        return []
+    grams: list[str] = []
+    max_len = min(len(value), max_size)
+    for size in range(min_size, max_len + 1):
+        for start in range(0, len(value) - size + 1):
+            grams.append(value[start:start + size])
+    return grams
+
+
+def extract_query_tokens(text: str) -> list[str]:
+    tokens: list[str] = []
+    for part in re.split(r"[\s,，/._:;|()（）\[\]{}<>《》\"'`]+", text):
+        stripped = part.strip()
+        if stripped:
+            tokens.append(stripped)
+    tokens.extend(re.findall(r"[A-Za-z][A-Za-z0-9-]*", text))
+    for cjk_text in re.findall(r"[\u3400-\u9fff]+", text):
+        tokens.append(cjk_text)
+        tokens.extend(cjk_ngrams(cjk_text))
+    return list(dict.fromkeys(tokens))
+
+
+def term_variants(term: str) -> set[str]:
+    stripped = term.strip()
+    if not stripped:
+        return set()
+    variants = {stripped, stripped.lower()}
+    lower = stripped.lower()
+    camel_words = re.sub(r"(?<!^)(?=[A-Z])", " ", stripped).lower()
+    variants.add(lower.replace(" ", "_").replace("-", "_"))
+    variants.add(lower.replace("_", " ").replace("-", " "))
+    variants.add(lower.replace("_", "-").replace(" ", "-"))
+    variants.add(camel_words)
+    variants.add(camel_words.replace(" ", "_"))
+    variants.add(camel_words.replace(" ", "-"))
+    return {item for item in variants if item}
+
+
+def build_search_terms(keyword: str, *, expand: bool) -> list[str]:
+    terms: set[str] = set()
+    for variant in term_variants(keyword):
+        terms.add(variant)
+    if expand:
+        for token in extract_query_tokens(keyword):
+            stripped = token.strip()
+            if len(stripped) >= 2:
+                terms.update(term_variants(stripped))
+    return sorted(terms, key=lambda item: (-len(item), item))
+
+
+def field_weight(path: str) -> int:
+    lowered = path.lower()
+    if lowered in {"api", "title", "summary"}:
+        return 80
+    if lowered in {"group.title", "group"}:
+        return 75
+    if lowered.endswith(".name") or ("parameters" in lowered and "name" in lowered):
+        return 65
+    if "description" in lowered or "documentation" in lowered:
+        return 45
+    if "shapeclosure" in lowered or "source-model" in lowered:
+        return 35
+    return 20
+
+
+def score_fields(fields: list[tuple[str, str]], terms: list[str]) -> tuple[float, str, str]:
+    best_term = ""
+    best_path = ""
+    term_scores: dict[str, tuple[float, str, str]] = {}
+    seen_paths: set[tuple[str, str]] = set()
+    for path, text in fields:
+        compact = clean_display_text(text)
+        lower_text = compact.lower()
+        for term in terms:
+            if not term:
+                continue
+            lower_term = term.lower()
+            if lower_term not in lower_text:
+                continue
+            key = (path, lower_term)
+            if key in seen_paths:
+                continue
+            seen_paths.add(key)
+            score = field_weight(path) + min(len(lower_term), 40) / 4
+            if lower_text == lower_term:
+                score += 20
+            if lower_text.startswith(lower_term):
+                score += 10
+            previous = term_scores.get(lower_term)
+            if previous is None or score > previous[0]:
+                term_scores[lower_term] = (score, term, path)
+    if not term_scores:
+        return 0.0, "", ""
+    ranked = sorted(term_scores.values(), key=lambda item: item[0], reverse=True)
+    best_score, best_term, best_path = ranked[0]
+    total_score = best_score + sum(score * 0.45 for score, _, _ in ranked[1:4])
+    return total_score, best_term, best_path
+
+
+def product_hint_text(product_meta: dict) -> str:
+    parts = [
+        str(product_meta.get("provider", "")),
+        str(product_meta.get("product", "")),
+        str(product_meta.get("slug", "")),
+        str(product_meta.get("sourceService", "")),
+        str(product_meta.get("display", "")),
+    ]
+    parts.extend(str(item) for item in product_meta.get("coverage", []))
+    return " ".join(parts)
+
+
+def product_hint_scores(keyword: str, provider: str | None) -> dict[tuple[str, str], float]:
+    tokens = [token for token in extract_query_tokens(keyword) if len(token.strip()) >= 2]
+    if not tokens:
+        return {}
+    scores: dict[tuple[str, str], float] = {}
+    for product_meta in index().get("products", []):
+        provider_slug = product_meta.get("provider", "")
+        product_slug = product_meta.get("product", "")
+        if provider and provider_slug != provider:
+            continue
+        direct_fields = [
+            str(product_meta.get("product", "")),
+            str(product_meta.get("slug", "")),
+            str(product_meta.get("sourceService", "")),
+        ]
+        display_fields = [str(product_meta.get("display", ""))]
+        coverage_fields = [str(item) for item in product_meta.get("coverage", [])]
+        direct_text = " ".join(direct_fields)
+        display_text = " ".join(display_fields)
+        coverage_text = " ".join(coverage_fields)
+        score = 0.0
+        for token in tokens:
+            if token_in_text(token, direct_text):
+                score += 120
+            elif token_in_text(token, display_text):
+                score += 80
+            elif token_in_text(token, coverage_text):
+                score += 50
+        if score > 0 and provider_slug and product_slug:
+            scores[(provider_slug, product_slug)] = score
+    return scores
+
+
+def product_index_by_key() -> dict[tuple[str, str], dict]:
+    return {
+        (item.get("provider", ""), item.get("product", "")): item
+        for item in index().get("products", [])
+    }
+
+
+def group_title_map(product_root: Path) -> dict[str, str]:
+    try:
+        product_index = read_json(product_root / "index.json")
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return {
+        group.get("slug", ""): group.get("title", "")
+        for group in product_index.get("groups", [])
+    }
+
+
+API_SEARCH_EXCLUDED_PATHS = {
+    "_layer",
+    "_version",
+    "provider",
+    "product",
+    "sourceService",
+}
+
+
+def api_search_fields(api: dict, group_titles: dict[str, str]) -> list[tuple[str, str]]:
+    fields = [
+        (path, value)
+        for path, value in iter_text_fields(api)
+        if path not in API_SEARCH_EXCLUDED_PATHS
+    ]
+    group_slug = api.get("group", "")
+    if group_slug:
+        fields.append(("group", str(group_slug)))
+        if group_titles.get(group_slug):
+            fields.append(("group.title", group_titles[group_slug]))
+    return fields
+
+
+def product_scope_note(scope_scores: dict[tuple[str, str], float]) -> str:
+    ranked = sorted(scope_scores.items(), key=lambda item: (-item[1], item[0][0], item[0][1]))
+    return ", ".join(f"{provider_slug}/{product_slug}" for (provider_slug, product_slug), _ in ranked[:6])
+
+
+def product_scope_direct_tokens(scope_scores: dict[tuple[str, str], float]) -> set[str]:
+    product_meta_by_key = product_index_by_key()
+    tokens: set[str] = set()
+    for key in scope_scores:
+        product_meta = product_meta_by_key.get(key, {})
+        for field in ("product", "slug", "sourceService"):
+            value = str(product_meta.get(field, ""))
+            token = normalized_token(value)
+            if token:
+                tokens.add(token)
+    return tokens
+
+
+def remove_scope_only_terms(terms: list[str], scope_scores: dict[tuple[str, str], float]) -> list[str]:
+    scope_tokens = product_scope_direct_tokens(scope_scores)
+    if not scope_tokens:
+        return terms
+    filtered = [
+        term for term in terms
+        if normalized_token(term) not in scope_tokens
+    ]
+    return filtered or terms
+
+
+def collect_search_hits(
+    keyword: str,
+    provider: str | None,
+    product: str | None,
+    terms: list[str],
+    scope_scores: dict[tuple[str, str], float],
+    *,
+    use_scope: bool,
+) -> list[tuple[float, str, str, str, dict, str]]:
+    providers = [provider] if provider else [item["slug"] for item in index()["providers"]]
+    hits: list[tuple[float, str, str, str, dict, str]] = []
+    for provider_slug in providers:
+        root = DATA_ROOT / "providers" / provider_slug
+        if not root.exists():
+            continue
+        if product:
+            products = [product]
+        else:
+            all_products = sorted(path.name for path in root.iterdir() if path.is_dir())
+            products = [
+                product_slug for product_slug in all_products
+                if not use_scope or (provider_slug, product_slug) in scope_scores
+            ]
+        for product_slug in products:
+            product_root = root / product_slug
+            if not product_root.exists():
+                continue
+            group_titles = group_title_map(product_root)
+            product_bonus = 0.0
+            if product:
+                product_bonus = 12.0
+            elif scope_scores.get((provider_slug, product_slug)):
+                product_bonus = min(scope_scores[(provider_slug, product_slug)] / 3, 45.0)
+            for api_file in sorted((product_root / "apis").glob("*.json")):
+                api = read_json(api_file)
+                fields = api_search_fields(api, group_titles)
+                score, best_term, best_path = score_fields(fields, terms)
+                if score <= 0:
+                    continue
+                score += product_bonus
+                snippet = match_snippet(fields, best_term or keyword)
+                hits.append((score, provider_slug, product_slug, api.get("group", ""), api, snippet or best_path))
+    return hits
+
+
+def score_api(fields: list[tuple[str, str]], terms: list[str]) -> tuple[float, str, str]:
+    return score_fields(fields, terms)
+
+
+def match_snippet(fields: list[tuple[str, str]], keyword: str, *, limit: int = 170) -> str:
     kw = keyword.lower()
-    for part in parts:
-        compact = " ".join(part.split())
+    for path, part in fields:
+        compact = clean_display_text(part)
         pos = compact.lower().find(kw)
         if pos < 0:
             continue
@@ -301,37 +607,56 @@ def match_snippet(parts: list[str], keyword: str, *, limit: int = 150) -> str:
         end = min(len(compact), pos + len(keyword) + 80)
         prefix = "..." if start > 0 else ""
         suffix = "..." if end < len(compact) else ""
-        return (prefix + compact[start:end] + suffix)[:limit]
+        snippet = prefix + compact[start:end] + suffix
+        return f"{path}: {snippet[:limit]}"
     return ""
 
 
-def cmd_search(keyword: str, provider: str | None) -> None:
-    kw = keyword.lower()
-    providers = [provider] if provider else [item["slug"] for item in index()["providers"]]
-    total = 0
-    for provider_slug in providers:
-        root = DATA_ROOT / "providers" / provider_slug
-        if not root.exists():
-            continue
-        for product in sorted(path.name for path in root.iterdir() if path.is_dir()):
-            hits = []
-            for api_file in sorted((root / product / "apis").glob("*.json")):
-                api = read_json(api_file)
-                parts = collect_text(api)
-                haystack = " ".join(parts).lower()
-                if kw in haystack:
-                    hits.append((api.get("group", ""), api, match_snippet(parts, keyword)))
-            if hits:
-                print(f"\n【{provider_slug}/{product}】{len(hits)} matches")
-                for group, api, snippet in hits[:15]:
-                    desc_lines = api.get("description", "").splitlines()
-                    summary = api.get("summary") or (desc_lines[0] if desc_lines else "")
-                    print(f"  {api['api']} ({group}) - {summary}")
-                    if snippet:
-                        print(f"    命中: {snippet}")
-                total += len(hits)
-    if total == 0:
+def cmd_search(keyword: str, provider: str | None, product: str | None, limit: int, offset: int, expand: bool) -> None:
+    terms = build_search_terms(keyword, expand=expand)
+    scope_scores = {} if product else product_hint_scores(keyword, provider)
+    if scope_scores:
+        terms = remove_scope_only_terms(terms, scope_scores)
+    use_scope = bool(scope_scores)
+    hits = collect_search_hits(keyword, provider, product, terms, scope_scores, use_scope=use_scope)
+    fallback_used = False
+    if not hits and use_scope:
+        hits = collect_search_hits(keyword, provider, product, terms, scope_scores, use_scope=False)
+        fallback_used = True
+    if not hits:
         print(f"未找到: {keyword}")
+        if expand and terms:
+            print("已尝试扩展词: " + ", ".join(terms[:12]))
+        if scope_scores:
+            print("产品线索: " + product_scope_note(scope_scores))
+        return
+    hits.sort(key=lambda item: (-item[0], item[1], item[2], item[4].get("api", "")))
+    effective_limit = max(1, limit)
+    effective_offset = max(0, offset)
+    shown = hits[effective_offset:effective_offset + effective_limit]
+    print(f"搜索: {keyword}")
+    if expand:
+        print("扩展词: " + ", ".join(terms[:16]))
+    if scope_scores and use_scope:
+        print("产品线索: " + product_scope_note(scope_scores))
+    if fallback_used:
+        print("产品线索无命中，已自动扩大到全部产品。")
+    end_index = effective_offset + len(shown)
+    print(
+        f"命中: {len(hits)} APIs，显示第 {effective_offset + 1}-{end_index} 条"
+        + ("（已截断）" if end_index < len(hits) else "")
+    )
+    if end_index < len(hits):
+        print(f"继续翻页: search {shlex.quote(keyword)} --limit {effective_limit} --offset {end_index}")
+    for score, provider_slug, product_slug, group, api, snippet in shown:
+        desc_lines = api.get("description", "").splitlines()
+        summary = api.get("summary") or (desc_lines[0] if desc_lines else "")
+        print(f"\n[{score:.1f}] {provider_slug}/{product_slug}/{api['api']} ({group})")
+        if summary:
+            print(f"  {clean_display_text(summary)[:220]}")
+        if snippet:
+            print(f"  命中: {snippet}")
+        print(f"  下一步: detail {api['api']} --product {product_slug} --provider {provider_slug} --full")
 
 
 def print_param(param: dict) -> None:
@@ -708,7 +1033,7 @@ def main() -> None:
     topic = sub.add_parser("topic"); topic.add_argument("slug")
     product = sub.add_parser("product"); product.add_argument("product"); product.add_argument("--provider", default=DEFAULT_PROVIDER)
     group = sub.add_parser("group"); group.add_argument("slug"); group.add_argument("--product", required=True); group.add_argument("--provider", default=DEFAULT_PROVIDER)
-    search = sub.add_parser("search"); search.add_argument("keyword"); search.add_argument("--provider")
+    search = sub.add_parser("search"); search.add_argument("keyword"); search.add_argument("--provider"); search.add_argument("--product"); search.add_argument("--limit", type=int, default=20); search.add_argument("--offset", type=int, default=0); search.add_argument("--no-expand", action="store_true")
     detail = sub.add_parser("detail"); detail.add_argument("api_name"); detail.add_argument("--product", required=True); detail.add_argument("--provider", default=DEFAULT_PROVIDER); detail.add_argument("--full", action="store_true")
     constraints = sub.add_parser("constraints"); constraints.add_argument("api_name"); constraints.add_argument("--product", required=True); constraints.add_argument("--provider", default=DEFAULT_PROVIDER)
     data_info = sub.add_parser("data-info"); data_info.add_argument("--no-remote", action="store_true")
@@ -731,7 +1056,7 @@ def main() -> None:
         "topic": lambda: cmd_topic(args.slug),
         "product": lambda: cmd_product(args.product, args.provider),
         "group": lambda: cmd_group(args.slug, args.product, args.provider),
-        "search": lambda: cmd_search(args.keyword, args.provider),
+        "search": lambda: cmd_search(args.keyword, args.provider, args.product, args.limit, args.offset, not args.no_expand),
         "detail": lambda: cmd_detail(args.api_name, args.product, args.provider, args.full),
         "constraints": lambda: cmd_constraints(args.api_name, args.product, args.provider),
         "data-info": lambda: cmd_data_info(no_remote=args.no_remote),
