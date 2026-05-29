@@ -342,6 +342,10 @@ def cjk_ngrams(value: str, *, min_size: int = 2, max_size: int = 4) -> list[str]
     return grams
 
 
+def contains_cjk(value: str) -> bool:
+    return bool(re.search(r"[\u3400-\u9fff]", value))
+
+
 def extract_query_tokens(text: str) -> list[str]:
     tokens: list[str] = []
     for part in re.split(r"[\s,，/._:;|()（）\[\]{}<>《》\"'`]+", text):
@@ -381,6 +385,179 @@ def build_search_terms(keyword: str, *, expand: bool) -> list[str]:
             if len(stripped) >= 2:
                 terms.update(term_variants(stripped))
     return sorted(terms, key=lambda item: (-len(item), item))
+
+
+GENERIC_IDENTIFIER_TERMS = {
+    "action",
+    "actions",
+    "add",
+    "api",
+    "attribute",
+    "attributes",
+    "batch",
+    "config",
+    "configuration",
+    "create",
+    "delete",
+    "description",
+    "describe",
+    "disable",
+    "enable",
+    "false",
+    "for",
+    "from",
+    "get",
+    "group",
+    "groups",
+    "id",
+    "ids",
+    "key",
+    "list",
+    "modify",
+    "name",
+    "query",
+    "remove",
+    "request",
+    "response",
+    "run",
+    "schema",
+    "set",
+    "start",
+    "status",
+    "stop",
+    "title",
+    "true",
+    "type",
+    "update",
+    "value",
+    "with",
+}
+
+
+def identifier_terms(value: object) -> list[str]:
+    text = str(value or "")
+    if not text:
+        return []
+    spaced = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", text)
+    words = re.findall(r"[A-Za-z][A-Za-z0-9]*", spaced)
+    terms: list[str] = []
+    for word in words:
+        lower = word.lower()
+        if len(lower) < 3 or lower in GENERIC_IDENTIFIER_TERMS:
+            continue
+        terms.append(lower)
+        if len(lower) > 4 and lower.endswith("s") and not lower.endswith("ss"):
+            terms.append(lower[:-1])
+    return list(dict.fromkeys(terms))
+
+
+CJK_GENERIC_QUERY_TERMS = {
+    "创建",
+    "删除",
+    "启动",
+    "停止",
+    "修改",
+    "更新",
+    "查询",
+    "查看",
+    "几种",
+    "多少",
+    "如何",
+    "是否",
+}
+
+
+def cjk_query_terms(keyword: str) -> list[str]:
+    terms = [
+        token for token in extract_query_tokens(keyword)
+        if contains_cjk(token) and len(token) >= 2 and token not in CJK_GENERIC_QUERY_TERMS
+    ]
+    return sorted(dict.fromkeys(terms), key=lambda item: (-len(item), item))
+
+
+def cjk_matching_paths(fields: list[tuple[str, str]], query_terms: list[str]) -> list[str]:
+    paths: list[str] = []
+    for path, value in fields:
+        text = clean_display_text(value)
+        if any(term in text for term in query_terms):
+            paths.append(path)
+    return paths
+
+
+def score_identifier_candidates(
+    scores: dict[str, float],
+    source: object,
+    weight: float,
+) -> None:
+    for term in identifier_terms(source):
+        scores[term] = scores.get(term, 0.0) + weight
+
+
+def related_identifier_prefixes(path: str) -> list[str]:
+    prefixes = []
+    for marker in (".schema.description", ".description", ".traits."):
+        if marker in path:
+            prefixes.append(path.split(marker, 1)[0])
+    if "." in path:
+        prefixes.append(path.rsplit(".", 1)[0])
+    return list(dict.fromkeys(prefix for prefix in prefixes if prefix))
+
+
+def score_related_identifiers(
+    scores: dict[str, float],
+    fields: list[tuple[str, str]],
+    matched_paths: list[str],
+) -> None:
+    prefixes = [prefix for path in matched_paths for prefix in related_identifier_prefixes(path)]
+    if not prefixes:
+        return
+    for path, value in fields:
+        lowered = path.lower()
+        if not (
+            lowered.endswith(".name")
+            or lowered.endswith(".target")
+            or lowered.endswith(".key")
+        ):
+            continue
+        if any(path.startswith(prefix) for prefix in prefixes):
+            score_identifier_candidates(scores, value, 12)
+
+
+def local_cooccurrence_terms(keyword: str, *, max_terms: int = 24) -> list[str]:
+    query_terms = cjk_query_terms(keyword)
+    if not query_terms:
+        return []
+    api_scores: dict[str, float] = {}
+    related_scores: dict[str, float] = {}
+    global_api_term_counts: dict[str, int] = {}
+    for provider_dir in sorted((DATA_ROOT / "providers").glob("*")):
+        if not provider_dir.is_dir():
+            continue
+        for product_root in sorted(path for path in provider_dir.iterdir() if path.is_dir()):
+            group_titles = group_title_map(product_root)
+            for api_file in sorted((product_root / "apis").glob("*.json")):
+                api = read_json(api_file)
+                for term in identifier_terms(api.get("api", "")):
+                    global_api_term_counts[term] = global_api_term_counts.get(term, 0) + 1
+                fields = api_search_fields(api, group_titles)
+                matched_paths = cjk_matching_paths(fields, query_terms)
+                if not matched_paths:
+                    continue
+                if any(path in {"title", "group.title"} for path in matched_paths):
+                    score_identifier_candidates(api_scores, api.get("api", ""), 30)
+                elif any(path in {"summary", "description"} for path in matched_paths):
+                    score_identifier_candidates(related_scores, api.get("api", ""), 6)
+                score_related_identifiers(related_scores, fields, matched_paths)
+    scores = api_scores or related_scores
+    ranked = sorted(
+        scores.items(),
+        key=lambda item: (
+            -(item[1] / (1 + global_api_term_counts.get(item[0], 0) / 12)),
+            -item[1],
+            item[0],
+        ),
+    )
+    return [term for term, _ in ranked[:max_terms]]
 
 
 def field_weight(path: str) -> int:
@@ -613,7 +790,11 @@ def match_snippet(fields: list[tuple[str, str]], keyword: str, *, limit: int = 1
 
 
 def cmd_search(keyword: str, provider: str | None, product: str | None, limit: int, offset: int, expand: bool) -> None:
-    terms = build_search_terms(keyword, expand=expand)
+    derived_terms = local_cooccurrence_terms(keyword) if expand else []
+    term_set = set(build_search_terms(keyword, expand=expand))
+    for term in derived_terms:
+        term_set.update(term_variants(term))
+    terms = sorted(term_set, key=lambda item: (-len(item), item))
     scope_scores = {} if product else product_hint_scores(keyword, provider)
     if scope_scores:
         terms = remove_scope_only_terms(terms, scope_scores)
@@ -637,6 +818,8 @@ def cmd_search(keyword: str, provider: str | None, product: str | None, limit: i
     print(f"搜索: {keyword}")
     if expand:
         print("扩展词: " + ", ".join(terms[:16]))
+    if derived_terms:
+        print("本地共现扩展词: " + ", ".join(derived_terms[:16]))
     if scope_scores and use_scope:
         print("产品线索: " + product_scope_note(scope_scores))
     if fallback_used:
